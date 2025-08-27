@@ -9,6 +9,7 @@ public abstract class User {
     public String lastName;
     public int age;
     public String school;
+    public String role;
     // public classroom Classroom;     TO BE ADDED
 
     //User Constructor
@@ -77,5 +78,17 @@ public abstract class User {
         this.school = school;
     }
 
+    //Getter Setter for role
+    public String getRole(){return role;}
+    public void setRole(int role){
+        if(role == 1)
+        {
+            this.role = "student";
+        }
+        else if(role ==2){
+            this.role = "teacher";
+        }
+    }
     //Methods
+    public abstract String getUserRole();
 }
