@@ -1,24 +1,24 @@
 package com.example.demo;
 
-import javafx.application.Application;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
+import javafx.scene.control.Button;
 import java.io.IOException;
 
-public class HelloApplication extends Application {
-    @Override
-    public void start(Stage stage) throws IOException {
+public class ClassesView {
+    @FXML
+    private Button homeButton;
+
+    @FXML
+    protected void onHomeButtonClick() throws IOException {
+        Stage stage = (Stage) homeButton.getScene().getWindow();
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("hello-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 800, 600);
-        stage.setTitle("Hello!");
         stage.setScene(scene);
-        stage.show();
-    }
-
-
-    public static void main(String[] args) {
-        launch();
     }
 }
