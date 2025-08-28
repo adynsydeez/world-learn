@@ -14,7 +14,7 @@
     <!-- leftt side info -->
     <HBox spacing="10" alignment="CENTER_LEFT">
         <Button fx:id="homeButtonProfilePage" text="home" style="-fx-background-radius:8; -fx-padding:6 10;" onAction="#onHomeButtonClickProfilePage"/>
-        <Label text="Your Classes" style="-fx-font-size:22; -fx-font-weight:bold;"/>
+        <Label text="Your Profile" style="-fx-font-size:22; -fx-font-weight:bold;"/>
         <Pane HBox.hgrow="ALWAYS"/>
 
     </HBox>
