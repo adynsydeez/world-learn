@@ -25,7 +25,7 @@
     </HBox>
 
 
-    <!-- lesson place holders-->
+    <!-- lesson placeholders-->
     <HBox spacing="16">
 
         <VBox spacing="6" style="-fx-padding:10; -fx-background-color:#f3edf9; -fx-background-radius:12; -fx-pref-width:180;">

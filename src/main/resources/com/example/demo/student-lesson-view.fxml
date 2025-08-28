@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.demo.StudentLessonView" spacing="14" style="-fx-padding:20;">
+    <HBox spacing="10">
+        <VBox spacing="10">
+            <Button fx:id="profileButtonLessonPage" text="Profile" style="-fx-background-radius:10; -fx-padding:6 12;"/>
+            <Button fx:id="homeButtonLessonPage" text="home" style="-fx-background-radius:10; -fx-padding:6 12;"/>
+            <Button text="settings" style="-fx-background-radius:10; -fx-padding:6 12;"/>
+        </VBox>
+        <VBox spacing="10">
+            <Label text="Lesson Title" style="-fx-font-size:22; -fx-font-weight:bold;"/>
+            <HBox spacing="10">
+                <VBox>
+                    <Label text="%"/>
+
+                </VBox>
+            </HBox>
+        </VBox>
+    </HBox>
+
+</VBox>
