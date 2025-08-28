@@ -10,24 +10,26 @@ import javafx.stage.Stage;
 import javafx.scene.control.Button;
 import java.io.IOException;
 
-public class ClassesView {
-    @FXML
-    private Button homeButton;
-    @FXML
-    private Button lessonButton;
+public class StudentLessonView {
 
     @FXML
-    protected void onHomeButtonClick() throws IOException {
-        Stage stage = (Stage) homeButton.getScene().getWindow();
+    private Button homeButtonLessonPage;
+    @FXML
+    private Button profileButtonLessonPage;
+
+    @FXML
+    protected void onHomeButtonClickLessonPage() throws IOException {
+        Stage stage = (Stage) homeButtonLessonPage.getScene().getWindow();
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("hello-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 800, 600);
         stage.setScene(scene);
     }
     @FXML
-    protected void onLessonButtonClick() throws IOException {
-        Stage stage = (Stage) homeButton.getScene().getWindow();
-        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("student-lesson-view.fxml"));
+    protected void onProfileButtonClickLessonPage() throws IOException {
+        Stage stage = (Stage) profileButtonLessonPage.getScene().getWindow();
+        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("profile-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 800, 600);
         stage.setScene(scene);
     }
+
 }
