@@ -9,14 +9,14 @@ public abstract class User {
     public String lastName;
     public int age;
     public String school;
-    public String role;
+    public Role role;
     // public classroom Classroom;     TO BE ADDED
 
     //User Constructor
-    public User(String email, String username, String password) {
+    public User(String email, String password, Role role) {
         this.email = email; //VERIFICATION TO BE ADDED
-        this.username = username;
         this.password = password;
+        this.role = role;
     }
 
     //Getters and Setters
@@ -79,15 +79,9 @@ public abstract class User {
     }
 
     //Getter Setter for role
-    public String getRole(){return role;}
-    public void setRole(int role){
-        if(role == 1)
-        {
-            this.role = "student";
-        }
-        else if(role ==2){
-            this.role = "teacher";
-        }
+    public Role getRole(){return role;}
+    public void setRole(Role role){
+        this.role = role;
     }
     //Methods
     public abstract String getUserRole();
