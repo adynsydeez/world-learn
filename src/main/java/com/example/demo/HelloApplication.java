@@ -1,10 +1,5 @@
 package com.example.demo;
 
-import com.example.demo.AuthenticationService;
-import com.example.demo.User;
-import javafx.fxml.FXML;
-import javafx.scene.control.*;
-
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -17,10 +12,10 @@ public class HelloApplication extends Application {
     public void start(Stage stage) throws IOException {
         AuthenticationService auth = new AuthenticationService();
 
-        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("auth-view.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("hello-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 640, 360);
 
-        AuthController controller = fxmlLoader.getController();
+        HelloController controller = fxmlLoader.getController();
         controller.init(auth, stage);
 
         stage.setTitle("WorldLearn");

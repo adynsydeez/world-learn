@@ -9,7 +9,7 @@
 <VBox alignment="CENTER" spacing="16"
       xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.example.demo.AuthController"
+      fx:controller="com.example.demo.HelloController"
       prefWidth="420">
     <padding>
         <Insets top="20" right="20" bottom="20" left="20"/>

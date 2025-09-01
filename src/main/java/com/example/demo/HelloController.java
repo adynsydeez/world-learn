@@ -12,7 +12,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 
-public class AuthController {
+public class HelloController {
 
     private AuthenticationService auth;
     private Stage stage;
