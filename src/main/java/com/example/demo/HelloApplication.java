@@ -17,7 +17,7 @@ public class HelloApplication extends Application {
     public void start(Stage stage) throws IOException {
         AuthenticationService auth = new AuthenticationService();
 
-        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("hello-view.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("auth-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 640, 360);
 
         AuthController controller = fxmlLoader.getController();

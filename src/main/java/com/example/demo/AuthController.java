@@ -72,7 +72,7 @@ public class AuthController {
             User newUser = auth.logIn(email, password);
             loginErrorLabel.setText("Logged in: " + newUser.getEmail() + " (" + newUser.getRole() + ")");
 
-            // Always load the same dashboard
+            //switch
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/demo/Dashboard-test.fxml"));
             Parent root = loader.load();
 
