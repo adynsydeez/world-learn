@@ -5,10 +5,10 @@ public abstract class User {
     private String username;
     private String password;
     private String email;
-    public String firstName;
-    public String lastName;
-    public int age;
-    public String school;
+    private String firstName;
+    private String lastName;
+    private int age;
+    private String school;
     public Role role;
     // public classroom Classroom;     TO BE ADDED
 

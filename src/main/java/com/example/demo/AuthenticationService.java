@@ -12,6 +12,7 @@ public class AuthenticationService implements IAuthenticationService {
         users.add(new Student("admin@email.com",  "password123"));
     }
 
+    //signsUp user. adds user to authentication service and returns user
     @Override
     public User signUp(String email, String password, Role role) {
         //Checks that email is in correct format, throws exception if not
@@ -30,6 +31,7 @@ public class AuthenticationService implements IAuthenticationService {
             }
         }
         // If not taken, create new user and add to list
+        //switch statement creates user based on role
         User newUser = switch (role) {
             case STUDENT -> new Student(email.trim(), password);
             case TEACHER -> new Teacher(email.trim(), password);
@@ -47,6 +49,7 @@ public class AuthenticationService implements IAuthenticationService {
 
         return newUser;
     }
+
 
     @Override
     public User logIn(String email, String password) {
