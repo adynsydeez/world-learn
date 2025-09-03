@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.worldlearn.frontend;
 
 import com.worldlearn.frontend.HelloApplication;
 import javafx.fxml.FXML;

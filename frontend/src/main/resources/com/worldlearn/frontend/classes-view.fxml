@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.demo.ClassesView" spacing="14" style="-fx-padding:20;">
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.worldlearn.frontend.ClassesView" spacing="14" style="-fx-padding:20;">
 
     <!--back arrow + title + menu -->
     <HBox spacing="10" alignment="CENTER_LEFT">

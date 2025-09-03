@@ -10,7 +10,7 @@
 
 <?import java.awt.Rectangle?>
 <?import javafx.scene.layout.StackPane?>
-<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.demo.ProfileView" spacing="14" style="-fx-padding:20;">
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.worldlearn.frontend.ProfileView" spacing="14" style="-fx-padding:20;">
     <!-- leftt side info -->
     <HBox spacing="10" alignment="CENTER_LEFT">
         <Button fx:id="homeButtonProfilePage" text="home" style="-fx-background-radius:8; -fx-padding:6 10;" onAction="#onHomeButtonClickProfilePage"/>

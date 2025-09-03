@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.worldlearn.frontend;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
