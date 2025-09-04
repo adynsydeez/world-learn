@@ -2,15 +2,13 @@ package com.example.demo;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 import javafx.scene.control.Button;
 import java.io.IOException;
 
-public class HelloController {
+public class StudentDashboardController {
 
 
     @FXML private Button classesButton;
@@ -20,7 +18,7 @@ public class HelloController {
     @FXML
     protected void onClassesButtonClick() throws IOException {
         Stage stage = (Stage) classesButton.getScene().getWindow();
-        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("classes-view.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("student-classes-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 800, 600);
         stage.setScene(scene);
     }
@@ -34,7 +32,7 @@ public class HelloController {
     @FXML
     protected void onTeacherButtonClick() throws IOException {   // NEW method
         Stage stage = (Stage) teacherButton.getScene().getWindow();
-        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("dashboard-view.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("teacher-dashboard-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 1200, 700); // dashboard is bigger
         stage.setScene(scene);
     }
