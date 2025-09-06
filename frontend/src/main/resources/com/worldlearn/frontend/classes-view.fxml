@@ -5,7 +5,11 @@
 <?import javafx.scene.layout.*?>
 
 <<<<<<<< HEAD:frontend/src/main/resources/com/worldlearn/frontend/classes-view.fxml
+<<<<<<<< HEAD:frontend/src/main/resources/com/worldlearn/frontend/classes-view.fxml
 <VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.worldlearn.frontend.ClassesView" spacing="14" style="-fx-padding:20;">
+========
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.demo.StudentClassesController" spacing="14" style="-fx-padding:20;">
+>>>>>>>> 4c50013e154809080ad1efc11407a8fbd292f921:frontend/src/main/resources/com/worldlearn/frontend/student-classes-view.fxml
 ========
 <VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.demo.StudentClassesController" spacing="14" style="-fx-padding:20;">
 >>>>>>>> 4c50013e154809080ad1efc11407a8fbd292f921:frontend/src/main/resources/com/worldlearn/frontend/student-classes-view.fxml

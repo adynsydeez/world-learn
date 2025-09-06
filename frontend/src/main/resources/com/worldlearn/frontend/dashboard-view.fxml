@@ -6,7 +6,11 @@
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
 <<<<<<<< HEAD:frontend/src/main/resources/com/worldlearn/frontend/dashboard-view.fxml
+<<<<<<<< HEAD:frontend/src/main/resources/com/worldlearn/frontend/dashboard-view.fxml
             fx:controller="com.worldlearn.frontend.DashboardController"
+========
+            fx:controller="com.example.demo.TeacherDashboardController"
+>>>>>>>> 4c50013e154809080ad1efc11407a8fbd292f921:frontend/src/main/resources/com/worldlearn/frontend/teacher-dashboard-view.fxml
 ========
             fx:controller="com.example.demo.TeacherDashboardController"
 >>>>>>>> 4c50013e154809080ad1efc11407a8fbd292f921:frontend/src/main/resources/com/worldlearn/frontend/teacher-dashboard-view.fxml

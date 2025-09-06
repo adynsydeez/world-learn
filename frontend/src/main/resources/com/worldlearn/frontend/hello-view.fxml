@@ -10,7 +10,11 @@
 
 <VBox alignment="TOP_LEFT" spacing="10.0" xmlns:fx="http://javafx.com/fxml"
 <<<<<<<< HEAD:frontend/src/main/resources/com/worldlearn/frontend/hello-view.fxml
+<<<<<<<< HEAD:frontend/src/main/resources/com/worldlearn/frontend/hello-view.fxml
       fx:controller="com.worldlearn.frontend.HelloController">
+========
+      fx:controller="com.example.demo.StudentDashboardController">
+>>>>>>>> 4c50013e154809080ad1efc11407a8fbd292f921:frontend/src/main/resources/com/worldlearn/frontend/student-dashboard-view.fxml
 ========
       fx:controller="com.example.demo.StudentDashboardController">
 >>>>>>>> 4c50013e154809080ad1efc11407a8fbd292f921:frontend/src/main/resources/com/worldlearn/frontend/student-dashboard-view.fxml
