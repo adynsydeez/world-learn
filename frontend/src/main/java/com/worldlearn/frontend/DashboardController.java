@@ -4,7 +4,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 
-public class TeacherDashboardController {
+public class DashboardController {
 
     @FXML private Label lblClasses;
     @FXML private Label lblLessons;
