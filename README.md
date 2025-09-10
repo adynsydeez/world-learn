@@ -32,7 +32,7 @@ A Java backend application using Javalin web framework and PostgreSQL database.
    - Choose installation directory (default is fine)
    - Select components (keep all selected)
    - Set data directory (default is fine)
-   - **Set password for postgres user** (remember this! We'll use `worldlearnpw`)
+   - **Set password for postgres user** (remember this! We'll use `postgrepw0`)
    - Set port to 5432 (default)
    - Choose locale (default is fine)
 3. Complete the installation
