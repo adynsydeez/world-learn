@@ -17,11 +17,7 @@ public class StudentClassesController {
     @FXML
     protected void onHomeButtonClick() throws IOException {
         Stage stage = (Stage) homeButton.getScene().getWindow();
-<<<<<<<< HEAD:frontend/src/main/java/com/worldlearn/frontend/ClassesView.java
-        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("/resources/hello-view.fxml"));
-========
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("student-dashboard-view.fxml"));
->>>>>>>> 4c50013e154809080ad1efc11407a8fbd292f921:frontend/src/main/java/com/worldlearn/frontend/StudentClassesController.java
         Scene scene = new Scene(fxmlLoader.load(), 800, 600);
         stage.setScene(scene);
     }

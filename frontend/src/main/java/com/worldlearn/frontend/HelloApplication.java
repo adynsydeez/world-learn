@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.worldlearn.frontend;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -8,14 +8,19 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class HelloApplication extends Application {
-    private String mode = "teacher" ; //change to teacher/student for testing while login no implemented
+
 
 
     @Override
-    public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("/com/worldlearn/frontend/hello-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 800, 600);
-        stage.setTitle("Hello!");
+    public void start(Stage stage) throws Exception {
+        // Easiest: package-relative (HelloApplication is in com.worldlearn.frontend)
+        FXMLLoader loader = new FXMLLoader(HelloApplication.class.getResource("hello-view.fxml"));
+
+        // OR absolute (equivalent):
+        // FXMLLoader loader = new FXMLLoader(HelloApplication.class.getResource("/com/worldlearn/frontend/hello-view.fxml"));
+
+        Scene scene = new Scene(loader.load(), 800, 600);
+        stage.setTitle("WorldLearn");
         stage.setScene(scene);
         stage.show();
     }

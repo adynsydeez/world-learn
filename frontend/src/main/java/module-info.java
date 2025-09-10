@@ -10,4 +10,6 @@ module com.worldlearn.frontend {
 
     opens com.worldlearn.frontend to javafx.fxml;
     exports com.worldlearn.frontend;
+    exports com.worldlearn.frontend.services;
+    opens com.worldlearn.frontend.services to javafx.fxml;
 }

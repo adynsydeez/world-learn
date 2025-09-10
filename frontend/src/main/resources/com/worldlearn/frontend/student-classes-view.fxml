@@ -4,15 +4,18 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<<<<<<<< HEAD:frontend/src/main/resources/com/worldlearn/frontend/classes-view.fxml
-<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.worldlearn.frontend.ClassesView" spacing="14" style="-fx-padding:20;">
-========
-<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.demo.StudentClassesController" spacing="14" style="-fx-padding:20;">
->>>>>>>> 4c50013e154809080ad1efc11407a8fbd292f921:frontend/src/main/resources/com/worldlearn/frontend/student-classes-view.fxml
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.worldlearn.frontend.StudentClassesController"
+      spacing="14"
+      style="-fx-padding:20;">
 
-    <!--back arrow + title + menu -->
+    <!-- back arrow + title + menu -->
     <HBox spacing="10" alignment="CENTER_LEFT">
-        <Button fx:id="homeButton" text="home" style="-fx-background-radius:8; -fx-padding:6 10;" onAction="#onHomeButtonClick"/>
+        <Button fx:id="homeButton"
+                text="home"
+                style="-fx-background-radius:8; -fx-padding:6 10;"
+                onAction="#onHomeButtonClick"/>
         <Label text="Your Classes" style="-fx-font-size:22; -fx-font-weight:bold;"/>
         <Pane HBox.hgrow="ALWAYS"/>
         <Button text="..." style="-fx-background-radius:8; -fx-padding:6 10;"/>
@@ -25,38 +28,45 @@
         <ToggleButton text="Ms Charlie"/>
         <ToggleButton text="Miss Delta"/>
         <Pane HBox.hgrow="ALWAYS"/>
-        <Button fx:id="joinButton" text="+ Join Class" style="-fx-background-radius:10; -fx-padding:6 12;"/>
+        <Button fx:id="joinButton"
+                text="+ Join Class"
+                style="-fx-background-radius:10; -fx-padding:6 12;"/>
     </HBox>
 
-
-    <!-- lesson placeholders-->
+    <!-- lesson placeholders -->
     <HBox spacing="16">
 
-        <VBox spacing="6" onMouseClicked="#onLessonButtonClick" style="-fx-padding:10; -fx-background-color:#f3edf9; -fx-background-radius:12; -fx-pref-width:180;" >
+        <VBox spacing="6"
+              onMouseClicked="#onLessonButtonClick"
+              style="-fx-padding:10; -fx-background-color:#f3edf9; -fx-background-radius:12; -fx-pref-width:180;">
             <Label text="1" style="-fx-font-size:60;"/>
             <Label text="Lesson 1" style="-fx-font-weight:bold;"/>
             <Label text="Updated today" style="-fx-text-fill:#666; -fx-font-size:11;"/>
         </VBox>
 
-
-        <VBox spacing="6" onMouseClicked="#onLessonButtonClick" style="-fx-padding:10; -fx-background-color:#f3edf9; -fx-background-radius:12; -fx-pref-width:180;">
+        <VBox spacing="6"
+              onMouseClicked="#onLessonButtonClick"
+              style="-fx-padding:10; -fx-background-color:#f3edf9; -fx-background-radius:12; -fx-pref-width:180;">
             <Label text="2" style="-fx-font-size:60;"/>
             <Label text="Lesson 2" style="-fx-font-weight:bold;"/>
             <Label text="Updated yesterday" style="-fx-text-fill:#666; -fx-font-size:11;"/>
         </VBox>
 
-
-        <VBox spacing="6" onMouseClicked="#onLessonButtonClick" style="-fx-padding:10; -fx-background-color:#f3edf9; -fx-background-radius:12; -fx-pref-width:180;">
+        <VBox spacing="6"
+              onMouseClicked="#onLessonButtonClick"
+              style="-fx-padding:10; -fx-background-color:#f3edf9; -fx-background-radius:12; -fx-pref-width:180;">
             <Label text="3" style="-fx-font-size:60;"/>
             <Label text="Lesson 3" style="-fx-font-weight:bold;"/>
             <Label text="Updated 4 days ago" style="-fx-text-fill:#666; -fx-font-size:11;"/>
         </VBox>
 
-
-        <VBox spacing="6" onMouseClicked="#onLessonButtonClick" style="-fx-padding:10; -fx-background-color:#f3edf9; -fx-background-radius:12; -fx-pref-width:180;">
+        <VBox spacing="6"
+              onMouseClicked="#onLessonButtonClick"
+              style="-fx-padding:10; -fx-background-color:#f3edf9; -fx-background-radius:12; -fx-pref-width:180;">
             <Label text="4" style="-fx-font-size:60;"/>
             <Label text="Lesson 4" style="-fx-font-weight:bold;"/>
             <Label text="Updated 6 days ago" style="-fx-text-fill:#666; -fx-font-size:11;"/>
         </VBox>
+
     </HBox>
 </VBox>

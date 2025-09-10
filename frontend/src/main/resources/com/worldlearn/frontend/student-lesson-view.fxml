@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Rectangle?>
 
-<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.worldlearn.frontend.StudentLessonView" spacing="14" style="-fx-padding:20;">
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.worldlearn.frontend.StudentLessonController" spacing="14" style="-fx-padding:20;">
     <HBox spacing="10">
         <VBox spacing="10" minWidth="100">
             <Button fx:id="homeButtonLessonPage" text="Profile" onAction="#onProfileButtonClickLessonPage" style="-fx-background-radius:10; -fx-padding:6 12;"/>
