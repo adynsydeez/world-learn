@@ -24,7 +24,8 @@
                 style="-fx-background-color:red; -fx-text-fill:black; -fx-font-weight: bold; -fx-font-size: 20px; -fx-background-radius:6;"/>
     </HBox>
 
-    <Label text="Welcome, UserNamePlaceholder!"
+    <Label fx:id="welcomeLabel"
+           text="Welcome, UserNamePlaceholder!"
            style="-fx-text-fill: black; -fx-font-size: 20px; -fx-font-weight: bold;"/>
 
     <HBox spacing="16">
