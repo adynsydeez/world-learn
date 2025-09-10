@@ -8,7 +8,7 @@ import javafx.stage.Stage;
 import javafx.scene.control.Button;
 import java.io.IOException;
 
-public class StudentLessonController {
+public class StudentLessonView {
 
     @FXML
     private Button homeButtonLessonPage;

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox alignment="CENTER" spacing="16"
+      xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.worldlearn.frontend.AuthController"
+      prefWidth="420">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <TabPane tabClosingPolicy="UNAVAILABLE" prefWidth="Infinity">
+
+        <!-- Sign Up Tab -->
+        <Tab text="Sign Up">
+            <VBox spacing="10" alignment="CENTER_LEFT">
+                <padding>
+                    <Insets top="10" right="10" bottom="10" left="10"/>
+                </padding>
+                <Label text="Sign Up" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+                <Label text="Email:"/>
+                <TextField fx:id="signupEmailField" promptText="e.g. student1@edu.com" />
+                <Label text="Password:"/>
+                <PasswordField fx:id="signupPasswordField" promptText="Choose a password" />
+                <Label text="Role:"/>
+                <ChoiceBox fx:id="signupRoleBox"/>
+                <Button text="Sign Up" onAction="#onSignup"/>
+                <Label fx:id="signupErrorLabel" textFill="#0e8010"/>
+            </VBox>
+        </Tab>
+
+        <!-- Login Tab -->
+        <Tab text="Login">
+            <VBox spacing="10" alignment="CENTER_LEFT">
+                <padding>
+                    <Insets top="10" right="10" bottom="10" left="10"/>
+                </padding>
+                <Label text="Login" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+                <Label text="Email:"/>
+                <TextField fx:id="loginEmailField" promptText="e.g. student1@edu.com"/>
+                <Label text="Password:"/>
+                <PasswordField fx:id="loginPasswordField" promptText="Your password"/>
+                <Button text="Log In" onAction="#onLogin" defaultButton="true"/>
+                <Label fx:id="loginErrorLabel" textFill="#0e8010"/>
+            </VBox>
+        </Tab>
+
+    </TabPane>
+</VBox>

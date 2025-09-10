@@ -1,5 +1,6 @@
-package com.example.demo;
+package com.worldlearn.frontend;
 
+import com.worldlearn.frontend.services.AuthenticationService;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -13,9 +14,16 @@ public class HelloApplication extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("/com/worldlearn/frontend/hello-view.fxml"));
+        AuthenticationService auth = new AuthenticationService();
+
+
+        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("/com/worldlearn/frontend/Auth-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 800, 600);
-        stage.setTitle("Hello!");
+
+        AuthController controller = fxmlLoader.getController();
+        controller.init(auth, stage);
+
+        stage.setTitle("World Learn");
         stage.setScene(scene);
         stage.show();
     }

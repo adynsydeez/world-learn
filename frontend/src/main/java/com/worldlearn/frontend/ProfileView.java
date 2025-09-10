@@ -8,7 +8,7 @@ import javafx.stage.Stage;
 import javafx.scene.control.Button;
 import java.io.IOException;
 
-public class ProfileController {
+public class ProfileView {
 
     @FXML
     private Button homeButtonProfilePage;

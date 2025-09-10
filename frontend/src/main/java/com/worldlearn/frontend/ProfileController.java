@@ -17,7 +17,7 @@ public class ProfileController {
     protected void onHomeButtonClickProfilePage() throws IOException {
         Stage stage = (Stage) homeButtonProfilePage.getScene().getWindow();
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("student-dashboard-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 800, 600);
+        Scene scene = new Scene(fxmlLoader.load(), 800, 800);
         stage.setScene(scene);
     }
 

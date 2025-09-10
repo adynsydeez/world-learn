@@ -19,14 +19,14 @@ public class StudentLessonController {
     protected void onHomeButtonClickLessonPage() throws IOException {
         Stage stage = (Stage) homeButtonLessonPage.getScene().getWindow();
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("student-dashboard-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 800, 600);
+        Scene scene = new Scene(fxmlLoader.load(), 800, 800);
         stage.setScene(scene);
     }
     @FXML
     protected void onProfileButtonClickLessonPage() throws IOException {
         Stage stage = (Stage) profileButtonLessonPage.getScene().getWindow();
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("profile-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 800, 600);
+        Scene scene = new Scene(fxmlLoader.load(), 800, 800);
         stage.setScene(scene);
     }
 

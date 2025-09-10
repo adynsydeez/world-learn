@@ -9,8 +9,8 @@
 <?import javafx.scene.layout.HBox?>
 
 <VBox alignment="TOP_LEFT" spacing="10.0" xmlns:fx="http://javafx.com/fxml"
-<<<<<<<< HEAD:frontend/src/main/resources/com/worldlearn/frontend/hello-view.fxml
-<<<<<<<< HEAD:frontend/src/main/resources/com/worldlearn/frontend/hello-view.fxml
+<<<<<<<< HEAD:frontend/src/main/resources/com/worldlearn/frontend/hello2-view.fxml
+<<<<<<<< HEAD:frontend/src/main/resources/com/worldlearn/frontend/hello2-view.fxml
       fx:controller="com.worldlearn.frontend.HelloController">
 ========
       fx:controller="com.example.demo.StudentDashboardController">
