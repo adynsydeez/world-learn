@@ -222,16 +222,16 @@ CREATE TABLE Quiz_Question (
 );
 
 -- Insert sample data
-INSERT INTO Users (email, first_name, last_name, user_role) VALUES 
-('alice@example.com', 'Alice', 'Smith', 'teacher'),
-('bob@example.com', 'Bob', 'Johnson', 'student'),
-('carol@example.com', 'Carol', 'Williams', 'teacher');
+INSERT INTO Users (email, password, first_name, last_name, user_role) VALUES 
+('alice@example.com', 'password1', 'Alice', 'Smith', 'teacher'),
+('bob@example.com', 'password2', 'Bob', 'Johnson', 'student'),
+('carol@example.com', 'password3', 'Carol', 'Williams', 'teacher');
 
-INSERT INTO Classes (join_code) VALUES (123456), (789012);
+INSERT INTO Classes (class_name, join_code) VALUES ('class 1', 123456), ('class 2', 789012);
 
-INSERT INTO Lessons (visibility) VALUES ('public'), ('private');
+INSERT INTO Lessons (lesson_name, visibility) VALUES ('lesson 1', 'public'), ('lesson 2', 'private');
 
-INSERT INTO Quizzes (visibility) VALUES ('public'), ('private');
+INSERT INTO Quizzes (quiz_name, visibility) VALUES ('quiz 1', 'public'), ('quiz 2', 'private');
 ```
 
 ## Running the Application
