@@ -19,9 +19,11 @@
                styleClass="MainTitle"
                style="-fx-text-fill: Green; -fx-font-size: 28px; -fx-font-weight: bold;"/>
         <Pane HBox.hgrow="ALWAYS"/>
-        <Button text="Log Out"
-                alignment="TOP_RIGHT"
-                style="-fx-background-color:red; -fx-text-fill:black; -fx-font-weight: bold; -fx-font-size: 20px; -fx-background-radius:6;"/>
+        <Button fx:id="logoutButton"
+                text="Log Out"
+                onAction="#onLogoutButtonClick"
+                style="-fx-background-color:red; -fx-text-fill:white; -fx-font-weight:bold; -fx-font-size:20px; -fx-background-radius:6;"/>
+
     </HBox>
 
     <Label fx:id="welcomeLabel"
@@ -60,17 +62,7 @@
 
         </VBox>
 
-        <!-- Teacher (tile) -->
-        <HBox spacing="12" alignment="CENTER_LEFT"
-              onMouseClicked="#onTeacherButtonClick"
-              style="-fx-background-color:#e9ffd9; -fx-background-radius:20; -fx-padding:20; -fx-cursor:hand;">
-            <VBox spacing="6">
-                <Label text="Teacher" style="-fx-font-size:20; -fx-font-weight:bold;"/>
-            </VBox>
-            <Region HBox.hgrow="ALWAYS"/>
-            <Label text="image" style="-fx-font-size:64;"/>
-            <Button fx:id="teacherButton" visible="false" managed="false" onAction="#onTeacherButtonClick"/>
-        </HBox>
+
 
         <!-- Settings bar -->
         <VBox prefWidth="120" alignment="CENTER"

@@ -5,6 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
+import com.worldlearn.frontend.services.AuthenticationService;
 
 import javafx.scene.control.Button;
 import java.io.IOException;
@@ -13,6 +14,7 @@ public class StudentDashboardController {
 
     private User user;
     private Stage stage;
+    private AuthenticationService auth;
 
     //pass user, stage to controller
     public void init(User user, Stage stage) {
@@ -40,13 +42,23 @@ public class StudentDashboardController {
         Scene scene = new Scene(fxmlLoader.load(), 800, 600);
         stage.setScene(scene);
     }
+    @FXML private Button logoutButton;
     @FXML
-    protected void onTeacherButtonClick() throws IOException {   // NEW method
-        Stage stage = (Stage) teacherButton.getScene().getWindow();
-        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("teacher-dashboard-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 1200, 700); // dashboard is bigger
+    protected void onLogoutButtonClick() throws Exception {
+        // clear any local session state if you want
+        this.user = null;
+
+        FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("Auth-view.fxml"));
+        Scene scene = new Scene(fxml.load(), 900, 650);
+
+        // re-init the AuthController with the SAME auth service + stage
+        AuthController authController = fxml.getController();
+        authController.init((auth != null ? auth : new AuthenticationService()), stage);
+
         stage.setScene(scene);
+        stage.show();
     }
+
 
 
 }
