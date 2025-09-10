@@ -82,6 +82,7 @@ CREATE TABLE Users (
 -- CLASSES
 CREATE TABLE Classes (
   class_id SERIAL PRIMARY KEY,
+  class_name VARCHAR(255) NOT NULL, 
   join_code INT NOT NULL UNIQUE
 );
 
@@ -107,6 +108,7 @@ CREATE TABLE Student_Class (
 -- LESSONS
 CREATE TABLE Lessons (
   lesson_id SERIAL PRIMARY KEY,
+  lesson_name VARCHAR(255) NOT NULL, 
   visibility visibility_type NOT NULL
 );
 
@@ -141,6 +143,7 @@ CREATE TABLE Class_Lesson (
 -- QUIZZES
 CREATE TABLE Quizzes (
   quiz_id SERIAL PRIMARY KEY,
+  quiz_name VARCHAR(255) NOT NULL, 
   visibility visibility_type NOT NULL
 );
 
@@ -169,6 +172,7 @@ CREATE TABLE Student_Quiz (
 -- QUESTIONS
 CREATE TABLE Questions (
   question_id SERIAL PRIMARY KEY,
+  question_name VARCHAR(255) NOT NULL, 
   answer VARCHAR(255),
   options TEXT[],
   prompt VARCHAR(500) NOT NULL,
