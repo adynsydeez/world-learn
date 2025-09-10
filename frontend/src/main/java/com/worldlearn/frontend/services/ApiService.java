@@ -2,6 +2,8 @@ package com.worldlearn.frontend.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.worldlearn.backend.models.User;
+import com.worldlearn.backend.models.WlClass;
+
 import java.net.http.*;
 import java.net.URI;
 import java.time.Duration;
@@ -178,6 +180,68 @@ public class ApiService {
                 return response.statusCode() == 200;
             } catch (Exception e) {
                 return false;
+            }
+        });
+    }
+
+    // ===== CLASS OPERATIONS =====
+
+    // Create Class
+    public CompletableFuture<User> createClassAsync(WlClass wlClass) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                String jsonBody = objectMapper.writeValueAsString(wlClass);
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(baseUrl + "/users"))
+                        .header("Content-Type", "application/json")
+                        .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
+                        .timeout(Duration.ofSeconds(30))
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request,
+                        HttpResponse.BodyHandlers.ofString());
+
+                if (response.statusCode() == 201) {
+                    return objectMapper.readValue(response.body(), User.class);
+                } else {
+                    throw new RuntimeException("Failed to create class: " + response.statusCode() +
+                            " - " + response.body());
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Error creating user: " + e.getMessage(), e);
+            }
+        });
+    }
+
+    // Assign user to class
+    public CompletableFuture<User> AssignToClassAsync(WlClass wlClass, User user, String access) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                String jsonBody;
+                if (user.getRole().equals("teacher")) {
+                    jsonBody = "{'teacher_role': '" + access + "', 'class_id': '" + wlClass.getId() + "', 'user_id': '" + user.getId() + "'}";
+                }
+                else {
+                    jsonBody = "{'class_id': '" + wlClass.getId() + "', 'user_id': '" + user.getId() + "'}";
+                }
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(baseUrl + "/users"))
+                        .header("Content-Type", "application/json")
+                        .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
+                        .timeout(Duration.ofSeconds(30))
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request,
+                        HttpResponse.BodyHandlers.ofString());
+
+                if (response.statusCode() == 201) {
+                    return objectMapper.readValue(response.body(), User.class);
+                } else {
+                    throw new RuntimeException("Failed to create class: " + response.statusCode() +
+                            " - " + response.body());
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Error creating user: " + e.getMessage(), e);
             }
         });
     }
