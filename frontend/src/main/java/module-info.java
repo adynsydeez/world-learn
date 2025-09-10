@@ -7,6 +7,8 @@ module com.worldlearn.frontend {
     requires com.fasterxml.jackson.databind;
     requires java.net.http;
     requires com.worldlearn.backend;
+    requires java.sql;
+    requires io.javalin;
 
     opens com.worldlearn.frontend to javafx.fxml;
     exports com.worldlearn.frontend;

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.worldlearn.frontend.QuestionCreatorController"
+      spacing="20">
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Button fx:id="homeButton" text="home"
+                style="-fx-background-radius:8; -fx-padding:6 10;"
+                onAction="#onHomeButtonClick"/>
+        <Label text="Your Classes" style="-fx-font-size:22; -fx-font-weight:bold;"/>
+        <Pane HBox.hgrow="ALWAYS"/>
+        <Button text="..." style="-fx-background-radius:8; -fx-padding:6 10;"/>
+    </HBox>
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Create A Question" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="deleteBtn" text="Delete"
+                style="-fx-background-color: #ff6b6b; -fx-text-fill: white;"/>
+        <Button fx:id="saveBtn" text="Save"
+                style="-fx-background-color: #a29bfe; -fx-text-fill: white;"/>
+    </HBox>
+
+    <!-- Question type selection -->
+    <VBox spacing="10">
+        <Label text="Question Type"/>
+        <RadioButton fx:id="mcqRadio" text="Multiple Choice" toggleGroup="$quizTypes"/>
+        <RadioButton fx:id="writtenRadio" text="Written Answer" toggleGroup="$quizTypes"/>
+        <RadioButton fx:id="mapRadio" text="Place Map Marker" toggleGroup="$quizTypes"/>
+    </VBox>
+
+    <!-- Prompt, points, visibility -->
+    <VBox spacing="5">
+        <Label text="Prompt"/>
+        <TextField fx:id="promptField" promptText="Enter Your Question Here..."/>
+        <TextField fx:id="pointsField" promptText="Points for This Question..."/>
+        <ComboBox fx:id="visibilityCombo" promptText="Question Visibility..."/>
+    </VBox>
+
+    <!-- Multiple Choice Options -->
+    <VBox fx:id="mcqFields" spacing="10">
+        <Label text="Answers"/>
+
+        <HBox spacing="5">
+            <RadioButton fx:id="correct1" toggleGroup="$correctAnswer" text=""/>
+            <TextField fx:id="option1" promptText="Option 1..." style="-fx-background-color: #ffe066;"/>
+        </HBox>
+
+        <HBox spacing="5">
+            <RadioButton fx:id="correct2" toggleGroup="$correctAnswer" text=""/>
+            <TextField fx:id="option2" promptText="Option 2..." style="-fx-background-color: #ffe066;"/>
+        </HBox>
+
+        <HBox spacing="5">
+            <RadioButton fx:id="correct3" toggleGroup="$correctAnswer" text=""/>
+            <TextField fx:id="option3" promptText="Option 3..." style="-fx-background-color: #ffe066;"/>
+        </HBox>
+
+        <HBox spacing="5">
+            <RadioButton fx:id="correct4" toggleGroup="$correctAnswer" text=""/>
+            <TextField fx:id="option4" promptText="Option 4..." style="-fx-background-color: #ffe066;"/>
+        </HBox>
+    </VBox>
+
+    <!-- Written Answer -->
+    <VBox fx:id="writtenFields" spacing="10">
+        <Label text="Student responses will be available in _______."/>
+    </VBox>
+
+    <!-- Map Question -->
+    <VBox fx:id="mapFields" spacing="10">
+        <Label text="Map"/>
+    </VBox>
+
+</VBox>
