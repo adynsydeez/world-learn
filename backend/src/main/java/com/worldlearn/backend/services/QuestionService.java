@@ -20,13 +20,6 @@ public class QuestionService {
         }
     }
 
-    /**
-     * Fetches a Question by its ID.
-     *
-     * @param id the question_id in DB
-     * @return Question object if found, null otherwise
-     * @throws SQLException if a DB error occurs
-     */
     public Optional<Question> getQuestionById(int id) throws SQLException {
         Database db = new Database();
         try (Connection conn = db.getConnection()) {

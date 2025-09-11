@@ -16,7 +16,6 @@ public class QuestionDAO {
         this.conn = conn;
     }
 
-    // INSERT
     public void insert(Question question) throws SQLException {
         String sql = """
             INSERT INTO questions (answer, options, prompt, type, points_worth, visibility)
@@ -36,7 +35,6 @@ public class QuestionDAO {
         }
     }
 
-    // SELECT all
     public List<Question> getAllQuestions() throws SQLException {
         List<Question> questions = new ArrayList<>();
         String sql = "SELECT question_id, answer, options, prompt, type, points_worth, visibility FROM questions";
@@ -61,8 +59,6 @@ public class QuestionDAO {
         return questions;
     }
 
-
-    // SELECT by ID
     public Optional<Question> findById(int id) throws SQLException {
         String sql = """
             SELECT question_id, answer, options, prompt, type, points_worth, visibility
@@ -91,7 +87,6 @@ public class QuestionDAO {
         return Optional.empty();
     }
 
-    // UPDATE
     public void update(Question question) throws SQLException {
         String sql = """
             UPDATE questions
@@ -114,7 +109,6 @@ public class QuestionDAO {
         }
     }
 
-    // DELETE
     public void delete(int id) throws SQLException {
         String sql = "DELETE FROM questions WHERE question_id = ?";
 

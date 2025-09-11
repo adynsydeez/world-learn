@@ -51,7 +51,6 @@ public class Question {
         this.visibility = visibility;
     }
 
-    // getters + setters...
     public int getQuestionId() { return questionId; }
     public String getAnswer() { return answer; }
     public String[] getOptions() { return options; }
