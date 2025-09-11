@@ -32,7 +32,7 @@ A Java backend application using Javalin web framework and PostgreSQL database.
    - Choose installation directory (default is fine)
    - Select components (keep all selected)
    - Set data directory (default is fine)
-   - **Set password for postgres user** (remember this! We'll use `worldlearnpw`)
+   - **Set password for postgres user** (remember this! We'll use `postgrepw0`)
    - Set port to 5432 (default)
    - Choose locale (default is fine)
 3. Complete the installation
@@ -73,6 +73,7 @@ CREATE TYPE question_type AS ENUM ('mcq', 'written', 'map');
 CREATE TABLE Users (
   user_id SERIAL PRIMARY KEY,
   email VARCHAR(255) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL UNIQUE,
   first_name VARCHAR(255) NOT NULL,
   last_name VARCHAR(255) NOT NULL,
   user_role user_role_type NOT NULL
@@ -81,6 +82,7 @@ CREATE TABLE Users (
 -- CLASSES
 CREATE TABLE Classes (
   class_id SERIAL PRIMARY KEY,
+  class_name VARCHAR(255) NOT NULL, 
   join_code INT NOT NULL UNIQUE
 );
 
@@ -106,6 +108,7 @@ CREATE TABLE Student_Class (
 -- LESSONS
 CREATE TABLE Lessons (
   lesson_id SERIAL PRIMARY KEY,
+  lesson_name VARCHAR(255) NOT NULL, 
   visibility visibility_type NOT NULL
 );
 
@@ -140,6 +143,7 @@ CREATE TABLE Class_Lesson (
 -- QUIZZES
 CREATE TABLE Quizzes (
   quiz_id SERIAL PRIMARY KEY,
+  quiz_name VARCHAR(255) NOT NULL, 
   visibility visibility_type NOT NULL
 );
 
@@ -168,6 +172,7 @@ CREATE TABLE Student_Quiz (
 -- QUESTIONS
 CREATE TABLE Questions (
   question_id SERIAL PRIMARY KEY,
+  question_name VARCHAR(255) NOT NULL, 
   answer VARCHAR(255),
   options TEXT[],
   prompt VARCHAR(500) NOT NULL,
@@ -217,16 +222,16 @@ CREATE TABLE Quiz_Question (
 );
 
 -- Insert sample data
-INSERT INTO Users (email, first_name, last_name, user_role) VALUES 
-('alice@example.com', 'Alice', 'Smith', 'teacher'),
-('bob@example.com', 'Bob', 'Johnson', 'student'),
-('carol@example.com', 'Carol', 'Williams', 'teacher');
+INSERT INTO Users (email, password, first_name, last_name, user_role) VALUES 
+('alice@example.com', 'password1', 'Alice', 'Smith', 'teacher'),
+('bob@example.com', 'password2', 'Bob', 'Johnson', 'student'),
+('carol@example.com', 'password3', 'Carol', 'Williams', 'teacher');
 
-INSERT INTO Classes (join_code) VALUES (123456), (789012);
+INSERT INTO Classes (class_name, join_code) VALUES ('class 1', 123456), ('class 2', 789012);
 
-INSERT INTO Lessons (visibility) VALUES ('public'), ('private');
+INSERT INTO Lessons (lesson_name, visibility) VALUES ('lesson 1', 'public'), ('lesson 2', 'private');
 
-INSERT INTO Quizzes (visibility) VALUES ('public'), ('private');
+INSERT INTO Quizzes (quiz_name, visibility) VALUES ('quiz 1', 'public'), ('quiz 2', 'private');
 ```
 
 ## Running the Application
