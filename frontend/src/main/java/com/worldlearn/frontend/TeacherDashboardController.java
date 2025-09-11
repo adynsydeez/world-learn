@@ -1,9 +1,14 @@
 package com.worldlearn.frontend;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+
+import java.io.IOException;
 
 public class TeacherDashboardController {
 
@@ -20,6 +25,11 @@ public class TeacherDashboardController {
     @FXML private Label lblLessons;
     @FXML private Label lblQuizzes;
     @FXML private Label lblQuestions;
+
+    @FXML private Button createLessonBtn;
+    @FXML private Button createClassBtn;
+    @FXML private Button createQuizBtn;
+    @FXML private Button createQuestionBtn;
 
     @FXML
     private void initialize() {
@@ -39,5 +49,14 @@ public class TeacherDashboardController {
             label.setStyle("-fx-underline: false;");
         });
     }
+
+    @FXML
+    protected void onCreateQuestionClick() throws IOException {
+        Stage stage = (Stage) createQuestionBtn.getScene().getWindow();
+        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("question-creation-view.fxml"));
+        Scene scene = new Scene(fxmlLoader.load(), 800, 600);
+        stage.setScene(scene);
+    }
+
 }
 
