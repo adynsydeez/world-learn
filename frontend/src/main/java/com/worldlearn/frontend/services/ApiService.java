@@ -1,6 +1,7 @@
 package com.worldlearn.frontend.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.worldlearn.backend.models.Question;
 import com.worldlearn.backend.models.User;
 import com.worldlearn.backend.models.WlClass;
 
@@ -245,4 +246,137 @@ public class ApiService {
             }
         });
     }
+
+    // ===== CLASS OPERATIONS =====
+    // Create question
+    public CompletableFuture<Question> createQuestionAsync(Question question) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                String jsonBody = objectMapper.writeValueAsString(question);
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(baseUrl + "/questions"))
+                        .header("Content-Type", "application/json")
+                        .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
+                        .timeout(Duration.ofSeconds(30))
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request,
+                        HttpResponse.BodyHandlers.ofString());
+
+                if (response.statusCode() == 201) {
+                    return objectMapper.readValue(response.body(), Question.class);
+                } else {
+                    throw new RuntimeException("Failed to create question: " + response.statusCode() +
+                            " - " + response.body());
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Error creating question: " + e.getMessage(), e);
+            }
+        });
+    }
+
+    // Get all questions
+    public CompletableFuture<List<Question>> getAllQuestionsAsync() {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(baseUrl + "/questions"))
+                        .header("Accept", "application/json")
+                        .GET()
+                        .timeout(Duration.ofSeconds(30))
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request,
+                        HttpResponse.BodyHandlers.ofString());
+
+                if (response.statusCode() == 200) {
+                    Question[] questions = objectMapper.readValue(response.body(), Question[].class);
+                    return List.of(questions);
+                } else {
+                    throw new RuntimeException("Failed to get questions: " + response.statusCode() +
+                            " - " + response.body());
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Error getting questions: " + e.getMessage(), e);
+            }
+        });
+    }
+
+    // Get question by ID
+    public CompletableFuture<Question> getQuestionByIdAsync(int id) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(baseUrl + "/questions/" + id))
+                        .header("Accept", "application/json")
+                        .GET()
+                        .timeout(Duration.ofSeconds(30))
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request,
+                        HttpResponse.BodyHandlers.ofString());
+
+                if (response.statusCode() == 200) {
+                    return objectMapper.readValue(response.body(), Question.class);
+                } else if (response.statusCode() == 404) {
+                    return null;
+                } else {
+                    throw new RuntimeException("Failed to get question: " + response.statusCode() +
+                            " - " + response.body());
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Error getting question: " + e.getMessage(), e);
+            }
+        });
+    }
+
+    // Update question
+    public CompletableFuture<Question> updateQuestionAsync(int id, Question question) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                String jsonBody = objectMapper.writeValueAsString(question);
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(baseUrl + "/questions/" + id))
+                        .header("Content-Type", "application/json")
+                        .PUT(HttpRequest.BodyPublishers.ofString(jsonBody))
+                        .timeout(Duration.ofSeconds(30))
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request,
+                        HttpResponse.BodyHandlers.ofString());
+
+                if (response.statusCode() == 200) {
+                    return objectMapper.readValue(response.body(), Question.class);
+                } else {
+                    throw new RuntimeException("Failed to update question: " + response.statusCode() +
+                            " - " + response.body());
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Error updating question: " + e.getMessage(), e);
+            }
+        });
+    }
+
+    // Delete question
+    public CompletableFuture<Boolean> deleteQuestionAsync(int id) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(baseUrl + "/questions/" + id))
+                        .DELETE()
+                        .timeout(Duration.ofSeconds(30))
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request,
+                        HttpResponse.BodyHandlers.ofString());
+
+                return response.statusCode() == 204 || response.statusCode() == 200;
+            } catch (Exception e) {
+                throw new RuntimeException("Error deleting question: " + e.getMessage(), e);
+            }
+        });
+    }
+
 }

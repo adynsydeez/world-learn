@@ -10,7 +10,7 @@ import javafx.scene.layout.VBox;
 import com.worldlearn.backend.models.Question;
 import com.worldlearn.backend.models.Question.QuestionType;
 import com.worldlearn.backend.models.Question.Visibility;
-import com.worldlearn.backend.services.QuestionService;
+import com.worldlearn.frontend.services.ApiService;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -44,6 +44,8 @@ public class QuestionCreatorController {
     @FXML private TextField option4;
 
     private QuestionType type;
+
+    private ApiService apiService = new ApiService();
 
     @FXML
     private void initialize() {
@@ -181,7 +183,7 @@ public class QuestionCreatorController {
             options = getOptions();
         }
         try {
-            Question q = new Question(
+            Question question = new Question(
                     0,
                     getAnswer(),
                     options,
@@ -191,14 +193,11 @@ public class QuestionCreatorController {
                     getVisibility()
             );
 
-            QuestionService controller = new QuestionService();
-            controller.createQuestion(q);
+            apiService.createQuestionAsync(question);
 
             System.out.println("Question saved!");
         } catch (IllegalArgumentException ex) {
             showAlert(ex.getMessage());
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -217,5 +216,13 @@ public class QuestionCreatorController {
         alert.setTitle("Validation Error");
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    public ApiService getApiService() {
+        return apiService;
+    }
+
+    public void setApiService(ApiService apiService) {
+        this.apiService = apiService;
     }
 }

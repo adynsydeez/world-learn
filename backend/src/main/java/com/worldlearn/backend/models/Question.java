@@ -59,6 +59,7 @@ public class Question {
     public int getPointsWorth() { return pointsWorth; }
     public Visibility getVisibility() { return visibility; }
 
+    public void setQuestionId(int id) { this.questionId = id; }
     public void setAnswer(String answer) {this.answer = answer;}
     public void setOptions(String[] options) {this.options = options;}
     public void setPrompt (String prompt) {this.prompt = prompt;}

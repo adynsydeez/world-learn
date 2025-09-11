@@ -10,38 +10,35 @@ import java.util.List;
 import java.util.Optional;
 
 public class QuestionService {
+    private final QuestionDAO questionDAO;
 
-    public void createQuestion(Question q) throws SQLException {
-        // Open a DB connection
-        Database db = new Database();
-        try (Connection conn = db.getConnection()) {
-            QuestionDAO dao = new QuestionDAO(conn);
-            dao.insert(q);
-        }
+    public QuestionService(QuestionDAO questionDAO) {
+        this.questionDAO = questionDAO;
+    }
+
+    public Question createQuestion(Question question) throws SQLException {
+
+        return questionDAO.createQuestion(question);
     }
 
     public Optional<Question> getQuestionById(int id) throws SQLException {
-        Database db = new Database();
-        try (Connection conn = db.getConnection()) {
-            QuestionDAO dao = new QuestionDAO(conn);
-            return dao.findById(id);
-        }
+        return questionDAO.getQuestionByID(id);
     }
 
-    public void deleteQuestion(int id) throws SQLException {
-        Database db = new Database();
-        try (Connection conn = db.getConnection()) {
-            QuestionDAO dao = new QuestionDAO(conn);
-            dao.delete(id);
+    public boolean deleteQuestion(int id) throws SQLException {
+        if (id <= 0) {
+            throw new IllegalArgumentException("Invalid user ID");
         }
+
+        return questionDAO.deleteQuestion(id);
     }
 
     public List<Question> getAllQuestions() throws SQLException {
-        Database db = new Database();
-        try (Connection conn = db.getConnection()) {
-            QuestionDAO dao = new QuestionDAO(conn);
-            return dao.getAllQuestions();
-        }
+        return questionDAO.getAllQuestions();
+    }
+
+    public Question updateQuestion(Question question) throws SQLException {
+        return questionDAO.updateQuestion(question);
     }
 
 
