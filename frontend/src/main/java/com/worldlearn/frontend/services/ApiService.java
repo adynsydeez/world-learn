@@ -1,6 +1,7 @@
 package com.worldlearn.frontend.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.worldlearn.backend.config.DatabaseConfig;
 import com.worldlearn.backend.models.Question;
 import com.worldlearn.backend.models.User;
 import com.worldlearn.backend.models.WlClass;
@@ -11,13 +12,15 @@ import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+
+
 public class ApiService {
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
     private final String baseUrl;
 
     public ApiService() {
-        this.baseUrl = "http://localhost:7000/api"; // Your backend URL
+        this.baseUrl = DatabaseConfig.getDatabaseUrl();
         this.httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(10))
                 .build();
@@ -30,6 +33,26 @@ public class ApiService {
                 .connectTimeout(Duration.ofSeconds(10))
                 .build();
         this.objectMapper = new ObjectMapper();
+    }
+
+    // Health check
+    public CompletableFuture<Boolean> checkConnectionAsync() {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create("http://localhost:7000/health"))
+                        .GET()
+                        .timeout(Duration.ofSeconds(5))
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request,
+                        HttpResponse.BodyHandlers.ofString());
+
+                return response.statusCode() == 200;
+            } catch (Exception e) {
+                return false;
+            }
+        });
     }
 
     // ===== USER OPERATIONS =====
@@ -161,26 +184,6 @@ public class ApiService {
                 return response.statusCode() == 204 || response.statusCode() == 200;
             } catch (Exception e) {
                 throw new RuntimeException("Error deleting user: " + e.getMessage(), e);
-            }
-        });
-    }
-
-    // Health check
-    public CompletableFuture<Boolean> checkConnectionAsync() {
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create("http://localhost:7000/health"))
-                        .GET()
-                        .timeout(Duration.ofSeconds(5))
-                        .build();
-
-                HttpResponse<String> response = httpClient.send(request,
-                        HttpResponse.BodyHandlers.ofString());
-
-                return response.statusCode() == 200;
-            } catch (Exception e) {
-                return false;
             }
         });
     }
