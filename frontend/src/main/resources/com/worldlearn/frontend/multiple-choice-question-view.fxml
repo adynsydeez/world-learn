@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.worldlearn.frontend.MultipleChoiceQuestionController"
+            style="-fx-background-color: #f5f7fa;">
+    <fx:define>
+        <ToggleGroup fx:id="answersGroup"/>
+    </fx:define>
+    <!-- Top bar -->
+    <top>
+        <HBox spacing="12" alignment="CENTER_LEFT"
+              style="-fx-padding: 12 16 8 16;">
+            <Button text="Back" onAction="#onBack"
+                    style="-fx-background-color: white; -fx-text-fill: #1976d2;
+                           -fx-border-color: #90caf9; -fx-border-width: 1;
+                           -fx-background-radius: 999; -fx-border-radius: 999;
+                           -fx-padding: 6 12;"/>
+            <Label fx:id="headerLabel"
+                   style="-fx-text-fill:#222; -fx-font-size:20; -fx-font-weight:bold;"/>
+        </HBox>
+    </top>
+
+    <!-- Middle: question card + (optional) map -->
+    <center>
+        <HBox spacing="16" style="-fx-padding: 8 16 0 16;">
+            <VBox spacing="12" HBox.hgrow="ALWAYS"
+                  style="-fx-background-color:#eeeeee; -fx-background-radius:16; -fx-padding:16;">
+                <Label fx:id="questionLabel" wrapText="true"
+                       style="-fx-text-fill:#2a2a2a; -fx-font-size:22; -fx-font-weight:bold;"/>
+            </VBox>
+            <ImageView fx:id="mapView" fitWidth="180" preserveRatio="true" smooth="true"/>
+        </HBox>
+    </center>
+
+    <!-- Bottom: 2x2 answers + submit -->
+    <bottom>
+        <VBox spacing="12" style="-fx-padding: 12 16 16 16;">
+            <GridPane hgap="12" vgap="12">
+                <columnConstraints>
+                    <ColumnConstraints hgrow="ALWAYS"/>
+                    <ColumnConstraints hgrow="ALWAYS"/>
+                </columnConstraints>
+
+                <!-- Toggle group for single selection -->
+
+
+                <!-- Base style is inline; selection/correct/incorrect highlights are set from controller -->
+                <ToggleButton fx:id="aBtn" toggleGroup="$answersGroup"
+                              GridPane.columnIndex="0" GridPane.rowIndex="0" maxWidth="Infinity"
+                              style="-fx-background-color:#f6a570; -fx-background-radius:16; -fx-padding:14; -fx-font-weight:bold; -fx-text-fill:#283238;"/>
+                <ToggleButton fx:id="bBtn" toggleGroup="$answersGroup"
+                              GridPane.columnIndex="1" GridPane.rowIndex="0" maxWidth="Infinity"
+                              style="-fx-background-color:#8ae58a; -fx-background-radius:16; -fx-padding:14; -fx-font-weight:bold; -fx-text-fill:#283238;"/>
+                <ToggleButton fx:id="cBtn" toggleGroup="$answersGroup"
+                              GridPane.columnIndex="0" GridPane.rowIndex="1" maxWidth="Infinity"
+                              style="-fx-background-color:#f36f4c; -fx-background-radius:16; -fx-padding:14; -fx-font-weight:bold; -fx-text-fill:#283238;"/>
+                <ToggleButton fx:id="dBtn" toggleGroup="$answersGroup"
+                              GridPane.columnIndex="1" GridPane.rowIndex="1" maxWidth="Infinity"
+                              style="-fx-background-color:#a6f08a; -fx-background-radius:16; -fx-padding:14; -fx-font-weight:bold; -fx-text-fill:#283238;"/>
+            </GridPane>
+
+            <HBox alignment="CENTER_RIGHT">
+                <Button fx:id="submitBtn" text="Submit" onAction="#onSubmit" disable="true"
+                        style="-fx-background-color:#1976d2; -fx-text-fill:white; -fx-background-radius:10; -fx-padding:8 16;"/>
+            </HBox>
+        </VBox>
+    </bottom>
+</BorderPane>
