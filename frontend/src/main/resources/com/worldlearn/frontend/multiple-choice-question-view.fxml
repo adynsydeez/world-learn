@@ -11,7 +11,7 @@
     <fx:define>
         <ToggleGroup fx:id="answersGroup"/>
     </fx:define>
-    <!-- Top bar -->
+
     <top>
         <HBox spacing="12" alignment="CENTER_LEFT"
               style="-fx-padding: 12 16 8 16;">
@@ -25,7 +25,7 @@
         </HBox>
     </top>
 
-    <!-- Middle: question card + (optional) map -->
+
     <center>
         <HBox spacing="16" style="-fx-padding: 8 16 0 16;">
             <VBox spacing="12" HBox.hgrow="ALWAYS"
@@ -37,7 +37,7 @@
         </HBox>
     </center>
 
-    <!-- Bottom: 2x2 answers + submit -->
+
     <bottom>
         <VBox spacing="12" style="-fx-padding: 12 16 16 16;">
             <GridPane hgap="12" vgap="12">
@@ -46,10 +46,8 @@
                     <ColumnConstraints hgrow="ALWAYS"/>
                 </columnConstraints>
 
-                <!-- Toggle group for single selection -->
 
 
-                <!-- Base style is inline; selection/correct/incorrect highlights are set from controller -->
                 <ToggleButton fx:id="aBtn" toggleGroup="$answersGroup"
                               GridPane.columnIndex="0" GridPane.rowIndex="0" maxWidth="Infinity"
                               style="-fx-background-color:#f6a570; -fx-background-radius:16; -fx-padding:14; -fx-font-weight:bold; -fx-text-fill:#283238;"/>
