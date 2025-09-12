@@ -2,7 +2,7 @@ package com.worldlearn.frontend.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.worldlearn.backend.models.Question;
-import com.worldlearn.backend.models.User;
+import com.worldlearn.backend.database.User;
 import com.worldlearn.backend.models.WlClass;
 
 import java.net.http.*;

@@ -1,6 +1,7 @@
-package com.worldlearn.frontend.services;
+package com.worldlearn.backend.database;
 
-import com.worldlearn.frontend.*;
+import com.worldlearn.backend.models.*;
+
 
 
 import java.util.ArrayList;
@@ -12,16 +13,13 @@ public class AuthenticationService implements IAuthenticationService {
     public AuthenticationService() {
         users = new ArrayList<>();
         // Add a default user (for testing)
-        users.add(new Student("admin@email.com",  "password123"));
-        User user = new Student("ass@ass.com", "ass");
-        users.add(user);
-        User user2 = new Teacher("ass2@ass.com","ass2");
-        users.add(user2);
+        User user1 = new Student("ass@ass.com", "ass");
+        users.add(user1);
     }
 
     //signsUp user. adds user to authentication service and returns user
     @Override
-    public User signUp(String email, String password, Role role) {
+    public User signUp(String email, String password, String role) {
         //Checks that email is in correct format, throws exception if not
         if (email == null || !email.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
             throw new IllegalArgumentException("Invalid email format: please use name@edu.com");
@@ -39,15 +37,17 @@ public class AuthenticationService implements IAuthenticationService {
         }
         // If not taken, create new user and add to list
         //switch statement creates user based on role
+        System.out.println(role);
         User newUser;
         switch (role) {
-            case STUDENT:
+            case "student":
                 newUser = new Student(email.trim(), password);
                 break;
-            case TEACHER:
+            case "teacher":
                 newUser = new Teacher(email.trim(), password);
                 break;
             default:
+                // shouldn't happen due to validation above
                 throw new IllegalStateException("Unexpected role: " + role);
         }
         users.add(newUser);
