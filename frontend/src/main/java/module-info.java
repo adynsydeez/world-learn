@@ -8,6 +8,7 @@ module com.worldlearn.frontend {
     requires java.net.http;
     requires com.worldlearn.backend;
 
+
     opens com.worldlearn.frontend to javafx.fxml;
     exports com.worldlearn.frontend;
     exports com.worldlearn.frontend.services;

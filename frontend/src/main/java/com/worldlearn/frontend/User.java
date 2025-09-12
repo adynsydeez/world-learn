@@ -21,14 +21,18 @@ public abstract class User {
     }
 
     //Getters and Setters
+    /// ////// USERNAME
     public String getUsername() {
+
         return username;
     }
 
     public void setUsername(String username) {
+
         this.username = username;
     }
 
+    /// ///// EMAIL
     public String getEmail() {
         return email;
     }
@@ -42,45 +46,52 @@ public abstract class User {
         }
     }
 
+    /// ///// PASSWORD
     public String getPassword(){
-        return password; //VERIFICATION TO BE ADDED
+
+        return password;
     }
 
     public void setPassword(String password) {
+
         this.password = password; //VERIFICATION TO BE ADDED
     }
 
+    /// ///// FIRST NAME
     public String getFirstName() {
+
         return firstName;
     }
 
+    public void setFirstName(String firstName) {
+        if (firstName == null) {
+            throw new IllegalArgumentException("First name cannot be null");
+        }
+        // letters only (rejects "", " ", "A1", "J@ne", "John-Doe")
+        if (!firstName.matches("^[A-Za-z]+$")) {
+            throw new IllegalArgumentException("Invalid first name");
+        }
+        this.firstName = firstName;
+    }
+
+    /// ///// LAST NAME
     public String getLastName() {
         return lastName;
     }
 
-    private void setLastName(String lastName) {
+    public void setLastName(String lastName) {
         if (lastName == null) {
-            throw new NullPointerException("Last name cannot be null");
+            throw new IllegalArgumentException("Last name cannot be null");
         }
-        String s = lastName.trim();
-        if (s.isEmpty() || !s.codePoints().allMatch(cp -> Character.isLetter(cp) || cp == '-')) {
-            throw new IllegalArgumentException("Last name may contain letters and hyphens only.");
+        // letters with optional internal hyphens (e.g., "Smith-Jones"),
+        // disallows "_", "Sm!th", "-" (single hyphen), leading/trailing hyphen
+        if (!lastName.matches("^[A-Za-z]+(?:-[A-Za-z]+)*$")) {
+            throw new IllegalArgumentException("Invalid last name");
         }
-        this.lastName = s;
+        this.lastName = lastName;
     }
 
-    private void setFirstName(String firstName) {
-        if (firstName == null) {
-            throw new NullPointerException("First name cannot be null");
-        }
-        String s = firstName.trim();
-        if (s.isEmpty() || !s.codePoints().allMatch(Character::isLetter)) {
-            throw new IllegalArgumentException("First name must contain letters only.");
-        }
-        this.firstName = s;
-    }
-
-    // Getter and Setter for age
+    /// ///// AGE
     public int getAge() {
         return age;
     }
@@ -89,7 +100,7 @@ public abstract class User {
         this.age = age;
     }
 
-    // Getter and Setter for school
+    /// ///// SCHOOL
     public String getSchool() {
         return school;
     }
@@ -98,21 +109,14 @@ public abstract class User {
         this.school = school;
     }
 
-    //Getter Setter for role
+    /// ///// ROLE
     public Role getRole(){return role;}
 
-    private void setRole(Role role) {
+    public void setRole(Role role) {
         if (role == null) {
-            throw new NullPointerException("Role cannot be null");
+            throw new IllegalArgumentException("Role cannot be null");
         }
-        switch (role) {
-            case STUDENT:
-            case TEACHER:
-                this.role = role;
-                break;
-            default:
-                throw new IllegalArgumentException("Role must be STUDENT or TEACHER (got " + role + ").");
-        }
+        this.role = role;
     }
 
     public abstract String getUserRole();
