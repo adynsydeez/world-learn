@@ -13,6 +13,17 @@ public class UserService {
         this.userDAO = userDAO;
     }
 
+    public User logIn(String email, String password) throws SQLException {
+        List<User> users = userDAO.getAllUsers();
+        for (User user : users) {
+            if (user.getEmail().equalsIgnoreCase(email) &&
+                    user.getPassword().equals(password)) {
+                return user;
+            }
+        }
+        return null; // invalid credentials
+    }
+
     public User getUserById(String id) throws SQLException {
         if (id == null || id.trim().isEmpty()) {
             throw new IllegalArgumentException("User ID is required");

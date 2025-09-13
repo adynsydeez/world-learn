@@ -1,5 +1,6 @@
 package com.worldlearn.backend.controllers;
 
+import com.worldlearn.backend.dto.LoginRequest;
 import com.worldlearn.backend.dto.UserRequest;
 import com.worldlearn.backend.models.Student;
 import com.worldlearn.backend.models.Teacher;
@@ -29,6 +30,21 @@ public class UserController {
             ctx.status(400).result("Invalid request: " + e.getMessage());
         } catch (Exception e) {
             ctx.status(500).result("Database error: " + e.getMessage());
+        }
+    }
+
+    public void logIn(Context ctx) {
+        try {
+            LoginRequest loginRequest = ctx.bodyAsClass(LoginRequest.class);
+            User user = userService.logIn(loginRequest.getEmail(), loginRequest.getPassword());
+            if (user != null) {
+                ctx.status(200).json(user);
+            } else {
+                ctx.status(401).result("Invalid email or password");
+            }
+        } catch (Exception e) {
+            ctx.status(500).result("Login error: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
