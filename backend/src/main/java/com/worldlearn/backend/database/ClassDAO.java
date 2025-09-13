@@ -1,6 +1,5 @@
 package com.worldlearn.backend.database;
 
-import com.worldlearn.backend.models.User;
 import com.worldlearn.backend.models.WlClass;
 
 import java.sql.*;

@@ -1,6 +1,6 @@
 package com.worldlearn.frontend;
 
-import com.worldlearn.frontend.services.AuthenticationService;
+import com.worldlearn.backend.database.AuthenticationService;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;

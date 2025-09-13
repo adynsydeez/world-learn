@@ -1,6 +1,8 @@
 package com.worldlearn.frontend;
 
-import com.worldlearn.frontend.services.AuthenticationService;
+
+import com.worldlearn.backend.database.User;
+import com.worldlearn.backend.database.AuthenticationService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -41,11 +43,9 @@ public class AuthController {
     public void onSignup(ActionEvent actionEvent) {
         String email = signupEmailField.getText().trim();
         String password = signupPasswordField.getText();
-        String roleString = signupRoleBox.getValue();
+        String role = signupRoleBox.getValue().toLowerCase();
 
         try {
-            // Convert string -> Role enum
-            Role role = roleString.equalsIgnoreCase("Student") ? Role.STUDENT : Role.TEACHER;
             //signs up user
             User newUser = auth.signUp(email, password, role);
             //displays message for successful sign up
@@ -75,11 +75,11 @@ public class AuthController {
 
             // Decide which FXML file to load based on role
             String fxmlFile;
-            switch (user.getRole()) {
-                case STUDENT:
+            switch (user.getRole().trim().toLowerCase()) {
+                case "student":
                     fxmlFile = "/com/worldlearn/frontend/student-dashboard-view.fxml";
                     break;
-                case TEACHER:
+                case "teacher":
                     fxmlFile = "/com/worldlearn/frontend/teacher-dashboard-view.fxml";
                     break;
                 default:

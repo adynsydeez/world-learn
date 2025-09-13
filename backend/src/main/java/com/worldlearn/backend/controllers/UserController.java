@@ -1,5 +1,8 @@
 package com.worldlearn.backend.controllers;
 
+import com.worldlearn.backend.dto.UserRequest;
+import com.worldlearn.backend.models.Student;
+import com.worldlearn.backend.models.Teacher;
 import com.worldlearn.backend.models.User;
 import com.worldlearn.backend.services.UserService;
 import io.javalin.http.Context;
@@ -31,13 +34,45 @@ public class UserController {
 
     public void createUser(Context ctx) {
         try {
-            User user = ctx.bodyAsClass(User.class);
-            User createdUser = userService.createUser(user);
+            // Parse the JSON body using UserRequest DTO
+            UserRequest userRequest = ctx.bodyAsClass(UserRequest.class);
+
+            // Create the appropriate user type based on role
+            User newUser;
+            String role = userRequest.getRole().toLowerCase().trim();
+
+            switch (role) {
+                case "student":
+                    newUser = new Student(
+                            userRequest.getEmail(),
+                            userRequest.getPassword(),
+                            userRequest.getFirstName(),
+                            userRequest.getLastName(),
+                            role
+                    );
+                    break;
+                case "teacher":
+                    newUser = new Teacher(
+                            userRequest.getEmail(),
+                            userRequest.getPassword(),
+                            userRequest.getFirstName(),
+                            userRequest.getLastName(),
+                            role
+                    );
+                    break;
+                default:
+                    ctx.status(400).json("Invalid role: " + userRequest.getRole());
+                    return;
+            }
+
+            // Save to database using your service
+            User createdUser = userService.createUser(newUser);
+
             ctx.status(201).json(createdUser);
-        } catch (IllegalArgumentException e) {
-            ctx.status(400).result("Validation error: " + e.getMessage());
+
         } catch (Exception e) {
-            ctx.status(500).result("Internal server error: " + e.getMessage());
+            ctx.status(500).json("Error creating user: " + e.getMessage());
+            e.printStackTrace(); // For debugging
         }
     }
 

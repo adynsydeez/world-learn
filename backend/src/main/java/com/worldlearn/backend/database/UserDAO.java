@@ -1,6 +1,9 @@
 package com.worldlearn.backend.database;
 
+import com.worldlearn.backend.models.Student;
+import com.worldlearn.backend.models.Teacher;
 import com.worldlearn.backend.models.User;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +16,7 @@ public class UserDAO {
     }
 
     public User getUserById(String id) throws SQLException {
-        String sql = "SELECT user_id, email, password, first_name, last_name, user_role FROM users WHERE user_id = ?";
+        final String sql = "SELECT user_id, email, password, first_name, last_name, user_role FROM users WHERE user_id = ?";
 
         try (Connection conn = database.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -22,14 +25,27 @@ public class UserDAO {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    return new User(
-                            rs.getString("user_id"),
-                            rs.getString("email"),
-                            rs.getString("password"),
-                            rs.getString("first_name"),
-                            rs.getString("last_name"),
-                            rs.getString("user_role")
-                    );
+                    String user_id      = rs.getString("user_id");   // use getInt + String.valueOf if you prefer
+                    String email    = rs.getString("email");
+                    String password = rs.getString("password");
+                    String first    = rs.getString("first_name");
+                    String last     = rs.getString("last_name");
+                    String roleRaw  = rs.getString("user_role");
+                    String role     = roleRaw == null ? "" : roleRaw.trim().toLowerCase();
+
+                    int int_id = Integer.parseInt(user_id);
+                    switch (role) {
+                        case "student":
+                            User student = new Student(email, password, first, last, role);
+                            student.setId(int_id);
+                            return student;
+                        case "teacher":
+                            User teacher = new Teacher(email, password, first, last, role);
+                            teacher.setId(int_id);
+                            return teacher;
+                        default:
+                            throw new IllegalArgumentException("Unknown user_role: " + roleRaw);
+                    }
                 }
             }
         }
@@ -65,25 +81,39 @@ public class UserDAO {
 
     public List<User> getAllUsers() throws SQLException {
         List<User> users = new ArrayList<>();
-        String sql = "SELECT user_id, email, password, first_name, last_name, user_role FROM users";
+        final String sql = "SELECT * FROM users";
 
         try (Connection conn = database.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                User user = new User(
-                        rs.getString("user_id"),
-                        rs.getString("email"),
-                        rs.getString("password"),
-                        rs.getString("first_name"),
-                        rs.getString("last_name"),
-                        rs.getString("user_role")
-                );
-                users.add(user);
+                String user_id      = rs.getString("user_id");
+                String email    = rs.getString("email");
+                String password = rs.getString("password");
+                String first    = rs.getString("first_name");
+                String last     = rs.getString("last_name");
+                String roleRaw  = rs.getString("user_role");
+                String role     = roleRaw == null ? "" : roleRaw.trim().toLowerCase();
+
+                int int_id = Integer.parseInt(user_id);
+                User u;
+                switch (role) {
+                    case "student":
+                        u = new Student(email, password, first, last, role);
+                        u.setId(int_id);
+                        users.add(u);
+                        break; // Added missing break
+                    case "teacher":
+                        u = new Teacher(email, password, first, last, role);
+                        u.setId(int_id);
+                        users.add(u);
+                        break; // Added missing break
+                    default:
+                        throw new IllegalArgumentException("Unknown user_role: " + roleRaw);
+                }
             }
         }
-
         return users;
     }
 

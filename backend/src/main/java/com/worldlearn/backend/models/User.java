@@ -1,9 +1,10 @@
 package com.worldlearn.backend.models;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class User {
+public abstract class User {
     @JsonProperty("id")
-    private String id;
+    private int id;
 
     @JsonProperty("firstName")
     private String firstName;
@@ -20,11 +21,9 @@ public class User {
     @JsonProperty("role")
     private String role;
 
-    public User() {
-    }
+    /// ////Constructors
 
-    public User(String id, String email, String password, String firstName, String lastName, String role) {
-        this.id = id;
+    public User(String email, String password, String firstName, String lastName, String role) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -32,26 +31,89 @@ public class User {
         this.role = role;
     }
 
-    public int getId() { return Integer.parseInt(this.id); }
-    public void setId(int id) { this.id = String.valueOf(id); }
+    public User(){};
 
-    public String getPassword() { return this.password; }
+    //Getters and Setters
+    /// ///// EMAIL
+    public String getEmail() {
+        return email;
+    }
 
-    public String getFirstName() { return this.firstName; }
-    public void setFirstName(String firstName) { this.firstName = firstName; }
+    public void setEmail(String email) {
+        if (email == null || !email.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
+            throw new IllegalArgumentException("Invalid email format: please use name@edu.com");
+        }
+        else {
+            this.email = email;
+        }
+    }
 
-    public String getLastName() { return this.lastName; }
-    public void setLastName(String lastName) { this.lastName = lastName; }
+    /// ///// PASSWORD
+    public String getPassword(){
 
-    public String getEmail() { return this.email; }
-    public void setEmail(String email) { this.email = email; }
+        return this.password;
+    }
 
-    public String getRole() { return this.role; }
-    public void setRole(String role) { this.role = role; }
+    public void setPassword(String password) {
+
+        this.password = password; //VERIFICATION TO BE ADDED
+    }
+
+    /// ///// FIRST NAME
+    public String getFirstName() {
+
+        return this.firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        if (firstName == null) {
+            throw new IllegalArgumentException("First name cannot be null");
+        }
+        // letters only (rejects "", " ", "A1", "J@ne", "John-Doe")
+        if (!firstName.matches("^[A-Za-z]+$")) {
+            throw new IllegalArgumentException("Invalid first name");
+        }
+        this.firstName = firstName;
+    }
+
+    /// ///// LAST NAME
+    public String getLastName() {
+        return this.lastName;
+    }
+
+    public void setLastName(String lastName) {
+        if (lastName == null) {
+            throw new IllegalArgumentException("Last name cannot be null");
+        }
+        // letters with optional internal hyphens (e.g., "Smith-Jones"),
+        // disallows "_", "Sm!th", "-" (single hyphen), leading/trailing hyphen
+        if (!lastName.matches("^[A-Za-z]+(?:-[A-Za-z]+)*$")) {
+            throw new IllegalArgumentException("Invalid last name");
+        }
+        this.lastName = lastName;
+    }
+
+    /// ///// ROLE
+    public String getRole(){return this.role;}
+
+    public void setRole(String role) {
+        if (role == null) {
+            throw new IllegalArgumentException("Role cannot be null");
+        }
+        this.role = role;
+    }
 
     @Override
     public String toString() {
         return String.format("User{id=%s, firstName='%s', lastName='%s', email='%s', role='%s'}",
                 id, firstName, lastName, email, role);
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getId() {
+        return this.id;
     }
 }

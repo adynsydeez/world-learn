@@ -6,4 +6,7 @@ module com.worldlearn.backend {
     requires java.xml.crypto;
     exports com.worldlearn.backend.models;
     exports com.worldlearn.backend.services;
+    exports com.worldlearn.backend.config;
+    exports com.worldlearn.backend.database;
+    exports com.worldlearn.backend.dto;
 }
