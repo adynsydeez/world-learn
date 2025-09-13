@@ -1,7 +1,7 @@
 package com.worldlearn.backend.services;
 
 import com.worldlearn.backend.database.UserDAO;
-import com.worldlearn.backend.models.User;
+import com.worldlearn.backend.database.User;
 import java.sql.SQLException;
 import java.util.List;
 

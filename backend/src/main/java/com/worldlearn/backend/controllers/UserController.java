@@ -1,6 +1,6 @@
 package com.worldlearn.backend.controllers;
 
-import com.worldlearn.backend.models.User;
+import com.worldlearn.backend.database.User;
 import com.worldlearn.backend.services.UserService;
 import io.javalin.http.Context;
 import java.util.List;

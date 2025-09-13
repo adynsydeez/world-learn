@@ -7,4 +7,5 @@ module com.worldlearn.backend {
     exports com.worldlearn.backend.models;
     exports com.worldlearn.backend.services;
     exports com.worldlearn.backend.config;
+    exports com.worldlearn.backend.database;
 }
