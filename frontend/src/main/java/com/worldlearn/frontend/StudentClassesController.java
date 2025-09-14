@@ -9,13 +9,12 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public class StudentClassesController {
@@ -62,6 +61,42 @@ public class StudentClassesController {
         }).exceptionally(ex -> {
             ex.printStackTrace();
             return null;
+        });
+    }
+
+    @FXML
+    private void onJoinButtonClick() {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Join Class");
+        dialog.setHeaderText("Enter the join code for the class:");
+        dialog.setContentText("Join code:");
+
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent(code -> {
+            try {
+                int joinCode = Integer.parseInt(code.trim());
+                joinClass(joinCode);
+            } catch (NumberFormatException e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Invalid join code.");
+                alert.showAndWait();
+            }
+        });
+    }
+
+    private void joinClass(int joinCode) {
+        CompletableFuture.runAsync(() -> {
+            try {
+                //apiService.assignStudentToClass(this.user.getId(), joinCode);
+
+                // Refresh the classes UI on JavaFX thread
+                Platform.runLater(this::loadClasses);
+
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    Alert alert = new Alert(Alert.AlertType.ERROR, "Failed to join class: " + e.getMessage());
+                    alert.showAndWait();
+                });
+            }
         });
     }
 
