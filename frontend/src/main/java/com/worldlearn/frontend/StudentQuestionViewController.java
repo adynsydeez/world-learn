@@ -1,6 +1,7 @@
 package com.worldlearn.frontend;
 
-import com.worldlearn.frontend.services.AuthenticationService;
+import com.worldlearn.backend.models.User;
+import com.worldlearn.frontend.services.AuthClientService;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -10,9 +11,9 @@ import javafx.stage.Stage;
 public class StudentQuestionViewController {
     private User user;
     private Stage stage;
-    private AuthenticationService auth;
+    private AuthClientService auth;
 
-    public void init(User user, Stage stage, AuthenticationService auth) {
+    public void init(User user, Stage stage, AuthClientService auth) {
         this.user = user;
         this.stage = stage;
         this.auth  = auth;

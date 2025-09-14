@@ -1,6 +1,8 @@
 package com.worldlearn.frontend;
 
-import com.worldlearn.frontend.services.AuthenticationService;
+import com.worldlearn.backend.models.User;
+import com.worldlearn.backend.services.AuthenticationService;
+import com.worldlearn.frontend.services.AuthClientService;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -10,12 +12,11 @@ import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 import java.util.List;
-import java.util.Map;
 
 public class MultipleChoiceQuestionController {
     private User user;
     private Stage stage;
-    private AuthenticationService auth;
+    private AuthClientService auth;
 
     private String correctAnswer;
 
@@ -31,7 +32,7 @@ public class MultipleChoiceQuestionController {
     private static final String CORRECT_HILITE  = "; -fx-border-color:#2e7d32; -fx-border-width:2; -fx-background-color:#c8f7c5;";
     private static final String WRONG_HILITE    = "; -fx-border-color:#b71c1c; -fx-border-width:2; -fx-background-color:#ffd3d3;";
 
-    public void init(User user, Stage stage, AuthenticationService auth,
+    public void init(User user, Stage stage, AuthClientService auth,
                      int questionNumber, String region, String question,
                      List<String> choices, String correct, String mapResource) {
 
