@@ -14,14 +14,7 @@ public class UserService {
     }
 
     public User logIn(String email, String password) throws SQLException {
-        List<User> users = userDAO.getAllUsers();
-        for (User user : users) {
-            if (user.getEmail().equalsIgnoreCase(email) &&
-                    user.getPassword().equals(password)) {
-                return user;
-            }
-        }
-        return null; // invalid credentials
+        return userDAO.getUserByEmailAndPassword(email, password);
     }
 
     public User getUserById(String id) throws SQLException {

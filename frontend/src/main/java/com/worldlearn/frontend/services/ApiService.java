@@ -82,8 +82,16 @@ public class ApiService {
                     UserResponse resp = objectMapper.readValue(response.body(), UserResponse.class);
 
                     return switch (resp.getRole().toLowerCase()) {
-                        case "student" -> new Student(resp.getEmail(), resp.getPassword(), resp.getFirstName(), resp.getLastName(), resp.getRole());
-                        case "teacher" -> new Teacher(resp.getEmail(), resp.getPassword(), resp.getFirstName(), resp.getLastName(), resp.getRole());
+                        case "student" -> {
+                            Student s = new Student(resp.getEmail(), resp.getPassword(), resp.getFirstName(), resp.getLastName(), resp.getRole());
+                            s.setId(resp.getId());
+                            yield s;
+                        }
+                        case "teacher" -> {
+                            Teacher t = new Teacher(resp.getEmail(), resp.getPassword(), resp.getFirstName(), resp.getLastName(), resp.getRole());
+                            t.setId(resp.getId());
+                            yield t;
+                        }
                         default -> throw new IllegalStateException("Unknown role: " + resp.getRole());
                     };
                 } else {
@@ -270,6 +278,37 @@ public class ApiService {
         });
     }
 
+    // Get all classes for specific user
+    public CompletableFuture<List<WlClass>> getAllClassesForUser(User user) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                // Use user.getId() in the URL
+                String url = baseUrl + "/classes/user/" + user.getId();
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .header("Accept", "application/json")
+                        .GET()
+                        .timeout(Duration.ofSeconds(30))
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request,
+                        HttpResponse.BodyHandlers.ofString());
+
+                if (response.statusCode() == 200) {
+                    WlClass[] classes = objectMapper.readValue(response.body(), WlClass[].class);
+                    return List.of(classes);
+                } else {
+                    throw new RuntimeException("Failed to get classes: " + response.statusCode() +
+                            " - " + response.body());
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Error getting classes: " + e.getMessage(), e);
+            }
+        });
+    }
+
+
     // Assign user to class
     public CompletableFuture<User> AssignToClassAsync(WlClass wlClass, User user, String access) {
         return CompletableFuture.supplyAsync(() -> {
@@ -306,7 +345,7 @@ public class ApiService {
         });
     }
 
-    // ===== CLASS OPERATIONS =====
+    // ===== Question OPERATIONS =====
     // Create question
     public CompletableFuture<Question> createQuestionAsync(Question question) {
         return CompletableFuture.supplyAsync(() -> {

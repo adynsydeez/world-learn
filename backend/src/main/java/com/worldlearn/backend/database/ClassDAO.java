@@ -1,8 +1,13 @@
 package com.worldlearn.backend.database;
 
+import com.worldlearn.backend.models.Student;
+import com.worldlearn.backend.models.Teacher;
+import com.worldlearn.backend.models.User;
 import com.worldlearn.backend.models.WlClass;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ClassDAO {
     private final Database database;
@@ -38,6 +43,45 @@ public class ClassDAO {
             }
         }
     }
+
+    public List<WlClass> getAllClassesForUser(User user) throws SQLException {
+        List<WlClass> classes = new ArrayList<>();
+        String sql;
+
+        if ("student".equalsIgnoreCase(user.getRole())) {
+            sql = "SELECT c.class_id, c.class_name, c.join_code " +
+                    "FROM classes c " +
+                    "JOIN student_class sc ON c.class_id = sc.class_id " +
+                    "WHERE sc.user_id = ?";
+        } else if ("teacher".equalsIgnoreCase(user.getRole())) {
+            sql = "SELECT c.class_id, c.class_name, c.join_code " +
+                    "FROM classes c " +
+                    "JOIN teacher_class tc ON c.class_id = tc.class_id " +
+                    "WHERE tc.user_id = ?";
+        } else {
+            throw new IllegalArgumentException("Unknown role: " + user.getRole());
+        }
+
+        try (Connection conn = database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, user.getId());
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    int class_id = rs.getInt("class_id");
+                    String class_name = rs.getString("class_name");
+                    int join_code = rs.getInt("join_code");
+
+                    WlClass wlClass = new WlClass(class_name, join_code);
+                    wlClass.setId(class_id);
+                    classes.add(wlClass);
+                }
+            }
+        }
+
+        return classes;
+    }
+
 
     // Future method: Create class and assign owner in a transaction
     // public WlClass createClassWithOwner(WlClass wlClass, User creator) throws SQLException {

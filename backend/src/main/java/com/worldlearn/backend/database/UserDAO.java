@@ -117,6 +117,37 @@ public class UserDAO {
         return users;
     }
 
+    public User getUserByEmailAndPassword(String email, String password) throws SQLException {
+        String sql = "SELECT user_id, first_name, last_name, email, password, user_role FROM users WHERE email = ? AND password = ?";
+        try (Connection conn = database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, email);
+            stmt.setString(2, password);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    String roleRaw  = rs.getString("user_role");
+                    String role     = roleRaw == null ? "" : roleRaw.trim().toLowerCase();
+                    int id          = rs.getInt("user_id");
+                    String first    = rs.getString("first_name");
+                    String last     = rs.getString("last_name");
+                    String userEmail = rs.getString("email");
+                    String userPassword = rs.getString("password");
+
+                    User u;
+                    switch (role) {
+                        case "student" -> u = new Student(userEmail, userPassword, first, last, role);
+                        case "teacher" -> u = new Teacher(userEmail, userPassword, first, last, role);
+                        default -> throw new IllegalArgumentException("Unknown user_role: " + roleRaw);
+                    }
+                    u.setId(id);
+                    return u;
+                }
+            }
+        }
+        return null; // invalid credentials
+    }
+
     public User updateUser(int id, User user) throws SQLException {
         String sql = "UPDATE users SET first_name = ?, last_name = ?, email = ?, password = ?, user_role = ?::user_role_type WHERE user_id = ?";
 

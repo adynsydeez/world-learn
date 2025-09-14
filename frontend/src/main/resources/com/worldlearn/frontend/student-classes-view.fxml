@@ -22,7 +22,7 @@
     </HBox>
 
     <!-- Teacher + Join class -->
-    <HBox spacing="8">
+    <HBox fx:id="classBox" spacing="8">
         <ToggleButton text="Mrs Alpha"/>
         <ToggleButton text="Mr Bravo"/>
         <ToggleButton text="Ms Charlie"/>

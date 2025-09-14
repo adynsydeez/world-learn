@@ -9,8 +9,7 @@ public class WlClass {
     public WlClass() {
     }
 
-    public WlClass(int id, String className, int joinCode) {
-        this.id = id;
+    public WlClass(String className, int joinCode) {
         this.className = className;
         this.joinCode = joinCode;
     }

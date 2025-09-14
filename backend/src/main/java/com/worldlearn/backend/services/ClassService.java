@@ -1,9 +1,11 @@
 package com.worldlearn.backend.services;
 
 import com.worldlearn.backend.database.ClassDAO;
+import com.worldlearn.backend.models.User;
 import com.worldlearn.backend.models.WlClass;
 
 import java.sql.SQLException;
+import java.util.List;
 
 public class ClassService {
     private final ClassDAO classDAO;
@@ -17,7 +19,11 @@ public class ClassService {
         return classDAO.createClass(wlClass);
     }
 
-    // Future methods when you implement user management:
+    public List<WlClass> getAllClassesForUser(User user) throws SQLException {
+        return classDAO.getAllClassesForUser(user);
+    }
+
+    // Future methods
 
     // Create class and automatically assign creator as owner
     // public WlClass createClassWithOwner(WlClass wlClass, User creator) throws SQLException {

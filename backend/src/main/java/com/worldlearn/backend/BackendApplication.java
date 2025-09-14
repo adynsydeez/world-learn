@@ -67,6 +67,8 @@ public class BackendApplication {
 
         // Class API endpoints
         app.post("/api/classes", classController::createClass);
+        app.get("/api/classes/user/{id}", classController::getAllClassesForUser);
+        //app.post("/api/classes/user", classController::assignStudent);
 
         // Question API endpoints
         app.post("/api/questions", questionController::createQuestion);
