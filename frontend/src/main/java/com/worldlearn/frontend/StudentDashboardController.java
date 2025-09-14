@@ -1,7 +1,8 @@
 package com.worldlearn.frontend;
 
-import com.worldlearn.backend.database.AuthenticationService;
-import com.worldlearn.backend.database.User;
+import com.worldlearn.backend.services.AuthenticationService;
+import com.worldlearn.backend.models.User;
+import com.worldlearn.frontend.services.AuthClientService;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -12,12 +13,12 @@ import javafx.stage.Stage;
 public class StudentDashboardController {
     private User user;
     private Stage stage;
-    private AuthenticationService auth;
+    private AuthClientService auth;
 
 
     public void init(User user, Stage stage) { init(user, stage, null); }
 
-    public void init(User user, Stage stage, AuthenticationService auth) {
+    public void init(User user, Stage stage, AuthClientService auth) {
         this.user = user;
         this.stage = stage;
         this.auth  = auth;
@@ -61,7 +62,7 @@ public class StudentDashboardController {
         FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("Auth-view.fxml"));
         Scene scene = new Scene(fxml.load(), 900, 650);
         AuthController authController = fxml.getController();
-        authController.init((auth != null ? auth : new AuthenticationService()), stage);
+        authController.init((auth != null ? auth : new AuthClientService()), stage);
         stage.setScene(scene);
         stage.show();
     }

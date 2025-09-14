@@ -1,6 +1,6 @@
 package com.worldlearn.frontend;
 
-import com.worldlearn.backend.database.AuthenticationService;
+import com.worldlearn.frontend.services.AuthClientService;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -11,10 +11,9 @@ import java.io.IOException;
 public class HelloApplication extends Application {
     private String mode = "teacher" ; //change to teacher/student for testing while login no implemented
 
-
     @Override
     public void start(Stage stage) throws IOException {
-        AuthenticationService auth = new AuthenticationService();
+        AuthClientService auth = new AuthClientService();
 
 
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("/com/worldlearn/frontend/Auth-view.fxml"));

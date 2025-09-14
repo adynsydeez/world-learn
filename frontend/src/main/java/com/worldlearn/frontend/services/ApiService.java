@@ -1,15 +1,18 @@
 package com.worldlearn.frontend.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.worldlearn.backend.config.DatabaseConfig;
-import com.worldlearn.backend.models.Question;
-import com.worldlearn.backend.database.User;
-import com.worldlearn.backend.models.WlClass;
+import com.worldlearn.backend.dto.LoginRequest;
+import com.worldlearn.backend.dto.UserRequest;
+import com.worldlearn.backend.dto.UserResponse;
+import com.worldlearn.backend.models.*;
+import com.worldlearn.backend.config.ApiConfig;
 
 import java.net.http.*;
 import java.net.URI;
 import java.time.Duration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 
@@ -20,7 +23,7 @@ public class ApiService {
     private final String baseUrl;
 
     public ApiService() {
-        this.baseUrl = DatabaseConfig.getDatabaseUrl();
+        this.baseUrl = ApiConfig.getApiBaseUrl();
         this.httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(10))
                 .build();
@@ -57,11 +60,53 @@ public class ApiService {
 
     // ===== USER OPERATIONS =====
 
+    public CompletableFuture<User> logInAsync(String email, String password) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                LoginRequest requestBody = new LoginRequest();
+                requestBody.setEmail(email);
+                requestBody.setPassword(password);
+
+                String json = objectMapper.writeValueAsString(requestBody);
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(new URI(baseUrl + "/users/login"))
+                        .header("Content-Type", "application/json")
+                        .POST(HttpRequest.BodyPublishers.ofString(json))
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+                if (response.statusCode() == 200) {
+                    // First deserialize to a simple DTO
+                    UserResponse resp = objectMapper.readValue(response.body(), UserResponse.class);
+
+                    return switch (resp.getRole().toLowerCase()) {
+                        case "student" -> new Student(resp.getEmail(), resp.getPassword(), resp.getFirstName(), resp.getLastName(), resp.getRole());
+                        case "teacher" -> new Teacher(resp.getEmail(), resp.getPassword(), resp.getFirstName(), resp.getLastName(), resp.getRole());
+                        default -> throw new IllegalStateException("Unknown role: " + resp.getRole());
+                    };
+                } else {
+                    throw new RuntimeException("Login failed: " + response.statusCode() + " - " + response.body());
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Error during login: " + e.getMessage(), e);
+            }
+        });
+    }
+
     // Create user
     public CompletableFuture<User> createUserAsync(User user) {
         return CompletableFuture.supplyAsync(() -> {
             try {
-                String jsonBody = objectMapper.writeValueAsString(user);
+                UserRequest requestDto = new UserRequest();
+                requestDto.setFirstName(user.getFirstName());
+                requestDto.setLastName(user.getLastName());
+                requestDto.setEmail(user.getEmail());
+                requestDto.setPassword(user.getPassword());
+                requestDto.setRole(user.getRole());
+
+                String jsonBody = objectMapper.writeValueAsString(requestDto);
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(baseUrl + "/users"))
@@ -74,10 +119,18 @@ public class ApiService {
                         HttpResponse.BodyHandlers.ofString());
 
                 if (response.statusCode() == 201) {
-                    return objectMapper.readValue(response.body(), User.class);
+                    // Deserialize using UserResponse first
+                    UserResponse resp = objectMapper.readValue(response.body(), UserResponse.class);
+
+                    return switch (resp.getRole().toLowerCase()) {
+                        case "student" -> new Student(resp.getEmail(), resp.getPassword(),
+                                resp.getFirstName(), resp.getLastName(), resp.getRole());
+                        case "teacher" -> new Teacher(resp.getEmail(), resp.getPassword(),
+                                resp.getFirstName(), resp.getLastName(), resp.getRole());
+                        default -> throw new IllegalStateException("Unknown role: " + resp.getRole());
+                    };
                 } else {
-                    throw new RuntimeException("Failed to create user: " + response.statusCode() +
-                            " - " + response.body());
+                    throw new RuntimeException("Failed to create user: " + response.statusCode() + " - " + response.body());
                 }
             } catch (Exception e) {
                 throw new RuntimeException("Error creating user: " + e.getMessage(), e);
@@ -221,15 +274,18 @@ public class ApiService {
     public CompletableFuture<User> AssignToClassAsync(WlClass wlClass, User user, String access) {
         return CompletableFuture.supplyAsync(() -> {
             try {
-                String jsonBody;
+                Map<String, Object> assignmentData = new HashMap<>();
+                assignmentData.put("class_id", wlClass.getId());
+                assignmentData.put("user_id", user.getId());
+
                 if (user.getRole().equals("teacher")) {
-                    jsonBody = "{'teacher_role': '" + access + "', 'class_id': '" + wlClass.getId() + "', 'user_id': '" + user.getId() + "'}";
+                    assignmentData.put("teacher_role", access);
                 }
-                else {
-                    jsonBody = "{'class_id': '" + wlClass.getId() + "', 'user_id': '" + user.getId() + "'}";
-                }
+
+                String jsonBody = objectMapper.writeValueAsString(assignmentData);
+
                 HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(baseUrl + "/users"))
+                        .uri(URI.create(baseUrl + "/class-assignments")) // Use appropriate endpoint
                         .header("Content-Type", "application/json")
                         .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
                         .timeout(Duration.ofSeconds(30))
@@ -241,11 +297,11 @@ public class ApiService {
                 if (response.statusCode() == 201) {
                     return objectMapper.readValue(response.body(), User.class);
                 } else {
-                    throw new RuntimeException("Failed to create class: " + response.statusCode() +
+                    throw new RuntimeException("Failed to assign to class: " + response.statusCode() +
                             " - " + response.body());
                 }
             } catch (Exception e) {
-                throw new RuntimeException("Error creating user: " + e.getMessage(), e);
+                throw new RuntimeException("Error assigning to class: " + e.getMessage(), e);
             }
         });
     }
