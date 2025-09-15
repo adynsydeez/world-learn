@@ -1,7 +1,10 @@
 package com.worldlearn.backend.models;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public class Question {
     private int questionId;
+    private String questionName;
     private String answer;
     private String[] options;
     private String prompt;
@@ -19,6 +22,12 @@ public class Question {
         public String getDbValue() {
             return this.name().toLowerCase();
         }
+
+        @JsonValue
+        public String toJson() {
+            return this.name().toLowerCase();
+        }
+
     }
 
 
@@ -30,6 +39,9 @@ public class Question {
         Visibility(String dbValue) { this.dbValue = dbValue; }
         public String getDbValue() { return dbValue; }
 
+        @JsonValue
+        public String toJSON() {return dbValue.toLowerCase();}
+
         public static Visibility fromDbValue(String value) {
             for (Visibility v : values()) {
                 if (v.dbValue.equalsIgnoreCase(value)) {
@@ -40,9 +52,10 @@ public class Question {
         }
     }
 
-    public Question(int questionId, String answer, String[] options,
+    public Question(int questionId, String questionName, String answer, String[] options,
                     String prompt, QuestionType type, int pointsWorth, Visibility visibility) {
         this.questionId = questionId;
+        this.questionName = questionName;
         this.answer = answer;
         this.options = options;
         this.prompt = prompt;
@@ -52,6 +65,7 @@ public class Question {
     }
 
     public int getQuestionId() { return questionId; }
+    public String getQuestionName() {return questionName; }
     public String getAnswer() { return answer; }
     public String[] getOptions() { return options; }
     public String getPrompt() { return prompt; }
@@ -60,6 +74,7 @@ public class Question {
     public Visibility getVisibility() { return visibility; }
 
     public void setQuestionId(int id) { this.questionId = id; }
+    public void setQuestionName(String questionName) {this.questionName = questionName; }
     public void setAnswer(String answer) {this.answer = answer;}
     public void setOptions(String[] options) {this.options = options;}
     public void setPrompt (String prompt) {this.prompt = prompt;}
