@@ -310,21 +310,17 @@ public class ApiService {
 
 
     // Assign user to class
-    public CompletableFuture<User> AssignToClassAsync(WlClass wlClass, User user, String access) {
+    public CompletableFuture<User> assignStudentToClass(int userId, int joinCode) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 Map<String, Object> assignmentData = new HashMap<>();
-                assignmentData.put("class_id", wlClass.getId());
-                assignmentData.put("user_id", user.getId());
-
-                if (user.getRole().equals("teacher")) {
-                    assignmentData.put("teacher_role", access);
-                }
+                assignmentData.put("join_code", joinCode);
+                assignmentData.put("user_id", userId);
 
                 String jsonBody = objectMapper.writeValueAsString(assignmentData);
 
                 HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(baseUrl + "/class-assignments")) // Use appropriate endpoint
+                        .uri(URI.create(baseUrl + "/class/student")) // Use appropriate endpoint
                         .header("Content-Type", "application/json")
                         .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
                         .timeout(Duration.ofSeconds(30))
@@ -345,7 +341,7 @@ public class ApiService {
         });
     }
 
-    // ===== Question OPERATIONS =====
+    // ===== QUESTION OPERATIONS =====
     // Create question
     public CompletableFuture<Question> createQuestionAsync(Question question) {
         return CompletableFuture.supplyAsync(() -> {

@@ -57,17 +57,16 @@ public class ClassController {
         }
     }
 
-    // Future method for adding users to existing classes
-    // public void addUserToClass(Context ctx) {
-    //     try {
-    //         int classId = Integer.parseInt(ctx.pathParam("classId"));
-    //         int userId = Integer.parseInt(ctx.pathParam("userId"));
-    //         String role = ctx.queryParam("role"); // "viewer" or "editor"
-    //
-    //         classService.addUserToClass(classId, userId, role);
-    //         ctx.status(200).result("User added to class successfully");
-    //     } catch (Exception e) {
-    //         ctx.status(500).result("Internal server error: " + e.getMessage());
-    //     }
-    // }
+     public void assignStudentToClass(Context ctx) {
+         try {
+             int joinCode = Integer.parseInt(ctx.pathParam("joinCode"));
+             int userId = Integer.parseInt(ctx.pathParam("userId"));
+             String role = ctx.queryParam("role"); // "viewer" or "editor"
+
+             classService.assignStudentToClass(userId, joinCode);
+             ctx.status(200).result("User added to class successfully");
+         } catch (Exception e) {
+             ctx.status(500).result("Internal server error: " + e.getMessage());
+         }
+     }
 }

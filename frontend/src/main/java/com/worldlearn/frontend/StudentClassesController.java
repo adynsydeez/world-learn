@@ -41,7 +41,7 @@ public class StudentClassesController {
 
         future.thenAccept(classes -> {
             Platform.runLater(() -> {
-                // Clear any existing buttons before adding
+                // Clear existing class buttons but keep space fresh
                 classBox.getChildren().clear();
 
                 ToggleGroup group = new ToggleGroup();
@@ -50,19 +50,24 @@ public class StudentClassesController {
                     ToggleButton btn = new ToggleButton(wlClass.getClassName());
                     btn.setToggleGroup(group);
 
-                    // Example: add event handler
                     btn.setOnAction(e -> {
                         System.out.println("Selected class: " + wlClass.getClassName());
                     });
 
                     classBox.getChildren().add(btn);
                 }
+
+                // Add Join Class button at the end
+                Button joinBtn = new Button("Join Class");
+                joinBtn.setOnAction(e -> onJoinButtonClick());
+                classBox.getChildren().add(joinBtn);
             });
         }).exceptionally(ex -> {
             ex.printStackTrace();
             return null;
         });
     }
+
 
     @FXML
     private void onJoinButtonClick() {
@@ -86,7 +91,7 @@ public class StudentClassesController {
     private void joinClass(int joinCode) {
         CompletableFuture.runAsync(() -> {
             try {
-                //apiService.assignStudentToClass(this.user.getId(), joinCode);
+                apiService.assignStudentToClass(this.user.getId(), joinCode);
 
                 // Refresh the classes UI on JavaFX thread
                 Platform.runLater(this::loadClasses);

@@ -82,6 +82,21 @@ public class ClassDAO {
         return classes;
     }
 
+    public void assignStudentToClass(int classId, int userId) throws SQLException {
+        String sql = "INSERT INTO student_class (class_id, user_id) VALUES (?, ?)";
+
+        try (Connection conn = database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, classId);
+            stmt.setInt(2, userId);
+
+            if (stmt.executeUpdate() == 0) {
+                throw new SQLException("Adding user to class failed, no rows affected.");
+            }
+        }
+    }
+
 
     // Future method: Create class and assign owner in a transaction
     // public WlClass createClassWithOwner(WlClass wlClass, User creator) throws SQLException {
@@ -146,23 +161,6 @@ public class ClassDAO {
     //             } catch (SQLException e) {
     //                 System.err.println("Error restoring auto-commit or closing connection: " + e.getMessage());
     //             }
-    //         }
-    //     }
-    // }
-
-    // Future method: Add user to existing class
-    // public void addUserToClass(int classId, int userId, String role) throws SQLException {
-    //     String sql = "INSERT INTO Teacher_Class (teacher_role, class_id, user_id) VALUES (?::teacher_role_type, ?, ?)";
-
-    //     try (Connection conn = database.getConnection();
-    //          PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-    //         stmt.setString(1, role);
-    //         stmt.setInt(2, classId);
-    //         stmt.setInt(3, userId);
-
-    //         if (stmt.executeUpdate() == 0) {
-    //             throw new SQLException("Adding user to class failed, no rows affected.");
     //         }
     //     }
     // }

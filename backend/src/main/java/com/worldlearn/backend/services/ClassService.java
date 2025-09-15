@@ -23,17 +23,14 @@ public class ClassService {
         return classDAO.getAllClassesForUser(user);
     }
 
-    // Future methods
-
     // Create class and automatically assign creator as owner
     // public WlClass createClassWithOwner(WlClass wlClass, User creator) throws SQLException {
     //     return classDAO.createClassWithOwner(wlClass, creator);
     // }
 
-    // Add additional users to existing classes
-    // public void addUserToClass(int classId, int userId, String role) throws SQLException {
-    //     classDAO.addUserToClass(classId, userId, role);
-    // }
+     public void assignStudentToClass(int classId, int userId) throws SQLException {
+         classDAO.assignStudentToClass(classId, userId);
+     }
 
     // Remove user from class
     // public void removeUserFromClass(int classId, int userId) throws SQLException {
