@@ -9,8 +9,11 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class StudentDashboardController {
+    private static final Logger log = LoggerFactory.getLogger(StudentDashboardController.class);
     private User user;
     private Stage stage;
     private AuthClientService auth;

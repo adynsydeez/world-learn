@@ -1,8 +1,11 @@
 package com.worldlearn.backend.database;
 
+import com.worldlearn.backend.models.User;
 import com.worldlearn.backend.models.WlClass;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ClassDAO {
     private final Database database;
@@ -38,6 +41,77 @@ public class ClassDAO {
             }
         }
     }
+
+    public List<WlClass> getAllClassesForUser(User user) throws SQLException {
+        List<WlClass> classes = new ArrayList<>();
+        String sql;
+
+        if ("student".equalsIgnoreCase(user.getRole())) {
+            sql = "SELECT c.class_id, c.class_name, c.join_code " +
+                    "FROM classes c " +
+                    "JOIN student_class sc ON c.class_id = sc.class_id " +
+                    "WHERE sc.user_id = ?";
+        } else if ("teacher".equalsIgnoreCase(user.getRole())) {
+            sql = "SELECT c.class_id, c.class_name, c.join_code " +
+                    "FROM classes c " +
+                    "JOIN teacher_class tc ON c.class_id = tc.class_id " +
+                    "WHERE tc.user_id = ?";
+        } else {
+            throw new IllegalArgumentException("Unknown role: " + user.getRole());
+        }
+
+        try (Connection conn = database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, user.getId());
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    int class_id = rs.getInt("class_id");
+                    String class_name = rs.getString("class_name");
+                    int join_code = rs.getInt("join_code");
+
+                    WlClass wlClass = new WlClass(class_name, join_code);
+                    wlClass.setId(class_id);
+                    classes.add(wlClass);
+                }
+            }
+        }
+
+        return classes;
+    }
+
+    public void assignStudentToClass(int classId, int userId) throws SQLException {
+        String sql = "INSERT INTO student_class (class_id, user_id) VALUES (?, ?)";
+
+        try (Connection conn = database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, classId);
+            stmt.setInt(2, userId);
+
+            if (stmt.executeUpdate() == 0) {
+                throw new SQLException("Adding user to class failed, no rows affected.");
+            }
+        }
+    }
+
+    public int getClassIdByJoinCode(int joinCode) throws SQLException {
+        String sql = "SELECT class_id FROM Classes WHERE join_code = ?";
+        int classId = 0;
+        try (Connection conn = database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, joinCode);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    classId = rs.getInt("class_id");
+                }
+            }
+        }
+
+        return classId;
+    }
+
 
     // Future method: Create class and assign owner in a transaction
     // public WlClass createClassWithOwner(WlClass wlClass, User creator) throws SQLException {
@@ -102,23 +176,6 @@ public class ClassDAO {
     //             } catch (SQLException e) {
     //                 System.err.println("Error restoring auto-commit or closing connection: " + e.getMessage());
     //             }
-    //         }
-    //     }
-    // }
-
-    // Future method: Add user to existing class
-    // public void addUserToClass(int classId, int userId, String role) throws SQLException {
-    //     String sql = "INSERT INTO Teacher_Class (teacher_role, class_id, user_id) VALUES (?::teacher_role_type, ?, ?)";
-
-    //     try (Connection conn = database.getConnection();
-    //          PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-    //         stmt.setString(1, role);
-    //         stmt.setInt(2, classId);
-    //         stmt.setInt(3, userId);
-
-    //         if (stmt.executeUpdate() == 0) {
-    //             throw new SQLException("Adding user to class failed, no rows affected.");
     //         }
     //     }
     // }

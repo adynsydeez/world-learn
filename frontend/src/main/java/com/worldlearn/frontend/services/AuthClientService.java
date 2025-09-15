@@ -27,8 +27,16 @@ public class AuthClientService {
         return apiService.logInAsync(email, password)
                 .thenApply(user -> {
                     currentUser = switch (user.getRole().toLowerCase()) {
-                        case "student" -> new Student(user.getEmail(), user.getPassword(), user.getFirstName(), user.getLastName(), user.getRole());
-                        case "teacher" -> new Teacher(user.getEmail(), user.getPassword(), user.getFirstName(), user.getLastName(), user.getRole());
+                        case "student" -> {
+                            Student s = new Student(user.getEmail(), user.getPassword(), user.getFirstName(), user.getLastName(), user.getRole());
+                            s.setId(user.getId());
+                            yield s;
+                        }
+                        case "teacher" -> {
+                            Teacher t = new Teacher(user.getEmail(), user.getPassword(), user.getFirstName(), user.getLastName(), user.getRole());
+                            t.setId(user.getId());
+                            yield t;
+                        }
                         default -> user;
                     };
                     return currentUser;

@@ -1,6 +1,7 @@
 package com.worldlearn.frontend.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.worldlearn.backend.dto.LoginRequest;
 import com.worldlearn.backend.dto.UserRequest;
 import com.worldlearn.backend.dto.UserResponse;
@@ -82,8 +83,16 @@ public class ApiService {
                     UserResponse resp = objectMapper.readValue(response.body(), UserResponse.class);
 
                     return switch (resp.getRole().toLowerCase()) {
-                        case "student" -> new Student(resp.getEmail(), resp.getPassword(), resp.getFirstName(), resp.getLastName(), resp.getRole());
-                        case "teacher" -> new Teacher(resp.getEmail(), resp.getPassword(), resp.getFirstName(), resp.getLastName(), resp.getRole());
+                        case "student" -> {
+                            Student s = new Student(resp.getEmail(), resp.getPassword(), resp.getFirstName(), resp.getLastName(), resp.getRole());
+                            s.setId(resp.getId());
+                            yield s;
+                        }
+                        case "teacher" -> {
+                            Teacher t = new Teacher(resp.getEmail(), resp.getPassword(), resp.getFirstName(), resp.getLastName(), resp.getRole());
+                            t.setId(resp.getId());
+                            yield t;
+                        }
                         default -> throw new IllegalStateException("Unknown role: " + resp.getRole());
                     };
                 } else {
@@ -270,43 +279,62 @@ public class ApiService {
         });
     }
 
-    // Assign user to class
-    public CompletableFuture<User> AssignToClassAsync(WlClass wlClass, User user, String access) {
+    // Get all classes for specific user
+    public CompletableFuture<List<WlClass>> getAllClassesForUser(User user) {
         return CompletableFuture.supplyAsync(() -> {
             try {
-                Map<String, Object> assignmentData = new HashMap<>();
-                assignmentData.put("class_id", wlClass.getId());
-                assignmentData.put("user_id", user.getId());
-
-                if (user.getRole().equals("teacher")) {
-                    assignmentData.put("teacher_role", access);
-                }
-
-                String jsonBody = objectMapper.writeValueAsString(assignmentData);
+                // Use user.getId() in the URL
+                String url = baseUrl + "/classes/user/" + user.getId();
 
                 HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(baseUrl + "/class-assignments")) // Use appropriate endpoint
-                        .header("Content-Type", "application/json")
-                        .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
+                        .uri(URI.create(url))
+                        .header("Accept", "application/json")
+                        .GET()
                         .timeout(Duration.ofSeconds(30))
                         .build();
 
                 HttpResponse<String> response = httpClient.send(request,
                         HttpResponse.BodyHandlers.ofString());
 
-                if (response.statusCode() == 201) {
-                    return objectMapper.readValue(response.body(), User.class);
+                if (response.statusCode() == 200) {
+                    WlClass[] classes = objectMapper.readValue(response.body(), WlClass[].class);
+                    return List.of(classes);
                 } else {
-                    throw new RuntimeException("Failed to assign to class: " + response.statusCode() +
+                    throw new RuntimeException("Failed to get classes: " + response.statusCode() +
                             " - " + response.body());
                 }
             } catch (Exception e) {
-                throw new RuntimeException("Error assigning to class: " + e.getMessage(), e);
+                throw new RuntimeException("Error getting classes: " + e.getMessage(), e);
             }
         });
     }
 
-    // ===== CLASS OPERATIONS =====
+
+    // Assign user to class
+    public void assignStudentToClass(int userId, int joinCode) {
+        try {
+            ObjectNode requestBody = objectMapper.createObjectNode();
+            requestBody.put("userId", userId);
+            requestBody.put("joinCode", joinCode);
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(baseUrl + "/classes/student"))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
+                    .build();
+
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() != 200) {
+                throw new RuntimeException("Failed to join class: " + response.statusCode() + " - " + response.body());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error joining class: " + e.getMessage(), e);
+        }
+    }
+
+
+    // ===== QUESTION OPERATIONS =====
     // Create question
     public CompletableFuture<Question> createQuestionAsync(Question question) {
         return CompletableFuture.supplyAsync(() -> {
