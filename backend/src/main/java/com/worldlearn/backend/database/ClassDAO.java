@@ -1,7 +1,5 @@
 package com.worldlearn.backend.database;
 
-import com.worldlearn.backend.models.Student;
-import com.worldlearn.backend.models.Teacher;
 import com.worldlearn.backend.models.User;
 import com.worldlearn.backend.models.WlClass;
 
@@ -95,6 +93,23 @@ public class ClassDAO {
                 throw new SQLException("Adding user to class failed, no rows affected.");
             }
         }
+    }
+
+    public int getClassIdByJoinCode(int joinCode) throws SQLException {
+        String sql = "SELECT class_id FROM Classes WHERE join_code = ?";
+        int classId = 0;
+        try (Connection conn = database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, joinCode);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    classId = rs.getInt("class_id");
+                }
+            }
+        }
+
+        return classId;
     }
 
 

@@ -32,6 +32,10 @@ public class ClassService {
          classDAO.assignStudentToClass(classId, userId);
      }
 
+     public int getClassIdByJoinCode(int joinCode) throws SQLException {
+        return classDAO.getClassIdByJoinCode(joinCode);
+     }
+
     // Remove user from class
     // public void removeUserFromClass(int classId, int userId) throws SQLException {
     //     classDAO.removeUserFromClass(classId, userId);

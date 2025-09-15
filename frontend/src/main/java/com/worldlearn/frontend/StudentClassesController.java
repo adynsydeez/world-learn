@@ -89,6 +89,7 @@ public class StudentClassesController {
     }
 
     private void joinClass(int joinCode) {
+        System.out.println("Joining with userId=" + user.getId() + " joinCode=" + joinCode);
         CompletableFuture.runAsync(() -> {
             try {
                 apiService.assignStudentToClass(this.user.getId(), joinCode);

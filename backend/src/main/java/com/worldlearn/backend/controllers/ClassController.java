@@ -2,6 +2,7 @@ package com.worldlearn.backend.controllers;
 
 import com.worldlearn.backend.database.Database;
 import com.worldlearn.backend.database.UserDAO;
+import com.worldlearn.backend.dto.AssignStudentRequest;
 import com.worldlearn.backend.models.User;
 import com.worldlearn.backend.services.UserService;
 import com.worldlearn.backend.models.WlClass;
@@ -57,16 +58,18 @@ public class ClassController {
         }
     }
 
-     public void assignStudentToClass(Context ctx) {
-         try {
-             int joinCode = Integer.parseInt(ctx.pathParam("joinCode"));
-             int userId = Integer.parseInt(ctx.pathParam("userId"));
-             String role = ctx.queryParam("role"); // "viewer" or "editor"
+    public void assignStudentToClass(Context ctx) {
+        try {
+            AssignStudentRequest req = ctx.bodyAsClass(AssignStudentRequest.class);
 
-             classService.assignStudentToClass(userId, joinCode);
-             ctx.status(200).result("User added to class successfully");
-         } catch (Exception e) {
-             ctx.status(500).result("Internal server error: " + e.getMessage());
-         }
-     }
+            // classService should look up classId by joinCode
+            int classId = classService.getClassIdByJoinCode(req.getJoinCode());
+
+            classService.assignStudentToClass(classId, req.getUserId());
+            ctx.status(200).result("User added to class successfully");
+
+        } catch (Exception e) {
+            ctx.status(500).result("Internal server error: " + e.getMessage());
+        }
+    }
 }

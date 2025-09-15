@@ -1,6 +1,7 @@
 package com.worldlearn.frontend.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.worldlearn.backend.dto.LoginRequest;
 import com.worldlearn.backend.dto.UserRequest;
 import com.worldlearn.backend.dto.UserResponse;
@@ -310,36 +311,28 @@ public class ApiService {
 
 
     // Assign user to class
-    public CompletableFuture<User> assignStudentToClass(int userId, int joinCode) {
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                Map<String, Object> assignmentData = new HashMap<>();
-                assignmentData.put("join_code", joinCode);
-                assignmentData.put("user_id", userId);
+    public void assignStudentToClass(int userId, int joinCode) {
+        try {
+            ObjectNode requestBody = objectMapper.createObjectNode();
+            requestBody.put("userId", userId);
+            requestBody.put("joinCode", joinCode);
 
-                String jsonBody = objectMapper.writeValueAsString(assignmentData);
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(baseUrl + "/classes/student"))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
+                    .build();
 
-                HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(baseUrl + "/class/student")) // Use appropriate endpoint
-                        .header("Content-Type", "application/json")
-                        .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
-                        .timeout(Duration.ofSeconds(30))
-                        .build();
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-                HttpResponse<String> response = httpClient.send(request,
-                        HttpResponse.BodyHandlers.ofString());
-
-                if (response.statusCode() == 201) {
-                    return objectMapper.readValue(response.body(), User.class);
-                } else {
-                    throw new RuntimeException("Failed to assign to class: " + response.statusCode() +
-                            " - " + response.body());
-                }
-            } catch (Exception e) {
-                throw new RuntimeException("Error assigning to class: " + e.getMessage(), e);
+            if (response.statusCode() != 200) {
+                throw new RuntimeException("Failed to join class: " + response.statusCode() + " - " + response.body());
             }
-        });
+        } catch (Exception e) {
+            throw new RuntimeException("Error joining class: " + e.getMessage(), e);
+        }
     }
+
 
     // ===== QUESTION OPERATIONS =====
     // Create question
