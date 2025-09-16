@@ -365,6 +365,34 @@ public class ApiService {
         });
     }
 
+    public CompletableFuture<List<Question>> getAllTeacherQuestionsAsync(int teacherId) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                // Make sure the URL matches the backend route
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(baseUrl + "/users/" + teacherId + "/questions"))
+                        .header("Accept", "application/json")
+                        .GET()
+                        .timeout(Duration.ofSeconds(30))
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request,
+                        HttpResponse.BodyHandlers.ofString());
+
+
+                if (response.statusCode() == 200) {
+                    Question[] questions = objectMapper.readValue(response.body(), Question[].class);
+                    return List.of(questions);
+                } else {
+                    throw new RuntimeException("Failed to get questions: " + response.statusCode() +
+                            " - " + response.body());
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Error getting questions: " + e.getMessage(), e);
+            }
+        });
+    }
+
     // Get all questions
     public CompletableFuture<List<Question>> getAllQuestionsAsync() {
         return CompletableFuture.supplyAsync(() -> {

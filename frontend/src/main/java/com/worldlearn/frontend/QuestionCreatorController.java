@@ -3,7 +3,7 @@ package com.worldlearn.frontend;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+
 import javafx.stage.Stage;
 import javafx.scene.layout.VBox;
 
@@ -11,12 +11,11 @@ import com.worldlearn.backend.models.Question;
 import com.worldlearn.backend.models.Question.QuestionType;
 import com.worldlearn.backend.models.Question.Visibility;
 import com.worldlearn.frontend.services.ApiService;
-
+import javafx.scene.control.*;
 import java.io.IOException;
 import java.sql.SQLException;
 
 public class QuestionCreatorController {
-    @FXML private Button homeButton;
     @FXML private Button saveBtn;
     @FXML private Button clearBtn;
 

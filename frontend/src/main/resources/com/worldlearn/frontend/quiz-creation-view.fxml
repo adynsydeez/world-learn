@@ -9,7 +9,6 @@
       spacing="20">
 
     <HBox spacing="10" alignment="CENTER_LEFT">
-        <Label text="Create A Quiz" style="-fx-font-size:22; -fx-font-weight:bold;"/>
         <Pane HBox.hgrow="ALWAYS"/>
     </HBox>
 
@@ -26,4 +25,45 @@
                 style="-fx-background-color: #a29bfe; -fx-text-fill: white;"/>
     </HBox>
 
+    <VBox spacing="5">
+        <Label text="Quiz Name"/>
+        <TextField fx:id="quizName" promptText="Enter a Quiz Name..."/>
+        <ComboBox fx:id="visibilityCombo"/>
+    </VBox>
+
+    <HBox spacing="20" alignment="TOP_LEFT">
+        <!-- Left ScrollPane: Author's Questions -->
+        <ScrollPane fx:id="privateScrollPane" prefWidth="200" prefHeight="400">
+            <content>
+                <VBox>
+                    <Label text="Your Questions"/>
+                    <Button fx:id="getBtn" text="Refresh Questions // WORKING"/>
+                    <VBox fx:id="privateContainer" spacing="5"/>
+                </VBox>
+            </content>
+        </ScrollPane>
+
+        <!-- Right ScrollPane: Selected Questions for Quiz -->
+        <ScrollPane fx:id="searchScrollPane" prefWidth="200" prefHeight="400">
+            <content>
+                <VBox>
+                    <Label text="Search Questions"/>
+                    <Button fx:id="searchBtn" text="Search Questions"/>
+                    <VBox fx:id="searchContainer" spacing="5"/>
+                </VBox>
+            </content>
+        </ScrollPane>
+
+        <ScrollPane fx:id="questionsScrollPane" prefWidth="200" prefHeight="400">
+            <content>
+                <VBox>
+                    <Label text="Your Quiz"/>
+                    <Button fx:id="removeBtn" text="Remove Question(s)"/>
+                    <VBox fx:id="questionsContainer" spacing="5"/>
+                </VBox>
+            </content>
+        </ScrollPane>
+    </HBox>
+
+    <Button fx:id="addToQuizBtn" text="Add Selected Questions"/>
 </VBox>

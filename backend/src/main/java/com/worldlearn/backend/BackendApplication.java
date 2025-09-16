@@ -61,6 +61,7 @@ public class BackendApplication {
         app.post("/api/users", userController::createUser);
         app.put("/api/users/{id}", userController::updateUser);
         app.delete("/api/users/{id}", userController::deleteUser);
+        app.get("/api/users/{id}/questions", questionController::getAllTeacherQuestions);
 
         // LOGIN endpoint
         app.post("/api/users/login", userController::logIn);
@@ -72,6 +73,7 @@ public class BackendApplication {
 
         // Question API endpoints
         app.post("/api/questions", questionController::createQuestion);
+
 
         // Graceful shutdown
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
