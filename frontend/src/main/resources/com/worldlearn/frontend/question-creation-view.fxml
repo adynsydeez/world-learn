@@ -9,12 +9,8 @@
       spacing="20">
 
     <HBox spacing="10" alignment="CENTER_LEFT">
-        <Button fx:id="homeButton" text="home"
-                style="-fx-background-radius:8; -fx-padding:6 10;"
-                onAction="#onHomeButtonClick"/>
-        <Label text="Your Classes" style="-fx-font-size:22; -fx-font-weight:bold;"/>
+        <Label text="Create A Question" style="-fx-font-size:22; -fx-font-weight:bold;"/>
         <Pane HBox.hgrow="ALWAYS"/>
-        <Button text="..." style="-fx-background-radius:8; -fx-padding:6 10;"/>
     </HBox>
 
     <padding>

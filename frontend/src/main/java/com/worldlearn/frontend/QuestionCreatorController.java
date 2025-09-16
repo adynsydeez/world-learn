@@ -110,14 +110,6 @@ public class QuestionCreatorController {
         }
     }
 
-    @FXML
-    protected void onHomeButtonClick() throws IOException {
-        Stage stage = (Stage) homeButton.getScene().getWindow();
-        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("teacher-dashboard-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 800, 600);
-        stage.setScene(scene);
-    }
-
     private String getAnswer() {
         if (type == QuestionType.mcq) {
             RadioButton selected = (RadioButton) correctAnswer.getSelectedToggle();
@@ -185,6 +177,7 @@ public class QuestionCreatorController {
         try {
             Question question = new Question(
                     0,
+                    getPrompt(),
                     getAnswer(),
                     options,
                     getPrompt(),
@@ -195,7 +188,10 @@ public class QuestionCreatorController {
 
             apiService.createQuestionAsync(question);
 
+
             System.out.println("Question saved!");
+            Stage stage = (Stage) saveBtn.getScene().getWindow();
+            stage.close();
         } catch (IllegalArgumentException ex) {
             showAlert(ex.getMessage());
         }

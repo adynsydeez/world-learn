@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -52,12 +53,45 @@ public class TeacherDashboardController {
     }
 
     @FXML
-    protected void onCreateQuestionClick() throws IOException {
-        Stage stage = (Stage) createQuestionBtn.getScene().getWindow();
-        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("question-creation-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 800, 600);
-        stage.setScene(scene);
+    private void openPopup(String fxmlPath, String title) {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource(fxmlPath));
+            Scene scene = new Scene(fxmlLoader.load(), 800, 600);
+
+            Stage popupStage = new Stage();
+            popupStage.setTitle(title);
+            popupStage.setScene(scene);
+            popupStage.initModality(Modality.APPLICATION_MODAL);
+
+            Stage parentStage = (Stage) createQuestionBtn.getScene().getWindow();
+            popupStage.initOwner(parentStage);
+
+            popupStage.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
+
+    @FXML
+    protected void onCreateQuestionClick() {
+        openPopup("question-creation-view.fxml", "Create Question");
+    }
+
+    @FXML
+    protected void onCreateClassClick() {
+        openPopup("class-creation-view.fxml", "Create Class");
+    }
+
+    @FXML
+    protected void onCreateLessonClick() {
+        openPopup("lesson-creation-view.fxml", "Create Class");
+    }
+
+    @FXML
+    protected void onCreateQuizClick() {
+        openPopup("quiz-creation-view.fxml", "Create Class");
+    }
+
 
 }
 
