@@ -9,7 +9,7 @@
       spacing="20">
 
     <HBox spacing="10" alignment="CENTER_LEFT">
-        <Label text="Create A Class" style="-fx-font-size:22; -fx-font-weight:bold;"/>
+        <Label text="Create A Lesson" style="-fx-font-size:22; -fx-font-weight:bold;"/>
         <Pane HBox.hgrow="ALWAYS"/>
     </HBox>
 
@@ -18,7 +18,7 @@
     </padding>
 
     <HBox spacing="10" alignment="CENTER_LEFT">
-        <Label text="Create A Class" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+        <Label text="Create A Lesson" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
         <Region HBox.hgrow="ALWAYS"/>
         <Button fx:id="deleteBtn" text="Delete"
                 style="-fx-background-color: #ff6b6b; -fx-text-fill: white;"/>

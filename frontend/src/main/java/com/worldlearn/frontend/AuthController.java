@@ -84,6 +84,7 @@ public class AuthController {
         auth.logIn(email, password)
                 .thenAccept(user -> javafx.application.Platform.runLater(() -> {
                     loginErrorLabel.setText("Logged in: " + user.getEmail() + " (" + user.getRole() + ")");
+                    Session.setCurrentUser(user);
 
                     String fxmlFile;
                     switch (user.getRole().toLowerCase()) {
@@ -103,7 +104,7 @@ public class AuthController {
                         if (controller instanceof StudentDashboardController studentController) {
                             studentController.init(user, stage);
                         } else if (controller instanceof TeacherDashboardController teacherController) {
-                            teacherController.init(user, stage);
+                            teacherController.init(stage);
                         }
 
                         stage.setScene(new Scene(root, 800, 800));

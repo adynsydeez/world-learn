@@ -17,7 +17,7 @@ public class QuestionDAO {
         this.database = database;
     }
 
-    public Question createQuestion(Question question) throws SQLException {
+    public Question createQuestion(Question question, int teacherId) throws SQLException {
         String sql = """
     INSERT INTO questions (question_name, answer, options, prompt, type, points_worth, visibility)
     VALUES (?, ?, ?, ?, ?::question_type, ?, ?::visibility_type)
@@ -74,6 +74,45 @@ public class QuestionDAO {
         }
         return questions;
     }
+
+    // v needs endpoint fix
+
+    //public List<Question> getAllTeacherQuestions(int userId) throws SQLException {
+    //    List<Question> questions = new ArrayList<>();
+//
+    //    String sql = """
+    //    SELECT q.question_id, q.question_name, q.answer, q.options, q.prompt,
+    //           q.type, q.points_worth, q.visibility
+    //    FROM questions q
+    //    INNER JOIN teacher_question tq ON q.question_id = tq.question_id
+    //    WHERE tq.user_id = ?
+    //""";
+//
+    //    try (Connection conn = database.getConnection();
+    //         PreparedStatement stmt = conn.prepareStatement(sql)) {
+//
+    //        stmt.setInt(1, userId);
+//
+    //         try (ResultSet rs = stmt.executeQuery()) {
+    //            while (rs.next()) {
+    //                String[] options = (String[]) rs.getArray("options").getArray();
+    //                Question q = new Question(
+    //                        rs.getInt("question_id"),
+    //                        rs.getString("question_name"),
+    //                        rs.getString("answer"),
+    //                        options,
+    //                        rs.getString("prompt"),
+    //                        QuestionType.fromDbValue(rs.getString("type")),
+    //                        rs.getInt("points_worth"),
+    //                        Visibility.fromDbValue(rs.getString("visibility"))
+    //               );
+    //                questions.add(q);
+    //            }
+    //        }
+    //    }
+//
+    //    return questions;
+    //}
 
     public Optional<Question> getQuestionByID(int id) throws SQLException {
         String sql = """
@@ -134,6 +173,20 @@ public class QuestionDAO {
             }
 
             return null;
+        }
+    }
+
+    public void saveTeacherToQuestion(int questionId, int teacherId){
+        String sql = "INSERT INTO teacher_question (teacher_role, question_id, user_id) VALUES (?::teacher_role_type, ?, ?)";
+        try (Connection conn = database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, "creator");
+            stmt.setInt(2, questionId);
+            stmt.setInt(3, teacherId);
+            System.out.println("Saving teacherId=" + teacherId + " questionId=" + questionId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to insert into teacher_question", e);
         }
     }
 

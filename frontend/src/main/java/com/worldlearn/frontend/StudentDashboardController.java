@@ -11,6 +11,7 @@ import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.worldlearn.frontend.Session;
 
 public class StudentDashboardController {
     private static final Logger log = LoggerFactory.getLogger(StudentDashboardController.class);

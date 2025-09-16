@@ -18,7 +18,7 @@ import java.sql.SQLException;
 public class QuestionCreatorController {
     @FXML private Button homeButton;
     @FXML private Button saveBtn;
-    @FXML private Button deleteBtn;
+    @FXML private Button clearBtn;
 
     @FXML private ComboBox<Visibility> visibilityCombo;
 
@@ -97,7 +97,7 @@ public class QuestionCreatorController {
 
         // bind buttons
         saveBtn.setOnAction(e -> saveQuestion());
-        deleteBtn.setOnAction(e -> clearFields());
+        clearBtn.setOnAction(e -> clearFields());
     }
 
     @FXML
@@ -174,24 +174,29 @@ public class QuestionCreatorController {
         if (type == QuestionType.mcq){
             options = getOptions();
         }
+        String prompt = getPrompt();
         try {
             Question question = new Question(
                     0,
-                    getPrompt(),
+                    prompt,
                     getAnswer(),
                     options,
-                    getPrompt(),
+                    prompt,
                     type,
                     getPoints(),
                     getVisibility()
             );
 
-            apiService.createQuestionAsync(question);
+            apiService.createQuestionAsync(question)
+                    .thenAccept(q -> System.out.println("Question saved: " + q.getQuestionId()))
+                    .exceptionally(e -> {
+                        e.printStackTrace();
+                        return null;
+                    })
+                    .join();
 
 
-            System.out.println("Question saved!");
-            Stage stage = (Stage) saveBtn.getScene().getWindow();
-            stage.close();
+            clearFields();
         } catch (IllegalArgumentException ex) {
             showAlert(ex.getMessage());
         }

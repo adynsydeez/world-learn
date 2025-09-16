@@ -7,6 +7,7 @@ import com.worldlearn.backend.dto.UserRequest;
 import com.worldlearn.backend.dto.UserResponse;
 import com.worldlearn.backend.models.*;
 import com.worldlearn.backend.config.ApiConfig;
+import com.worldlearn.frontend.Session;
 
 import java.net.http.*;
 import java.net.URI;
@@ -340,9 +341,10 @@ public class ApiService {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 String jsonBody = objectMapper.writeValueAsString(question);
-
+                int teacherId = Session.getCurrentUser().getId();
+                String url = baseUrl + "/questions?teacherId=" +teacherId;
                 HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(baseUrl + "/questions"))
+                        .uri(URI.create(url))
                         .header("Content-Type", "application/json")
                         .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
                         .timeout(Duration.ofSeconds(30))

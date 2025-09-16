@@ -18,9 +18,11 @@ public class TeacherDashboardController {
     private Stage stage;
 
     // pass user,stage to controller
-    public void init(User user, Stage stage) {
-        this.user = user;
-        this.stage = stage;
+    public void init(Stage stage) {
+        User user = Session.getCurrentUser();
+        if(user == null){
+            System.err.println("No user logged in.");
+        }
     }
 
     @FXML private Label lblClasses;

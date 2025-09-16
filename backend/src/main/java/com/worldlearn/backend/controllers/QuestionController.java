@@ -32,9 +32,12 @@ public class QuestionController {
     }
 
     public void createQuestion(Context ctx) {
+        System.out.println("hey");
         try {
+            int teacherId = Integer.parseInt(ctx.queryParam("teacherId"));
+            System.out.println("teacherId param: " + ctx.queryParam("teacherId"));
             Question question = ctx.bodyAsClass(Question.class);
-            Question createdQuestion = questionService.createQuestion(question);
+            Question createdQuestion = questionService.createQuestion(question, teacherId);
             ctx.status(201).json(createdQuestion);
         } catch (IllegalArgumentException e) {
             ctx.status(400).result("Validation error: " + e.getMessage());
