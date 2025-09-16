@@ -16,9 +16,12 @@ public class QuestionService {
         this.questionDAO = questionDAO;
     }
 
-    public Question createQuestion(Question question) throws SQLException {
+    public Question createQuestion(Question question, int teacherId) throws SQLException {
+        Question saved = questionDAO.createQuestion(question, teacherId);
+        System.out.println("Linking teacherId=" + teacherId + " to questionId=" + saved.getQuestionId());
+        questionDAO.saveTeacherToQuestion(saved.getQuestionId(), teacherId);
 
-        return questionDAO.createQuestion(question);
+        return saved;
     }
 
     public Optional<Question> getQuestionById(int id) throws SQLException {
@@ -36,6 +39,10 @@ public class QuestionService {
     public List<Question> getAllQuestions() throws SQLException {
         return questionDAO.getAllQuestions();
     }
+
+    //public List<Question> getAllTeacherQuestions(int userId) throws SQLException {
+    //    return questionDAO.getAllTeacherQuestions(userId);
+    //}
 
     public Question updateQuestion(Question question) throws SQLException {
         return questionDAO.updateQuestion(question);
