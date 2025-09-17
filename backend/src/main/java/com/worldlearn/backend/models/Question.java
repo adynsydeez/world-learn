@@ -1,5 +1,7 @@
 package com.worldlearn.backend.models;
 
+import java.util.Arrays;
+
 public class Question {
     private int questionId;
     private String answer;
@@ -8,6 +10,88 @@ public class Question {
     private QuestionType type;
     private int pointsWorth;
     private Visibility visibility;
+
+
+    /// ////CONSTRUCTOR
+    public Question() {};
+
+    public Question(int questionId,
+                    String answer,
+                    String[] options,
+                    String prompt,
+                    QuestionType type,
+                    int pointsWorth,
+                    Visibility visibility) {
+        setQuestionId(questionId);
+        setAnswer(answer);
+        setOptions(options);
+        setPrompt(prompt);
+        setType(type);
+        setPointsWorth(pointsWorth);
+        setVisibility(visibility);
+    }
+
+    /// ////GETTERS AND SETTERS
+    //QUESTION ID
+    public void setQuestionId(int id) {
+        if (id < 0) {
+            throw new IllegalArgumentException("questionId must be >= 0");
+        }
+        this.questionId = id;
+    }
+    public int getQuestionId() { return questionId; }
+
+    //ANSWER
+    public void setAnswer(String answer) {
+        if (answer == null || answer.isBlank()) {
+            throw new IllegalArgumentException("answer must not be null/blank");
+        }
+        this.answer = answer.trim();
+    }
+    public String getAnswer() { return answer; }
+
+    //OPTIONS
+    public void setOptions(String[] options) {
+        if (options == null) {
+            throw new IllegalArgumentException("options must not be null");
+        }
+        // Disallow null/blank elements
+        for (int i = 0; i < options.length; i++) {
+            String opt = options[i];
+            if (opt == null || opt.isBlank()) {
+                throw new IllegalArgumentException("options contains null/blank at index " + i);
+            }
+        }
+        // Defensive copy
+        this.options = Arrays.copyOf(options, options.length);
+    }
+    public String[] getOptions() { return options; }
+
+    //PROMPT
+    public void setPrompt(String prompt) {
+        if (prompt == null || prompt.isBlank()) {
+            throw new IllegalArgumentException("prompt must not be null/blank");
+        }
+        this.prompt = prompt.trim();
+    }
+    public String getPrompt() { return prompt; }
+
+    //TYPE
+    public void setType(QuestionType type) {this.type = type;}
+    public QuestionType getType() { return type; }
+
+    //POINTSWORTH
+    public void setPointsWorth(int points) {
+        if (points <= 0) {
+            throw new IllegalArgumentException("pointsWorth must be >= 0");
+        }
+        this.pointsWorth = points;
+    }
+    public int getPointsWorth() { return pointsWorth; }
+
+    //VISIBILITY
+    public void setVisibility(Visibility vis) {this.visibility = vis;}
+    public Visibility getVisibility() { return visibility; }
 
     public enum QuestionType {
         mcq, written, map;
@@ -39,33 +123,4 @@ public class Question {
             throw new IllegalArgumentException("Unknown visibility: " + value);
         }
     }
-
-    public Question(int questionId, String answer, String[] options,
-                    String prompt, QuestionType type, int pointsWorth, Visibility visibility) {
-        this.questionId = questionId;
-        this.answer = answer;
-        this.options = options;
-        this.prompt = prompt;
-        this.type = type;
-        this.pointsWorth = pointsWorth;
-        this.visibility = visibility;
-    }
-
-    public int getQuestionId() { return questionId; }
-    public String getAnswer() { return answer; }
-    public String[] getOptions() { return options; }
-    public String getPrompt() { return prompt; }
-    public QuestionType getType() { return type; }
-    public int getPointsWorth() { return pointsWorth; }
-    public Visibility getVisibility() { return visibility; }
-
-    public void setQuestionId(int id) { this.questionId = id; }
-    public void setAnswer(String answer) {this.answer = answer;}
-    public void setOptions(String[] options) {this.options = options;}
-    public void setPrompt (String prompt) {this.prompt = prompt;}
-    public void setType(QuestionType type) {this.type = type;}
-    public void setPointsWorth(int points) {this.pointsWorth = points;}
-    public void setVisibility(Visibility vis) {this.visibility = vis;}
-
-    public Question() {}
 }

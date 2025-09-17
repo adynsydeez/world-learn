@@ -6,7 +6,6 @@ public class Student extends User {
 
     public Student(String email, String password) {
         super(email, password);
-        // rely on User's validation (IllegalArgumentException on bad/null)
         setRole("student");
     }
 
