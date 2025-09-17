@@ -32,37 +32,22 @@
     </VBox>
 
     <HBox spacing="20" alignment="TOP_LEFT">
-        <!-- Left ScrollPane: Author's Questions -->
-        <ScrollPane fx:id="privateScrollPane" prefWidth="200" prefHeight="400">
-            <content>
-                <VBox>
-                    <Label text="Your Questions"/>
-                    <Button fx:id="getBtn" text="Refresh Questions // WORKING"/>
-                    <VBox fx:id="privateContainer" spacing="5"/>
-                </VBox>
-            </content>
-        </ScrollPane>
+        <VBox>
+                <Label text="Your Questions"/>
+                <ListView fx:id="teacherQuestionsList"/>
+        </VBox>
 
-        <!-- Right ScrollPane: Selected Questions for Quiz -->
-        <ScrollPane fx:id="searchScrollPane" prefWidth="200" prefHeight="400">
-            <content>
-                <VBox>
-                    <Label text="Search Questions"/>
-                    <Button fx:id="searchBtn" text="Search Questions"/>
-                    <VBox fx:id="searchContainer" spacing="5"/>
-                </VBox>
-            </content>
-        </ScrollPane>
+        <VBox>
+            <Label text="Search Questions"/>
+            <Button fx:id="searchBtn" text="Search Questions"/>
+            <ListView fx:id="searchQuestionsList"/>
+        </VBox>
 
-        <ScrollPane fx:id="questionsScrollPane" prefWidth="200" prefHeight="400">
-            <content>
-                <VBox>
-                    <Label text="Your Quiz"/>
-                    <Button fx:id="removeBtn" text="Remove Question(s)"/>
-                    <VBox fx:id="questionsContainer" spacing="5"/>
-                </VBox>
-            </content>
-        </ScrollPane>
+        <VBox>
+            <Label text="Your Quiz"/>
+            <Button fx:id="removeBtn" text="Remove"/>
+            <ListView fx:id="quizQuestionsList"/>
+        </VBox>
     </HBox>
 
     <Button fx:id="addToQuizBtn" text="Add Selected Questions"/>

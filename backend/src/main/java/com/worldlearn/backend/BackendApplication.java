@@ -73,6 +73,7 @@ public class BackendApplication {
 
         // Question API endpoints
         app.post("/api/questions", questionController::createQuestion);
+        app.get("/api/questions/public", questionController::getPublicQuestions);
 
 
         // Graceful shutdown

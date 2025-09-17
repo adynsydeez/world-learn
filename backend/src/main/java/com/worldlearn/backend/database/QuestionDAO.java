@@ -141,6 +141,35 @@ public class QuestionDAO {
         return questions;
     }
 
+    public List<Question> getPublicQuestions() throws SQLException {
+        List<Question> questions = new ArrayList<>();
+        String sql = "SELECT question_id, question_name, answer, options, prompt, type, points_worth, visibility FROM questions WHERE visibility = 'public'";
+
+        try (Connection conn = database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                Array optionsArray = rs.getArray("options");
+                String[] options = optionsArray != null ? (String[]) optionsArray.getArray() : new String[0];
+
+                Question q = new Question(
+                        rs.getInt("question_id"),
+                        rs.getString("question_name"),
+                        rs.getString("answer"),
+                        options,
+                        rs.getString("prompt"),
+                        QuestionType.fromDbValue(rs.getString("type")),
+                        rs.getInt("points_worth"),
+                        Visibility.fromDbValue(rs.getString("visibility"))
+                );
+                questions.add(q);
+            }
+        }
+        return questions;
+    }
+
+
 
     public Optional<Question> getQuestionByID(int id) throws SQLException {
         String sql = """
