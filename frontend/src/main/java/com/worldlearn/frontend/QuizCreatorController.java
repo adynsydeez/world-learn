@@ -5,10 +5,9 @@ import com.worldlearn.backend.models.Question;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,14 +16,19 @@ public class QuizCreatorController {
     @FXML private ListView<Question> teacherQuestionsList;
     @FXML private ListView<Question> searchQuestionsList;
     @FXML private ListView<Question> quizQuestionsList;
+    //@FXML private ComboBox<Visibility> visibilityComboBox;
     @FXML private Button addToQuizBtn;
-    @FXML private Button searchBtn;
     @FXML private Button removeBtn;
     @FXML private Button saveBtn;
+    @FXML private Button clearBtn;
+    @FXML private TextField searchField;
+    @FXML private TextField nameField;
 
     private ObservableList<Question> teacherQuestions = FXCollections.observableArrayList();
     private ObservableList<Question> searchQuestions = FXCollections.observableArrayList();
     private ObservableList<Question> quizQuestions = FXCollections.observableArrayList();
+
+    private FilteredList<Question> filteredSearch;
 
     int teacherId = Session.getCurrentUser().getId();
     private final ApiService apiService = new ApiService();
@@ -35,6 +39,29 @@ public class QuizCreatorController {
         teacherQuestionsList.setItems(teacherQuestions);
         searchQuestionsList.setItems(searchQuestions);
         quizQuestionsList.setItems(quizQuestions);
+
+        searchQuestions();
+
+        // wrap your observable list in a FilteredList
+        filteredSearch = new FilteredList<>(searchQuestions, q -> true);
+
+// bind filtered list to ListView
+        searchQuestionsList.setItems(filteredSearch);
+
+// add listener on text field
+        searchField.textProperty().addListener((obs, oldVal, newVal) -> {
+            String filter = newVal.toLowerCase();
+            filteredSearch.setPredicate(q -> {
+                if (filter == null || filter.isEmpty()) {
+                    return true; // show all
+                }
+                return q.getQuestionName().toLowerCase().contains(filter);
+            });
+        });
+
+
+        //visibilityComboBox.getItems().setAll(Quiz.Visibility.values());
+        //visibilityComboBox.setValue(Quiz.Visibility.PRIVATE);
 
         teacherQuestionsList.setCellFactory(lv -> new ListCell<Question>() {
             @Override
@@ -65,9 +92,6 @@ public class QuizCreatorController {
         searchQuestionsList.getSelectionModel().setSelectionMode(javafx.scene.control.SelectionMode.MULTIPLE);
         quizQuestionsList.getSelectionModel().setSelectionMode(javafx.scene.control.SelectionMode.MULTIPLE);
 
-        searchBtn.setOnAction(e -> {
-            searchQuestions();
-        });
 
         addToQuizBtn.setOnAction(e -> {
             List<Question> privateSelected = new ArrayList<>(teacherQuestionsList.getSelectionModel().getSelectedItems());
@@ -84,6 +108,10 @@ public class QuizCreatorController {
 
         saveBtn.setOnAction(e -> {
             saveQuiz(quizQuestions);
+        });
+
+        clearBtn.setOnAction(e -> {
+            clearQuiz();
         });
     }
 
@@ -113,7 +141,9 @@ public class QuizCreatorController {
 
     private void addToQuiz(List<Question> questions) {
         for (Question q : questions) {
-            if (!quizQuestions.contains(q)) {
+            boolean alreadyAdded = quizQuestions.stream()
+                    .anyMatch(existing -> existing.getQuestionId() == q.getQuestionId());
+            if (!alreadyAdded) {
                 quizQuestions.add(q);
             }
         }
@@ -129,7 +159,29 @@ public class QuizCreatorController {
         quizQuestions.clear();
     }
 
+    private boolean checkInvalidName() {
+        if (nameField.getText() == null || nameField.getText().trim().isEmpty()) {
+            return true;
+        } else return nameField.getText().trim().length() < 2;
+    }
+
+    private boolean checkInvalidQuiz() {
+        return quizQuestions.isEmpty();
+    }
+
+    private void showAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Validation Error");
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
     private void saveQuiz(List<Question> questions) {
+        if (checkInvalidName()) {
+            showAlert("Please enter a valid quiz name");
+        } else if (checkInvalidQuiz()) {
+            showAlert("ERROR: Quiz Must Contain Questions");
+        }
         System.out.println("Need Save Quiz Implementation!");
     }
 }

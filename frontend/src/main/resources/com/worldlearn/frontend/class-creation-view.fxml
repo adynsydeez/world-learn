@@ -26,4 +26,21 @@
                 style="-fx-background-color: #a29bfe; -fx-text-fill: white;"/>
     </HBox>
 
+    <VBox>
+        <Label text="Class Name"/>
+        <TextField fx:id="nameField" promptText="Enter a Class Name..."/>
+    </VBox>
+    <HBox spacing="20" alignment="TOP_LEFT">
+        <VBox>
+          <Label text="Add Students"/>
+           <ListView fx:id="studentsList"/>
+        </VBox>
+
+        <VBox>
+            <Label text="Your Class"/>
+            <Button fx:id="removeBtn" text="Remove Student(s)"/>
+            <ListView fx:id="classStudentsList"/>
+        </VBox>
+    </HBox>
+    <Button fx:id="addBtn" text="Add Student(s)"/>
 </VBox>
