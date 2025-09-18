@@ -55,6 +55,25 @@ public class QuestionController {
         }
     }
 
+    public void getAllTeacherQuestions(Context ctx) {
+        try {
+            int teacherId = Integer.parseInt(ctx.pathParam("id"));
+            List<Question> questions = questionService.getAllTeacherQuestions(teacherId);
+            ctx.json(questions);
+        } catch (Exception e) {
+            ctx.status(500).result("Failed to get questions: " + e.getMessage());
+        }
+    }
+
+    public void getPublicQuestions(Context ctx) {
+        try {
+            List<Question> questions = questionService.getPublicQuestions();
+            ctx.json(questions);
+        } catch (Exception e) {
+            ctx.status(500).result("Failed to get questions:" +e.getMessage());
+        }
+    }
+
     public void updateQuestion(Context ctx) {
         try {
             Question question = ctx.bodyAsClass(Question.class);
