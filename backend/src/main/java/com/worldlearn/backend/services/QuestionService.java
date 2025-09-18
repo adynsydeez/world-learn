@@ -40,9 +40,13 @@ public class QuestionService {
         return questionDAO.getAllQuestions();
     }
 
-    //public List<Question> getAllTeacherQuestions(int userId) throws SQLException {
-    //    return questionDAO.getAllTeacherQuestions(userId);
-    //}
+    public List<Question> getAllTeacherQuestions(int userId) throws SQLException {
+        return questionDAO.getAllTeacherQuestions(userId);
+    }
+
+    public List<Question> getPublicQuestions() throws SQLException {
+        return questionDAO.getPublicQuestions();
+    }
 
     public Question updateQuestion(Question question) throws SQLException {
         return questionDAO.updateQuestion(question);
