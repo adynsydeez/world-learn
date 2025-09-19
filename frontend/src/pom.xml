@@ -85,7 +85,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.13.0</version>
                 <configuration>
-                    <release>21</release>
+                    <release>${maven.compiler.release}</release>
                 </configuration>
             </plugin>
 
@@ -96,8 +96,6 @@
                 <version>3.2.5</version>
                 <configuration>
                     <useModulePath>false</useModulePath>
-                    <source>16</source>
-                    <target>16</target>
                 </configuration>
                 <dependencies>
                     <dependency>
@@ -120,4 +118,3 @@
         </plugins>
     </build>
 </project>
-

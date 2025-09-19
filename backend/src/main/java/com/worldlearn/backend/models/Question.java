@@ -1,12 +1,11 @@
 package com.worldlearn.backend.models;
 
-import com.fasterxml.jackson.annotation.JsonValue;
-
 import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 public class Question {
     private int questionId;
-    private String questionName;
+    private String questionName;  // kept from damon-latest
     private String answer;
     private String[] options;
     private String prompt;
@@ -14,49 +13,8 @@ public class Question {
     private int pointsWorth;
     private Visibility visibility;
 
-    public enum QuestionType {
-        mcq, written, map;
-
-        public static QuestionType fromDbValue(String dbValue) {
-            return QuestionType.valueOf(dbValue.toLowerCase());
-        }
-
-        public String getDbValue() {
-            return this.name().toLowerCase();
-        }
-
-        @JsonValue
-        public String toJson() {
-            return this.name().toLowerCase();
-        }
-
-    }
-
-
-    public enum Visibility {
-        PUBLIC("public"),
-        PRIVATE("private");
-
-        private final String dbValue;
-        Visibility(String dbValue) { this.dbValue = dbValue; }
-        public String getDbValue() { return dbValue; }
-
-        @JsonValue
-        public String toJSON() {return dbValue.toLowerCase();}
-
-        public static Visibility fromDbValue(String value) {
-            for (Visibility v : values()) {
-                if (v.dbValue.equalsIgnoreCase(value)) {
-                    return v;
-                }
-            }
-            throw new IllegalArgumentException("Unknown visibility: " + value);
-        }
-    }
-
-
     /// ////CONSTRUCTOR
-    public Question() {};
+    public Question() {}
 
     public Question(int questionId,
                     String questionName,
@@ -72,13 +30,12 @@ public class Question {
         setOptions(options);
         setPrompt(prompt);
         setType(type);
-        setType(type);
         setPointsWorth(pointsWorth);
         setVisibility(visibility);
     }
 
     /// ////GETTERS AND SETTERS
-    //QUESTION ID
+    // QUESTION ID
     public void setQuestionId(int id) {
         if (id < 0) {
             throw new IllegalArgumentException("questionId must be >= 0");
@@ -87,7 +44,13 @@ public class Question {
     }
     public int getQuestionId() { return questionId; }
 
-    //ANSWER
+    // QUESTION NAME
+    public void setQuestionName(String questionName) {
+        this.questionName = questionName;
+    }
+    public String getQuestionName() { return questionName; }
+
+    // ANSWER
     public void setAnswer(String answer) {
         if (answer == null || answer.isBlank()) {
             throw new IllegalArgumentException("answer must not be null/blank");
@@ -96,24 +59,22 @@ public class Question {
     }
     public String getAnswer() { return answer; }
 
-    //OPTIONS
+    // OPTIONS
     public void setOptions(String[] options) {
         if (options == null) {
             throw new IllegalArgumentException("options must not be null");
         }
-        // Disallow null/blank elements
         for (int i = 0; i < options.length; i++) {
             String opt = options[i];
             if (opt == null || opt.isBlank()) {
                 throw new IllegalArgumentException("options contains null/blank at index " + i);
             }
         }
-        // Defensive copy
         this.options = Arrays.copyOf(options, options.length);
     }
     public String[] getOptions() { return options; }
 
-    //PROMPT
+    // PROMPT
     public void setPrompt(String prompt) {
         if (prompt == null || prompt.isBlank()) {
             throw new IllegalArgumentException("prompt must not be null/blank");
@@ -122,11 +83,11 @@ public class Question {
     }
     public String getPrompt() { return prompt; }
 
-    //TYPE
-    public void setType(QuestionType type) {this.type = type;}
+    // TYPE
+    public void setType(QuestionType type) { this.type = type; }
     public QuestionType getType() { return type; }
 
-    //POINTSWORTH
+    // POINTSWORTH
     public void setPointsWorth(int points) {
         if (points <= 0) {
             throw new IllegalArgumentException("pointsWorth must be >= 0");
@@ -135,12 +96,40 @@ public class Question {
     }
     public int getPointsWorth() { return pointsWorth; }
 
-    //VISIBILITY
-    public void setVisibility(Visibility vis) {this.visibility = vis;}
+    // VISIBILITY
+    public void setVisibility(Visibility vis) { this.visibility = vis; }
     public Visibility getVisibility() { return visibility; }
 
-    //QUESTION NAME
-    public void setQuestionName(String questionName) {this.questionName = questionName; }
-    public String getQuestionName() {return questionName; }
+    // ENUMS
+    public enum QuestionType {
+        mcq, written, map;
 
+        public static QuestionType fromDbValue(String dbValue) {
+            return QuestionType.valueOf(dbValue.toLowerCase());
+        }
+        public String getDbValue() { return this.name().toLowerCase(); }
+        @JsonValue
+        public String toJson() { return this.name().toLowerCase(); }
+    }
+
+    public enum Visibility {
+        PUBLIC("public"),
+        PRIVATE("private");
+
+        private final String dbValue;
+        Visibility(String dbValue) { this.dbValue = dbValue; }
+        public String getDbValue() { return dbValue; }
+
+        @JsonValue
+        public String toJSON() { return dbValue.toLowerCase(); }
+
+        public static Visibility fromDbValue(String value) {
+            for (Visibility v : values()) {
+                if (v.dbValue.equalsIgnoreCase(value)) {
+                    return v;
+                }
+            }
+            throw new IllegalArgumentException("Unknown visibility: " + value);
+        }
+    }
 }

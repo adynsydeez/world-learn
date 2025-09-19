@@ -50,10 +50,31 @@ public class QuizTest {
 
 
     }
+=======
+import static org.junit.jupiter.api.Assertions.*;
+
+public Quiz quiz;
+public User user;
+
+public class QuizTest {
+    @BeforeEach void seUp() {
+        User teacher = new Teacher("teacher", "teacher");
+        Quiz quiz = new Quiz();
+    }
 
     @Nested
-    @DisplayName("AuthorValidation")
-    class authorTest {
+    @DisplayName("firstName validation")
+    class emptyTest {
+
+            @ParameterizedTest
+            @ValueSource(strings = {""," "})
+            void emptyInput(String empty) {
+                assertThrows(IllegalArgumentException.class, () -> quiz.setQuestion(empty));
+            }
+
+            @Test
+            void rejectsNull() {assertThrows(IllegalArgumentException.class, () -> quiz.setQuestion(null));}
+      
         @Test
         @DisplayName("rejects null author")
         void rejectsNullAuthor() {
@@ -92,6 +113,3 @@ public class QuizTest {
         }
     }
 }
-
-
-
