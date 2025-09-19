@@ -9,7 +9,7 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-/*import java.util.ArrayList;
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -17,51 +17,81 @@ import static org.junit.jupiter.api.Assertions.*;
 public class QuizTest {
 
     public Quiz quiz;
-    public User user;
+    public Teacher teacher;   // assuming Teacher extends User in your codebase
+    public ArrayList<Question> questions;
 
-    @BeforeEach void seUp() {
-        User user = new Teacher("Student@edu.com", "student", "Anna", "Banana", "teacher");
-        Quiz quiz = new Quiz();
-        ArrayList<Question> questions =
+    @BeforeEach
+    void setUp() {
+        // Build a valid Teacher and a fresh Quiz before each test
+        teacher = new Teacher("teacher@edu.com", "password", "Anna", "Banana", "teacher");
+        quiz = new Quiz();
+
+        // Start with a valid list of non-null questions
+        questions = new ArrayList<>();
+        questions.add(new Question());
+        questions.add(new Question());
     }
 
     @Nested
-    @DisplayName("firstName validation")
-    class emptyTest {
+    @DisplayName("Constructor")
+    class ConstructorTest {
 
-            @ParameterizedTest
-            @ValueSource(strings = {""," "})
-            void emptyInput(String empty) {
-                assertThrows(IllegalArgumentException.class, () -> quiz.setQuestions(empty));
-            }
+        @Test
+        @DisplayName("constructor rejects null author")
+        void constructorRejectsNullAuthor() {
+            assertThrows(IllegalArgumentException.class, () -> new Quiz(questions, null));
+        }
 
-            @Test
-            void rejectsNull() {assertThrows(IllegalArgumentException.class, () -> quiz.setQuestions(null));}
-
-    @Nested
-    @DisplayName("AuthorValidation")
-    class authorTest {
-
-            @ParameterizedTest
-            @ValueSource(strings = "string")
-            void stringInput(String string) {
-                    assertThrows(IllegalArgumentException.class, () -> quiz.setAuthor(string));
-            }
-
-            @Test
-            void rejectsNull() {assertThrows(IllegalArgumentException.class, (() -> quiz.setQuestions(null)));}
-
-        /// /////
-        @ParameterizedTest
-        @ValueSource(strings = {"Smith", "Smith-Jones", "Brown-Lee"})
-            void acceptsTeacherOnly() {
-                quiz.setAuthor(this.user);
-
-            }
+        @Test
+        @DisplayName("constructor rejects null questions")
+        void constructorRejectsNullQuestions() {
+            assertThrows(IllegalArgumentException.class, () -> new Quiz(null, teacher));
         }
 
 
     }
+
+    @Nested
+    @DisplayName("AuthorValidation")
+    class authorTest {
+        @Test
+        @DisplayName("rejects null author")
+        void rejectsNullAuthor() {
+            assertThrows(IllegalArgumentException.class, () -> quiz.setAuthor(null));
+        }
+
+        @Test
+        @DisplayName("constructor rejects null author")
+        void constructorRejectsNullAuthor() {
+            assertThrows(IllegalArgumentException.class, () -> new Quiz(questions, null));
+        }
+    }
+
+    @Nested
+    @DisplayName("QuestionsValidation")
+    class questionsTest {
+
+        @DisplayName("rejects null list")
+        void rejectsNullList() {
+            assertThrows(IllegalArgumentException.class, () -> quiz.setQuestions(null));
+        }
+
+        @Test
+        @DisplayName("rejects list when any element is null (even if others are non-null)")
+        void rejectsWhenAnyNullPresent() {
+            ArrayList<Question> qs = new ArrayList<>();
+            qs.add(new Question());
+            qs.add(null);                 // <- triggers rejection
+            qs.add(new Question());
+
+            IllegalArgumentException ex =
+                    assertThrows(IllegalArgumentException.class, () -> quiz.setQuestions(qs));
+
+            // matches your setter message: "questions[<i>] cannot be null"
+            assertTrue(ex.getMessage().contains("questions[1]"));
+        }
+    }
 }
-*/
+
+
 
