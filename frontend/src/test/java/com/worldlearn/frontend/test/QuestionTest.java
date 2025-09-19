@@ -6,6 +6,7 @@ import com.worldlearn.backend.models.*;
 
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 
@@ -16,7 +17,7 @@ public class QuestionTest {
 
     @BeforeEach
     void setUp() {
-        question= new Question(1, "4",
+        question= new Question(1, "testQ", "4",
                 new String[] {"3", "4", "5"},
                 "2 + 2 = ?",
                 Question.QuestionType.mcq,

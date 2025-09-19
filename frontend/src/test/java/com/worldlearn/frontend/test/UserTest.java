@@ -17,8 +17,7 @@ class UserTest {
 
     @BeforeEach
     void setUp() {
-        User user = new Teacher("Student@edu.com", "student");
-        this.user = user;
+        User user = new Teacher("Student@edu.com", "student", "Anna", "Banana", "teacher");
     }
 
     @Nested
