@@ -4,10 +4,12 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import com.worldlearn.backend.config.DatabaseConfig;
+
 public class Database {
-    private static final String URL = "jdbc:postgresql://localhost:5432/worldlearn";
-    private static final String USER = "postgres";
-    private static final String PASSWORD = "postgrepw0";
+    private static final String URL = DatabaseConfig.DB_URL;
+    private static final String USER = DatabaseConfig.DB_USER;
+    private static final String PASSWORD = DatabaseConfig.DB_PASSWORD;
 
     public Connection getConnection() throws SQLException {
         return DriverManager.getConnection(URL, USER, PASSWORD);

@@ -1,15 +1,23 @@
 package com.worldlearn.frontend.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.worldlearn.backend.models.Question;
-import com.worldlearn.backend.database.User;
-import com.worldlearn.backend.models.WlClass;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.worldlearn.backend.dto.LoginRequest;
+import com.worldlearn.backend.dto.UserRequest;
+import com.worldlearn.backend.dto.UserResponse;
+import com.worldlearn.backend.models.*;
+import com.worldlearn.backend.config.ApiConfig;
+import com.worldlearn.frontend.Session;
 
 import java.net.http.*;
 import java.net.URI;
 import java.time.Duration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+
+
 
 public class ApiService {
     private final HttpClient httpClient;
@@ -17,7 +25,7 @@ public class ApiService {
     private final String baseUrl;
 
     public ApiService() {
-        this.baseUrl = "http://localhost:7000/api"; // Your backend URL
+        this.baseUrl = ApiConfig.getApiBaseUrl();
         this.httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(10))
                 .build();
@@ -32,13 +40,83 @@ public class ApiService {
         this.objectMapper = new ObjectMapper();
     }
 
+    // Health check
+    public CompletableFuture<Boolean> checkConnectionAsync() {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create("http://localhost:7000/health"))
+                        .GET()
+                        .timeout(Duration.ofSeconds(5))
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request,
+                        HttpResponse.BodyHandlers.ofString());
+
+                return response.statusCode() == 200;
+            } catch (Exception e) {
+                return false;
+            }
+        });
+    }
+
     // ===== USER OPERATIONS =====
+
+    public CompletableFuture<User> logInAsync(String email, String password) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                LoginRequest requestBody = new LoginRequest();
+                requestBody.setEmail(email);
+                requestBody.setPassword(password);
+
+                String json = objectMapper.writeValueAsString(requestBody);
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(new URI(baseUrl + "/users/login"))
+                        .header("Content-Type", "application/json")
+                        .POST(HttpRequest.BodyPublishers.ofString(json))
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+                if (response.statusCode() == 200) {
+                    // First deserialize to a simple DTO
+                    UserResponse resp = objectMapper.readValue(response.body(), UserResponse.class);
+
+                    return switch (resp.getRole().toLowerCase()) {
+                        case "student" -> {
+                            Student s = new Student(resp.getEmail(), resp.getPassword(), resp.getFirstName(), resp.getLastName(), resp.getRole());
+                            s.setId(resp.getId());
+                            yield s;
+                        }
+                        case "teacher" -> {
+                            Teacher t = new Teacher(resp.getEmail(), resp.getPassword(), resp.getFirstName(), resp.getLastName(), resp.getRole());
+                            t.setId(resp.getId());
+                            yield t;
+                        }
+                        default -> throw new IllegalStateException("Unknown role: " + resp.getRole());
+                    };
+                } else {
+                    throw new RuntimeException("Login failed: " + response.statusCode() + " - " + response.body());
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Error during login: " + e.getMessage(), e);
+            }
+        });
+    }
 
     // Create user
     public CompletableFuture<User> createUserAsync(User user) {
         return CompletableFuture.supplyAsync(() -> {
             try {
-                String jsonBody = objectMapper.writeValueAsString(user);
+                UserRequest requestDto = new UserRequest();
+                requestDto.setFirstName(user.getFirstName());
+                requestDto.setLastName(user.getLastName());
+                requestDto.setEmail(user.getEmail());
+                requestDto.setPassword(user.getPassword());
+                requestDto.setRole(user.getRole());
+
+                String jsonBody = objectMapper.writeValueAsString(requestDto);
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(baseUrl + "/users"))
@@ -51,10 +129,18 @@ public class ApiService {
                         HttpResponse.BodyHandlers.ofString());
 
                 if (response.statusCode() == 201) {
-                    return objectMapper.readValue(response.body(), User.class);
+                    // Deserialize using UserResponse first
+                    UserResponse resp = objectMapper.readValue(response.body(), UserResponse.class);
+
+                    return switch (resp.getRole().toLowerCase()) {
+                        case "student" -> new Student(resp.getEmail(), resp.getPassword(),
+                                resp.getFirstName(), resp.getLastName(), resp.getRole());
+                        case "teacher" -> new Teacher(resp.getEmail(), resp.getPassword(),
+                                resp.getFirstName(), resp.getLastName(), resp.getRole());
+                        default -> throw new IllegalStateException("Unknown role: " + resp.getRole());
+                    };
                 } else {
-                    throw new RuntimeException("Failed to create user: " + response.statusCode() +
-                            " - " + response.body());
+                    throw new RuntimeException("Failed to create user: " + response.statusCode() + " - " + response.body());
                 }
             } catch (Exception e) {
                 throw new RuntimeException("Error creating user: " + e.getMessage(), e);
@@ -165,26 +251,6 @@ public class ApiService {
         });
     }
 
-    // Health check
-    public CompletableFuture<Boolean> checkConnectionAsync() {
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create("http://localhost:7000/health"))
-                        .GET()
-                        .timeout(Duration.ofSeconds(5))
-                        .build();
-
-                HttpResponse<String> response = httpClient.send(request,
-                        HttpResponse.BodyHandlers.ofString());
-
-                return response.statusCode() == 200;
-            } catch (Exception e) {
-                return false;
-            }
-        });
-    }
-
     // ===== CLASS OPERATIONS =====
 
     // Create Class
@@ -214,48 +280,71 @@ public class ApiService {
         });
     }
 
-    // Assign user to class
-    public CompletableFuture<User> AssignToClassAsync(WlClass wlClass, User user, String access) {
+    // Get all classes for specific user
+    public CompletableFuture<List<WlClass>> getAllClassesForUser(User user) {
         return CompletableFuture.supplyAsync(() -> {
             try {
-                String jsonBody;
-                if (user.getRole().equals("teacher")) {
-                    jsonBody = "{'teacher_role': '" + access + "', 'class_id': '" + wlClass.getId() + "', 'user_id': '" + user.getId() + "'}";
-                }
-                else {
-                    jsonBody = "{'class_id': '" + wlClass.getId() + "', 'user_id': '" + user.getId() + "'}";
-                }
+                // Use user.getId() in the URL
+                String url = baseUrl + "/classes/user/" + user.getId();
+
                 HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(baseUrl + "/users"))
-                        .header("Content-Type", "application/json")
-                        .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
+                        .uri(URI.create(url))
+                        .header("Accept", "application/json")
+                        .GET()
                         .timeout(Duration.ofSeconds(30))
                         .build();
 
                 HttpResponse<String> response = httpClient.send(request,
                         HttpResponse.BodyHandlers.ofString());
 
-                if (response.statusCode() == 201) {
-                    return objectMapper.readValue(response.body(), User.class);
+                if (response.statusCode() == 200) {
+                    WlClass[] classes = objectMapper.readValue(response.body(), WlClass[].class);
+                    return List.of(classes);
                 } else {
-                    throw new RuntimeException("Failed to create class: " + response.statusCode() +
+                    throw new RuntimeException("Failed to get classes: " + response.statusCode() +
                             " - " + response.body());
                 }
             } catch (Exception e) {
-                throw new RuntimeException("Error creating user: " + e.getMessage(), e);
+                throw new RuntimeException("Error getting classes: " + e.getMessage(), e);
             }
         });
     }
 
-    // ===== CLASS OPERATIONS =====
+
+    // Assign user to class
+    public void assignStudentToClass(int userId, int joinCode) {
+        try {
+            ObjectNode requestBody = objectMapper.createObjectNode();
+            requestBody.put("userId", userId);
+            requestBody.put("joinCode", joinCode);
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(baseUrl + "/classes/student"))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
+                    .build();
+
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() != 200) {
+                throw new RuntimeException("Failed to join class: " + response.statusCode() + " - " + response.body());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error joining class: " + e.getMessage(), e);
+        }
+    }
+
+
+    // ===== QUESTION OPERATIONS =====
     // Create question
     public CompletableFuture<Question> createQuestionAsync(Question question) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 String jsonBody = objectMapper.writeValueAsString(question);
-
+                int teacherId = Session.getCurrentUser().getId();
+                String url = baseUrl + "/questions?teacherId=" +teacherId;
                 HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(baseUrl + "/questions"))
+                        .uri(URI.create(url))
                         .header("Content-Type", "application/json")
                         .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
                         .timeout(Duration.ofSeconds(30))
@@ -276,6 +365,62 @@ public class ApiService {
         });
     }
 
+    public CompletableFuture<List<Question>> getAllTeacherQuestionsAsync(int teacherId) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                // Make sure the URL matches the backend route
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(baseUrl + "/users/" + teacherId + "/questions"))
+                        .header("Accept", "application/json")
+                        .GET()
+                        .timeout(Duration.ofSeconds(30))
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request,
+                        HttpResponse.BodyHandlers.ofString());
+
+
+                if (response.statusCode() == 200) {
+                    Question[] questions = objectMapper.readValue(response.body(), Question[].class);
+                    return List.of(questions);
+                } else {
+                    throw new RuntimeException("Failed to get questions: " + response.statusCode() +
+                            " - " + response.body());
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Error getting questions: " + e.getMessage(), e);
+            }
+        });
+    }
+
+    public CompletableFuture<List<Question>> getPublicQuestionsAsync() {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                // Make sure the URL matches the backend route
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(baseUrl + "/questions/public"))
+                        .header("Accept", "application/json")
+                        .GET()
+                        .timeout(Duration.ofSeconds(30))
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request,
+                        HttpResponse.BodyHandlers.ofString());
+
+
+                if (response.statusCode() == 200) {
+                    Question[] questions = objectMapper.readValue(response.body(), Question[].class);
+                    return List.of(questions);
+                } else {
+                    throw new RuntimeException("Failed to get questions: " + response.statusCode() +
+                            " - " + response.body());
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Error getting questions: " + e.getMessage(), e);
+            }
+        });
+    }
+
     // Get all questions
     public CompletableFuture<List<Question>> getAllQuestionsAsync() {
         return CompletableFuture.supplyAsync(() -> {
@@ -286,6 +431,7 @@ public class ApiService {
                         .GET()
                         .timeout(Duration.ofSeconds(30))
                         .build();
+                System.out.println("Built and Sent!");
 
                 HttpResponse<String> response = httpClient.send(request,
                         HttpResponse.BodyHandlers.ofString());

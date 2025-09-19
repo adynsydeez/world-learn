@@ -1,4 +1,5 @@
-package com.worldlearn.backend.database;
+package com.worldlearn.backend.models;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public abstract class User {
@@ -22,8 +23,7 @@ public abstract class User {
 
     /// ////Constructors
 
-    public User(int id, String email, String password, String firstName, String lastName, String role) {
-        this.id = id;
+    public User(String email, String password, String firstName, String lastName, String role) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -31,12 +31,7 @@ public abstract class User {
         this.role = role;
     }
 
-    //User Constructor
-    public User(String email, String password) {
-        this.setEmail(email); //VERIFICATION TO BE ADDED
-        this.setPassword(password);
-        //this.role = role;
-    }
+    public User(){};
 
     //Getters and Setters
     /// ///// EMAIL
@@ -56,7 +51,7 @@ public abstract class User {
     /// ///// PASSWORD
     public String getPassword(){
 
-        return password;
+        return this.password;
     }
 
     public void setPassword(String password) {
@@ -67,7 +62,7 @@ public abstract class User {
     /// ///// FIRST NAME
     public String getFirstName() {
 
-        return firstName;
+        return this.firstName;
     }
 
     public void setFirstName(String firstName) {
@@ -83,7 +78,7 @@ public abstract class User {
 
     /// ///// LAST NAME
     public String getLastName() {
-        return lastName;
+        return this.lastName;
     }
 
     public void setLastName(String lastName) {
@@ -99,7 +94,7 @@ public abstract class User {
     }
 
     /// ///// ROLE
-    public String getRole(){return role;}
+    public String getRole(){return this.role;}
 
     public void setRole(String role) {
         if (role == null) {
@@ -107,8 +102,6 @@ public abstract class User {
         }
         this.role = role;
     }
-
-    public abstract String getUserRole();
 
     @Override
     public String toString() {

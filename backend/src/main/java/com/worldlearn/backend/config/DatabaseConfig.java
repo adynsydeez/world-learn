@@ -3,7 +3,7 @@ package com.worldlearn.backend.config;
 public class DatabaseConfig {
     public static final String DB_URL = "jdbc:postgresql://localhost:5432/worldlearn";
     public static final String DB_USER = "postgres";
-    public static final String DB_PASSWORD = "worldlearnpw";
+    public static final String DB_PASSWORD = "postgrepw0";
     public static final int SERVER_PORT = 7000;
 
     // You could load these from environment variables or config files

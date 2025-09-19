@@ -1,7 +1,5 @@
 package com.worldlearn.backend.models;
 
-import com.worldlearn.backend.database.User;
-
 public class Student extends User {
 
     public Student(String email, String password) {

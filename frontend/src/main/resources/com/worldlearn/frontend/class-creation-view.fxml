@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.worldlearn.frontend.ClassCreatorController"
+            prefWidth="1000" prefHeight="700">
+
+    <!-- Sidebar -->
+    <left>
+        <VBox spacing="12" alignment="TOP_CENTER" style="-fx-padding: 12; -fx-background-color: #a0a0a0;" prefWidth="140">
+            <Button fx:id="homeBtn" text="Home" onAction="#handleHome" />
+            <Button text="Create Class" disable="true"/>
+            <Separator/>
+            <Label text="Class Tools" style="-fx-font-weight: bold;"/>
+        </VBox>
+    </left>
+
+    <!-- Main Content -->
+    <center>
+        <VBox spacing="16" alignment="TOP_LEFT" style="-fx-padding: 20;">
+            <Label text="Class Management" style="-fx-font-size: 20; -fx-font-weight: bold;"/>
+
+            <TitledPane text="Manage Students" expanded="true">
+                <VBox spacing="10" style="-fx-padding: 10;">
+                    <HBox spacing="8">
+                        <TextField fx:id="studentEmailField" promptText="Enter student email (e.g. student@school.edu)" HBox.hgrow="ALWAYS"/>
+                        <Button text="Add" onAction="#handleAddStudent"/>
+                        <Button text="Remove Selected" onAction="#handleRemoveStudent"/>
+                    </HBox>
+                    <ListView fx:id="studentList" prefHeight="320"/>
+                </VBox>
+            </TitledPane>
+
+            <TitledPane text="Lessons (coming soon)" expanded="false">
+                <VBox spacing="10" style="-fx-padding: 10;">
+                    <Label text="Lesson creation will be enabled later."/>
+                    <Button text="Add Lesson" disable="true"/>
+                </VBox>
+            </TitledPane>
+        </VBox>
+    </center>
+</BorderPane>

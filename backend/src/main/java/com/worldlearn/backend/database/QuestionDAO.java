@@ -17,21 +17,23 @@ public class QuestionDAO {
         this.database = database;
     }
 
-    public Question createQuestion(Question question) throws SQLException {
+    public Question createQuestion(Question question, int teacherId) throws SQLException {
         String sql = """
-            INSERT INTO questions (answer, options, prompt, type, points_worth, visibility)
-            VALUES (?, ?, ?, ?::question_type, ?, ?::visibility_type)
-        """;
-        try (Connection conn = database.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+    INSERT INTO questions (question_name, answer, options, prompt, type, points_worth, visibility)
+    VALUES (?, ?, ?, ?, ?::question_type, ?, ?::visibility_type)
+""";
 
-            stmt.setString(1, question.getAnswer());
+        try (Connection conn = database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+            stmt.setString(1, question.getQuestionName());     // question_name
+            stmt.setString(2, question.getAnswer());            // answer
             Array optionsArray = conn.createArrayOf("text", question.getOptions());
-            stmt.setArray(2, optionsArray);
-            stmt.setString(3, question.getPrompt());
-            stmt.setString(4, question.getType().getDbValue());
-            stmt.setInt(5, question.getPointsWorth());
-            stmt.setString(6, question.getVisibility().getDbValue());
+            stmt.setArray(3, optionsArray);                     // options
+            stmt.setString(4, question.getPrompt());            // prompt
+            stmt.setString(5, question.getType().getDbValue()); // type
+            stmt.setInt(6, question.getPointsWorth());          // points_worth
+            stmt.setString(7, question.getVisibility().getDbValue()); // visibility
 
             int rowsAffected = stmt.executeUpdate();
 
@@ -49,7 +51,7 @@ public class QuestionDAO {
 
     public List<Question> getAllQuestions() throws SQLException {
         List<Question> questions = new ArrayList<>();
-        String sql = "SELECT question_id, answer, options, prompt, type, points_worth, visibility FROM questions";
+        String sql = "SELECT question_id, question_name, answer, options, prompt, type, points_worth, visibility FROM questions";
 
         try (Connection conn = database.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -59,6 +61,7 @@ public class QuestionDAO {
                 String[] options = (String[]) rs.getArray("options").getArray();
                 Question q = new Question(
                         rs.getInt("question_id"),
+                        rs.getString("question_name"),
                         rs.getString("answer"),
                         options,
                         rs.getString("prompt"),
@@ -72,11 +75,107 @@ public class QuestionDAO {
         return questions;
     }
 
+    public List<Question> getAllTeacherQuestions(int userId) throws SQLException {
+        List<Question> questions = new ArrayList<>();
+
+        String sql = """
+        SELECT q.question_id, q.question_name, q.answer, q.options, q.prompt,
+               q.type, q.points_worth, q.visibility
+        FROM questions q
+        INNER JOIN teacher_question tq ON q.question_id = tq.question_id
+        WHERE tq.user_id = ?
+    """;
+
+        try (Connection conn = database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, userId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    // Fetch options array safely
+                    String[] options = null;
+                    try {
+                        Array optionsArray = rs.getArray("options");
+                        if (optionsArray != null) {
+                            options = (String[]) optionsArray.getArray();
+                        }
+                    } catch (SQLException e) {
+                        System.err.println("Failed to fetch options array for question_id="
+                                + rs.getInt("question_id") + ": " + e.getMessage());
+                        options = null;
+                    }
+
+                    // Fetch other fields safely
+                    String typeStr = rs.getString("type");
+                    QuestionType type = null;
+                    if (typeStr != null) {
+                        type = QuestionType.fromDbValue(typeStr);
+                    }
+
+                    String visibilityStr = rs.getString("visibility");
+                    Visibility visibility = null;
+                    if (visibilityStr != null) {
+                        visibility = Visibility.fromDbValue(visibilityStr);
+                    }
+
+                    Question q = new Question(
+                            rs.getInt("question_id"),
+                            rs.getString("question_name"),
+                            rs.getString("answer"),
+                            options,
+                            rs.getString("prompt"),
+                            type,
+                            rs.getInt("points_worth"),
+                            visibility
+                    );
+
+                    // Debug print for each row
+                    System.out.println("Loaded question: " + q.getQuestionId() + ", prompt=" + q.getPrompt());
+
+                    questions.add(q);
+                }
+            }
+        }
+
+        return questions;
+    }
+
+    public List<Question> getPublicQuestions() throws SQLException {
+        List<Question> questions = new ArrayList<>();
+        String sql = "SELECT question_id, question_name, answer, options, prompt, type, points_worth, visibility FROM questions WHERE visibility = 'public'";
+
+        try (Connection conn = database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                Array optionsArray = rs.getArray("options");
+                String[] options = optionsArray != null ? (String[]) optionsArray.getArray() : new String[0];
+
+                Question q = new Question(
+                        rs.getInt("question_id"),
+                        rs.getString("question_name"),
+                        rs.getString("answer"),
+                        options,
+                        rs.getString("prompt"),
+                        QuestionType.fromDbValue(rs.getString("type")),
+                        rs.getInt("points_worth"),
+                        Visibility.fromDbValue(rs.getString("visibility"))
+                );
+                questions.add(q);
+            }
+        }
+        return questions;
+    }
+
+
+
     public Optional<Question> getQuestionByID(int id) throws SQLException {
         String sql = """
-            SELECT question_id, answer, options, prompt, type, points_worth, visibility
-            FROM questions WHERE question_id = ?
-        """;
+        SELECT question_id, question_name, answer, options, prompt, type, points_worth, visibility
+        FROM questions WHERE question_id = ?
+    """;
 
         try (Connection conn = database.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -86,6 +185,7 @@ public class QuestionDAO {
                     String[] options = (String[]) rs.getArray("options").getArray();
                     Question q = new Question(
                             rs.getInt("question_id"),
+                            rs.getString("question_name"),
                             rs.getString("answer"),
                             options,
                             rs.getString("prompt"),
@@ -100,10 +200,11 @@ public class QuestionDAO {
         return Optional.empty();
     }
 
+
     public Question updateQuestion(Question question) throws SQLException {
         String sql = """
             UPDATE questions
-            SET answer = ?, options = ?, prompt = ?, 
+            SET question_name = ?, answer = ?, options = ?, prompt = ?,
                 type = ?::question_type, points_worth = ?, visibility = ?::visibility_type
             WHERE question_id = ?
         """;
@@ -111,14 +212,15 @@ public class QuestionDAO {
         try (Connection conn = database.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setString(1, question.getAnswer());
+            stmt.setString(1, question.getQuestionName());
+            stmt.setString(2, question.getAnswer());
             Array optionsArray = conn.createArrayOf("text", question.getOptions());
-            stmt.setArray(2, optionsArray);
-            stmt.setString(3, question.getPrompt());
-            stmt.setString(4, question.getType().getDbValue());
-            stmt.setInt(5, question.getPointsWorth());
-            stmt.setString(6, question.getVisibility().getDbValue());
-            stmt.setInt(7, question.getQuestionId());
+            stmt.setArray(3, optionsArray);
+            stmt.setString(4, question.getPrompt());
+            stmt.setString(5, question.getType().getDbValue());
+            stmt.setInt(6, question.getPointsWorth());
+            stmt.setString(7, question.getVisibility().getDbValue());
+            stmt.setInt(8, question.getQuestionId());
 
             int rowsAffected = stmt.executeUpdate();
 
@@ -128,6 +230,20 @@ public class QuestionDAO {
             }
 
             return null;
+        }
+    }
+
+    public void saveTeacherToQuestion(int questionId, int teacherId){
+        String sql = "INSERT INTO teacher_question (teacher_role, question_id, user_id) VALUES (?::teacher_role_type, ?, ?)";
+        try (Connection conn = database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, "creator");
+            stmt.setInt(2, questionId);
+            stmt.setInt(3, teacherId);
+            System.out.println("Saving teacherId=" + teacherId + " questionId=" + questionId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to insert into teacher_question", e);
         }
     }
 

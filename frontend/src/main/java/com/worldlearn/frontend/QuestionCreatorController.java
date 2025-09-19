@@ -3,7 +3,7 @@ package com.worldlearn.frontend;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+
 import javafx.stage.Stage;
 import javafx.scene.layout.VBox;
 
@@ -11,14 +11,13 @@ import com.worldlearn.backend.models.Question;
 import com.worldlearn.backend.models.Question.QuestionType;
 import com.worldlearn.backend.models.Question.Visibility;
 import com.worldlearn.frontend.services.ApiService;
-
+import javafx.scene.control.*;
 import java.io.IOException;
 import java.sql.SQLException;
 
 public class QuestionCreatorController {
-    @FXML private Button homeButton;
     @FXML private Button saveBtn;
-    @FXML private Button deleteBtn;
+    @FXML private Button clearBtn;
 
     @FXML private ComboBox<Visibility> visibilityCombo;
 
@@ -97,7 +96,7 @@ public class QuestionCreatorController {
 
         // bind buttons
         saveBtn.setOnAction(e -> saveQuestion());
-        deleteBtn.setOnAction(e -> clearFields());
+        clearBtn.setOnAction(e -> clearFields());
     }
 
     @FXML
@@ -108,14 +107,6 @@ public class QuestionCreatorController {
             vbox.setVisible(show);
             vbox.setManaged(show);
         }
-    }
-
-    @FXML
-    protected void onHomeButtonClick() throws IOException {
-        Stage stage = (Stage) homeButton.getScene().getWindow();
-        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("student-dashboard-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 800, 600);
-        stage.setScene(scene);
     }
 
     private String getAnswer() {
@@ -182,20 +173,29 @@ public class QuestionCreatorController {
         if (type == QuestionType.mcq){
             options = getOptions();
         }
+        String prompt = getPrompt();
         try {
             Question question = new Question(
                     0,
+                    prompt,
                     getAnswer(),
                     options,
-                    getPrompt(),
+                    prompt,
                     type,
                     getPoints(),
                     getVisibility()
             );
 
-            apiService.createQuestionAsync(question);
+            apiService.createQuestionAsync(question)
+                    .thenAccept(q -> System.out.println("Question saved: " + q.getQuestionId()))
+                    .exceptionally(e -> {
+                        e.printStackTrace();
+                        return null;
+                    })
+                    .join();
 
-            System.out.println("Question saved!");
+
+            clearFields();
         } catch (IllegalArgumentException ex) {
             showAlert(ex.getMessage());
         }

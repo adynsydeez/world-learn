@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.worldlearn.frontend.QuizCreatorController"
+      spacing="20">
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Pane HBox.hgrow="ALWAYS"/>
+    </HBox>
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Create A Quiz" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="clearBtn" text="Clear Quiz"
+                style="-fx-background-color: #ff6b6b; -fx-text-fill: white;"/>
+        <Button fx:id="saveBtn" text="Save"
+                style="-fx-background-color: #a29bfe; -fx-text-fill: white;"/>
+    </HBox>
+
+    <VBox spacing="5">
+        <Label text="Quiz Name"/>
+        <TextField fx:id="nameField" promptText="Enter a Quiz Name..."/>
+        <ComboBox fx:id="visibilityCombo"/>
+    </VBox>
+
+    <HBox spacing="20" alignment="TOP_LEFT">
+        <VBox>
+                <Label text="Your Questions"/>
+                <ListView fx:id="teacherQuestionsList"/>
+        </VBox>
+
+        <VBox>
+            <Label text="Search Questions"/>
+            <HBox>
+                <TextField fx:id="searchField" promptText="Search Questions..."/>
+            </HBox>
+            <ListView fx:id="searchQuestionsList"/>
+        </VBox>
+
+        <VBox>
+            <Label text="Your Quiz"/>
+            <Button fx:id="removeBtn" text="Remove"/>
+            <ListView fx:id="quizQuestionsList"/>
+        </VBox>
+    </HBox>
+
+    <Button fx:id="addToQuizBtn" text="Add Selected Questions"/>
+</VBox>

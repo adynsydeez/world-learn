@@ -1,23 +1,28 @@
 package com.worldlearn.frontend;
 
-import com.worldlearn.backend.database.AuthenticationService;
-import com.worldlearn.backend.database.User;
+import com.worldlearn.backend.services.AuthenticationService;
+import com.worldlearn.backend.models.User;
+import com.worldlearn.frontend.services.AuthClientService;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import com.worldlearn.frontend.Session;
 
 public class StudentDashboardController {
+    private static final Logger log = LoggerFactory.getLogger(StudentDashboardController.class);
     private User user;
     private Stage stage;
-    private AuthenticationService auth;
+    private AuthClientService auth;
 
 
     public void init(User user, Stage stage) { init(user, stage, null); }
 
-    public void init(User user, Stage stage, AuthenticationService auth) {
+    public void init(User user, Stage stage, AuthClientService auth) {
         this.user = user;
         this.stage = stage;
         this.auth  = auth;
@@ -61,7 +66,7 @@ public class StudentDashboardController {
         FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("Auth-view.fxml"));
         Scene scene = new Scene(fxml.load(), 900, 650);
         AuthController authController = fxml.getController();
-        authController.init((auth != null ? auth : new AuthenticationService()), stage);
+        authController.init((auth != null ? auth : new AuthClientService()), stage);
         stage.setScene(scene);
         stage.show();
     }

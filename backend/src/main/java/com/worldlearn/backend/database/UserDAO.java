@@ -2,6 +2,7 @@ package com.worldlearn.backend.database;
 
 import com.worldlearn.backend.models.Student;
 import com.worldlearn.backend.models.Teacher;
+import com.worldlearn.backend.models.User;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -35,9 +36,13 @@ public class UserDAO {
                     int int_id = Integer.parseInt(user_id);
                     switch (role) {
                         case "student":
-                            return new Student(int_id, email, password, first, last, "student");
+                            User student = new Student(email, password, first, last, role);
+                            student.setId(int_id);
+                            return student;
                         case "teacher":
-                            return new Teacher(int_id, email, password, first, last, "teacher");
+                            User teacher = new Teacher(email, password, first, last, role);
+                            teacher.setId(int_id);
+                            return teacher;
                         default:
                             throw new IllegalArgumentException("Unknown user_role: " + roleRaw);
                     }
@@ -76,7 +81,7 @@ public class UserDAO {
 
     public List<User> getAllUsers() throws SQLException {
         List<User> users = new ArrayList<>();
-        final String sql = "SELECT user_id, email, password, first_name, last_name, user_role FROM users";
+        final String sql = "SELECT * FROM users";
 
         try (Connection conn = database.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -95,17 +100,52 @@ public class UserDAO {
                 User u;
                 switch (role) {
                     case "student":
-                        u =  new Student(int_id, email, password, first, last, "student");
+                        u = new Student(email, password, first, last, role);
+                        u.setId(int_id);
                         users.add(u);
+                        break; // Added missing break
                     case "teacher":
-                        u =  new Teacher(int_id, email, password, first, last, "teacher");
+                        u = new Teacher(email, password, first, last, role);
+                        u.setId(int_id);
                         users.add(u);
+                        break; // Added missing break
                     default:
                         throw new IllegalArgumentException("Unknown user_role: " + roleRaw);
                 }
             }
         }
         return users;
+    }
+
+    public User getUserByEmailAndPassword(String email, String password) throws SQLException {
+        String sql = "SELECT user_id, first_name, last_name, email, password, user_role FROM users WHERE email = ? AND password = ?";
+        try (Connection conn = database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, email);
+            stmt.setString(2, password);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    String roleRaw  = rs.getString("user_role");
+                    String role     = roleRaw == null ? "" : roleRaw.trim().toLowerCase();
+                    int id          = rs.getInt("user_id");
+                    String first    = rs.getString("first_name");
+                    String last     = rs.getString("last_name");
+                    String userEmail = rs.getString("email");
+                    String userPassword = rs.getString("password");
+
+                    User u;
+                    switch (role) {
+                        case "student" -> u = new Student(userEmail, userPassword, first, last, role);
+                        case "teacher" -> u = new Teacher(userEmail, userPassword, first, last, role);
+                        default -> throw new IllegalArgumentException("Unknown user_role: " + roleRaw);
+                    }
+                    u.setId(id);
+                    return u;
+                }
+            }
+        }
+        return null; // invalid credentials
     }
 
     public User updateUser(int id, User user) throws SQLException {

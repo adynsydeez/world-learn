@@ -36,7 +36,11 @@
             <VBox spacing="10" prefWidth="250">
                 <HBox spacing="10" alignment="CENTER_LEFT">
                     <Label text="My Classes" style="-fx-font-weight: bold;"/>
-                    <Button fx:id="createClassBtn" text="+ Create" style="-fx-background-color: blue; -fx-text-fill: white;" />
+                    <Button fx:id="createClassBtn"
+                            text="+ Create"
+                            style="-fx-background-color: blue; -fx-text-fill: white;"
+                            onMouseClicked="#onCreateClassClick"
+                    />
                 </HBox>
                 <TextField promptText="Search Classes"/>
                 <ScrollPane fitToWidth="true" prefHeight="500">
@@ -53,7 +57,11 @@
             <VBox spacing="10" prefWidth="250">
                 <HBox spacing="10" alignment="CENTER_LEFT">
                     <Label text="My Lessons" style="-fx-font-weight: bold;"/>
-                    <Button fx:id="createLessonBtn" text="+ Create" style="-fx-background-color: blue; -fx-text-fill: white;" />
+                    <Button fx:id="createLessonBtn"
+                            text="+ Create"
+                            style="-fx-background-color: blue; -fx-text-fill: white;"
+                            onMouseClicked="#onCreateLessonClick"
+                    />
                 </HBox>
                 <TextField promptText="Search Lessons"/>
                 <ScrollPane fitToWidth="true" prefHeight="500">
@@ -70,7 +78,11 @@
             <VBox spacing="10" prefWidth="250">
                 <HBox spacing="10" alignment="CENTER_LEFT">
                     <Label text="My Quizzes" style="-fx-font-weight: bold;"/>
-                    <Button fx:id="createQuizBtn" text="+ Create" style="-fx-background-color: blue; -fx-text-fill: white;" />
+                    <Button fx:id="createQuizBtn"
+                            text="+ Create"
+                            style="-fx-background-color: blue; -fx-text-fill: white;"
+                            onMouseClicked="#onCreateQuizClick"
+                    />
                 </HBox>
                 <TextField promptText="Search Quizzes"/>
                 <ScrollPane fitToWidth="true" prefHeight="500">

@@ -32,9 +32,12 @@ public class QuestionController {
     }
 
     public void createQuestion(Context ctx) {
+        System.out.println("hey");
         try {
+            int teacherId = Integer.parseInt(ctx.queryParam("teacherId"));
+            System.out.println("teacherId param: " + ctx.queryParam("teacherId"));
             Question question = ctx.bodyAsClass(Question.class);
-            Question createdQuestion = questionService.createQuestion(question);
+            Question createdQuestion = questionService.createQuestion(question, teacherId);
             ctx.status(201).json(createdQuestion);
         } catch (IllegalArgumentException e) {
             ctx.status(400).result("Validation error: " + e.getMessage());
@@ -49,6 +52,25 @@ public class QuestionController {
             ctx.json(questions);
         } catch (Exception e) {
             ctx.status(500).result("Internal server error: " + e.getMessage());
+        }
+    }
+
+    public void getAllTeacherQuestions(Context ctx) {
+        try {
+            int teacherId = Integer.parseInt(ctx.pathParam("id"));
+            List<Question> questions = questionService.getAllTeacherQuestions(teacherId);
+            ctx.json(questions);
+        } catch (Exception e) {
+            ctx.status(500).result("Failed to get questions: " + e.getMessage());
+        }
+    }
+
+    public void getPublicQuestions(Context ctx) {
+        try {
+            List<Question> questions = questionService.getPublicQuestions();
+            ctx.json(questions);
+        } catch (Exception e) {
+            ctx.status(500).result("Failed to get questions:" +e.getMessage());
         }
     }
 

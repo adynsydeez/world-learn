@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.worldlearn.frontend.LessonCreatorController"
+            prefWidth="1000" prefHeight="700">
+
+    <!-- Top Bar -->
+    <top>
+        <HBox spacing="20" alignment="CENTER_LEFT" style="-fx-background-color: #2c3e50; -fx-padding: 15;">
+            <Button text="Home" onAction="#goHome" style="-fx-background-color: #e74c3c; -fx-text-fill: white;"/>
+            <Label text="Create Lesson" style="-fx-font-size: 22; -fx-font-weight: bold; -fx-text-fill: white;"/>
+        </HBox>
+    </top>
+
+    <!-- Main Content -->
+    <center>
+        <VBox spacing="25" alignment="TOP_CENTER" style="-fx-padding: 40; -fx-background-color: #f8f9fa;">
+            
+            <!-- Lesson Title -->
+            <VBox spacing="8" alignment="CENTER_LEFT" prefWidth="800">
+                <Label text="Lesson Title:" style="-fx-font-size: 16; -fx-font-weight: bold;"/>
+                <TextField fx:id="lessonTitleField" promptText="Enter lesson name" prefWidth="800"/>
+            </VBox>
+
+            <!-- Description -->
+            <VBox spacing="8" alignment="CENTER_LEFT" prefWidth="800">
+                <Label text="Description:" style="-fx-font-size: 16; -fx-font-weight: bold;"/>
+                <TextArea fx:id="lessonDescriptionField" promptText="Enter lesson description" prefWidth="800" prefHeight="200"/>
+            </VBox>
+
+            <!-- Action Buttons -->
+            <HBox spacing="20" alignment="CENTER">
+                <Button fx:id="addContentBtn" text="Add Content" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-padding: 10 20;"/>
+                <Button fx:id="addQuizBtn" text="Add Quiz" style="-fx-background-color: #2980b9; -fx-text-fill: white; -fx-padding: 10 20;"/>
+            </HBox>
+
+            <!-- Create Button -->
+            <Button fx:id="createLessonBtn" text="Create Lesson"
+                    style="-fx-background-color: #8e44ad; -fx-text-fill: white; -fx-font-size: 16; -fx-font-weight: bold; -fx-padding: 12 40;"/>
+
+        </VBox>
+    </center>
+</BorderPane>

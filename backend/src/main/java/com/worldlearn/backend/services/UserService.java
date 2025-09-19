@@ -1,15 +1,20 @@
 package com.worldlearn.backend.services;
 
 import com.worldlearn.backend.database.UserDAO;
-import com.worldlearn.backend.database.User;
+import com.worldlearn.backend.models.User;
 import java.sql.SQLException;
 import java.util.List;
+
 
 public class UserService {
     private final UserDAO userDAO;
 
     public UserService(UserDAO userDAO) {
         this.userDAO = userDAO;
+    }
+
+    public User logIn(String email, String password) throws SQLException {
+        return userDAO.getUserByEmailAndPassword(email, password);
     }
 
     public User getUserById(String id) throws SQLException {

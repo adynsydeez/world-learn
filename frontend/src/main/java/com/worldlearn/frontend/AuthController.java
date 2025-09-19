@@ -1,8 +1,9 @@
 package com.worldlearn.frontend;
 
 
-import com.worldlearn.backend.database.User;
-import com.worldlearn.backend.database.AuthenticationService;
+import com.worldlearn.backend.models.User;
+import com.worldlearn.backend.services.AuthenticationService;
+import com.worldlearn.frontend.services.AuthClientService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,15 +15,17 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
+import java.io.IOException;
+
 
 public class AuthController {
 
-    private AuthenticationService auth;
+    private AuthClientService auth;
     private Stage stage;
 
     //passes authentication service to controller
     @FXML
-    public void init(AuthenticationService auth, Stage stage) {
+    public void init(AuthClientService auth, Stage stage) {
         this.auth = auth;
         this.stage = stage;
     }
@@ -34,6 +37,8 @@ public class AuthController {
     }
 
     //sign up fields
+    @FXML public TextField signupFirstNameField;
+    @FXML public TextField signupLastNameField;
     @FXML public PasswordField signupPasswordField;
     @FXML public TextField signupEmailField;
     @FXML public Label signupErrorLabel;
@@ -41,13 +46,15 @@ public class AuthController {
 
     @FXML
     public void onSignup(ActionEvent actionEvent) {
+        String firstName = signupFirstNameField.getText().trim();
+        String lastName = signupLastNameField.getText().trim();
         String email = signupEmailField.getText().trim();
         String password = signupPasswordField.getText();
         String role = signupRoleBox.getValue().toLowerCase();
 
         try {
-            //signs up user
-            User newUser = auth.signUp(email, password, role);
+            //signs up user - you'll need to update your AuthenticationService.signUp method to accept firstName and lastName
+            User newUser = auth.signUp(email, password, role, firstName, lastName);
             //displays message for successful sign up
             signupErrorLabel.setText("Signed up: " + newUser.getEmail() + " (" + newUser.getRole() + ")");
         } catch (IllegalArgumentException ex) {
@@ -69,55 +76,52 @@ public class AuthController {
         String email = loginEmailField.getText().trim();
         String password = loginPasswordField.getText().trim();
 
-        try {
-            User user = auth.logIn(email, password);
-            loginErrorLabel.setText("Logged in: " + user.getEmail() + " (" + user.getRole() + ")");
-
-            // Decide which FXML file to load based on role
-            String fxmlFile;
-            switch (user.getRole().trim().toLowerCase()) {
-                case "student":
-                    fxmlFile = "/com/worldlearn/frontend/student-dashboard-view.fxml";
-                    break;
-                case "teacher":
-                    fxmlFile = "/com/worldlearn/frontend/teacher-dashboard-view.fxml";
-                    break;
-                default:
-                    throw new IllegalArgumentException("Unknown role: " + user.getRole());
-            }
-
-            // --- Step 2: Load FXML ---
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
-            Parent root = loader.load();
-
-            // --- Step 3: Get controller and call init(...) depending on type ---
-            Object controller = loader.getController();
-            if (controller instanceof StudentDashboardController) {
-                ((StudentDashboardController) controller).init(user, stage);
-            } else if (controller instanceof TeacherDashboardController) {
-                ((TeacherDashboardController) controller).init(user, stage);
-            }
-
-            // Swap scene
-            stage.setScene(new Scene(root, 800, 800));
-            stage.show();
-
-
-            //throws errors if credentials are incorrect or no input
-        } catch (IllegalArgumentException ex) {
-            loginErrorLabel.setText(ex.getMessage());
-        } catch (Exception ex) {
-            loginErrorLabel.setText("Log in Failed");
-            ex.printStackTrace();
+        if (email.isEmpty() || password.isEmpty()) {
+            loginErrorLabel.setText("Email and password are required");
+            return;
         }
 
+        auth.logIn(email, password)
+                .thenAccept(user -> javafx.application.Platform.runLater(() -> {
+                    loginErrorLabel.setText("Logged in: " + user.getEmail() + " (" + user.getRole() + ")");
+                    Session.setCurrentUser(user);
 
+                    String fxmlFile;
+                    switch (user.getRole().toLowerCase()) {
+                        case "student" -> fxmlFile = "/com/worldlearn/frontend/student-dashboard-view.fxml";
+                        case "teacher" -> fxmlFile = "/com/worldlearn/frontend/teacher-dashboard-view.fxml";
+                        default -> {
+                            loginErrorLabel.setText("Unknown role: " + user.getRole());
+                            return;
+                        }
+                    }
+
+                    try {
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
+                        Parent root = loader.load();
+
+                        Object controller = loader.getController();
+                        if (controller instanceof StudentDashboardController studentController) {
+                            studentController.init(user, stage);
+                        } else if (controller instanceof TeacherDashboardController teacherController) {
+                            teacherController.init(stage);
+                        }
+
+                        stage.setScene(new Scene(root, 800, 800));
+                        stage.show();
+                    } catch (IOException e) {
+                        loginErrorLabel.setText("Failed to load dashboard");
+                        e.printStackTrace();
+                    }
+                }))
+                .exceptionally(ex -> {
+                    javafx.application.Platform.runLater(() -> {
+                        String message = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
+                        loginErrorLabel.setText("Login failed: " + message);
+                    });
+                    ex.printStackTrace();
+                    return null;
+                });
     }
-
-
-
-
-
-
 
 }

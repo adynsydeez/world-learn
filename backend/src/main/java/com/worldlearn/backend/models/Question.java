@@ -1,9 +1,13 @@
 package com.worldlearn.backend.models;
 
+
 import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 
 public class Question {
     private int questionId;
+    private String questionName;
     private String answer;
     private String[] options;
     private String prompt;
@@ -103,6 +107,12 @@ public class Question {
         public String getDbValue() {
             return this.name().toLowerCase();
         }
+
+        @JsonValue
+        public String toJson() {
+            return this.name().toLowerCase();
+        }
+
     }
 
 
@@ -113,6 +123,9 @@ public class Question {
         private final String dbValue;
         Visibility(String dbValue) { this.dbValue = dbValue; }
         public String getDbValue() { return dbValue; }
+
+        @JsonValue
+        public String toJSON() {return dbValue.toLowerCase();}
 
         public static Visibility fromDbValue(String value) {
             for (Visibility v : values()) {

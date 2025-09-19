@@ -2,21 +2,20 @@ package com.worldlearn.backend.models;
 
 
 public class WlClass {
-    private String id;
+    private int id;
     private String className;
     private int joinCode;
 
     public WlClass() {
     }
 
-    public WlClass(String id, String className, int joinCode) {
-        this.id = id;
+    public WlClass(String className, int joinCode) {
         this.className = className;
         this.joinCode = joinCode;
     }
 
-    public int getId() { return Integer.parseInt(this.id); }
-    public void setId(int id) { this.id = String.valueOf(id); }
+    public int getId() { return this.id; }
+    public void setId(int id) { this.id = id; }
 
     public String getClassName() { return this.className; }
     public void setClassName(String className) { this.className = className; }
