@@ -31,6 +31,11 @@ public abstract class User {
         this.role = role;
     }
 
+    public User(String email, String password){
+        this.email = email;
+        this.password = password;
+    }
+
     public User(){};
 
     //Getters and Setters
@@ -116,4 +121,6 @@ public abstract class User {
     public int getId() {
         return this.id;
     }
+
+    public abstract String getUserRole();
 }

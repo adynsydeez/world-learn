@@ -52,25 +52,35 @@ public class Question {
 
     // ANSWER
     public void setAnswer(String answer) {
-        if (answer == null || answer.isBlank()) {
-            throw new IllegalArgumentException("answer must not be null/blank");
+        if (this.type == QuestionType.mcq) {
+            if (answer == null || answer.isBlank()) {
+                throw new IllegalArgumentException("MCQ must have a non-empty answer");
+            }
+            this.answer = answer.trim();
+        } else {
+            // Written and Map don’t need an answer
+            this.answer = null;
         }
-        this.answer = answer.trim();
     }
     public String getAnswer() { return answer; }
 
     // OPTIONS
     public void setOptions(String[] options) {
-        if (options == null) {
-            throw new IllegalArgumentException("options must not be null");
-        }
-        for (int i = 0; i < options.length; i++) {
-            String opt = options[i];
-            if (opt == null || opt.isBlank()) {
-                throw new IllegalArgumentException("options contains null/blank at index " + i);
+        if (this.type == QuestionType.mcq) {
+            if (options == null || options.length == 0) {
+                throw new IllegalArgumentException("MCQ must have non-empty options");
             }
+            for (int i = 0; i < options.length; i++) {
+                String opt = options[i];
+                if (opt == null || opt.isBlank()) {
+                    throw new IllegalArgumentException("options contains null/blank at index " + i);
+                }
+            }
+            this.options = Arrays.copyOf(options, options.length);
+        } else {
+            // Written and Map don’t need options
+            this.options = null;
         }
-        this.options = Arrays.copyOf(options, options.length);
     }
     public String[] getOptions() { return options; }
 

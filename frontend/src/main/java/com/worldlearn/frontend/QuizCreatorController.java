@@ -1,5 +1,10 @@
 package com.worldlearn.frontend;
 
+import com.worldlearn.backend.models.Quiz;
+import com.worldlearn.backend.models.Teacher;
+import com.worldlearn.backend.models.User;
+import com.worldlearn.backend.dto.CreateQuizRequest;
+import com.worldlearn.backend.models.Question.Visibility;
 import com.worldlearn.frontend.services.ApiService;
 import com.worldlearn.backend.models.Question;
 import javafx.application.Platform;
@@ -16,13 +21,15 @@ public class QuizCreatorController {
     @FXML private ListView<Question> teacherQuestionsList;
     @FXML private ListView<Question> searchQuestionsList;
     @FXML private ListView<Question> quizQuestionsList;
-    //@FXML private ComboBox<Visibility> visibilityComboBox;
+    @FXML private ComboBox<Question.Visibility> visibilityComboBox;
     @FXML private Button addToQuizBtn;
     @FXML private Button removeBtn;
     @FXML private Button saveBtn;
     @FXML private Button clearBtn;
+    @FXML private Button loadBtn;
     @FXML private TextField searchField;
     @FXML private TextField nameField;
+    private String quizName;
 
     private ObservableList<Question> teacherQuestions = FXCollections.observableArrayList();
     private ObservableList<Question> searchQuestions = FXCollections.observableArrayList();
@@ -35,18 +42,21 @@ public class QuizCreatorController {
 
     @FXML
     public void initialize() {
+
+
         // hook up observable lists to UI
         teacherQuestionsList.setItems(teacherQuestions);
         searchQuestionsList.setItems(searchQuestions);
         quizQuestionsList.setItems(quizQuestions);
-
-        searchQuestions();
 
         // wrap your observable list in a FilteredList
         filteredSearch = new FilteredList<>(searchQuestions, q -> true);
 
 // bind filtered list to ListView
         searchQuestionsList.setItems(filteredSearch);
+
+        visibilityComboBox.getItems().setAll(Visibility.values());
+        visibilityComboBox.setValue(Visibility.PRIVATE);
 
 // add listener on text field
         searchField.textProperty().addListener((obs, oldVal, newVal) -> {
@@ -104,7 +114,7 @@ public class QuizCreatorController {
             List<Question> selected = new ArrayList<>(quizQuestionsList.getSelectionModel().getSelectedItems());
             removeFromQuiz(selected);
         });
-        getTeacherQuestions();
+
 
         saveBtn.setOnAction(e -> {
             saveQuiz(quizQuestions);
@@ -112,6 +122,11 @@ public class QuizCreatorController {
 
         clearBtn.setOnAction(e -> {
             clearQuiz();
+        });
+
+        loadBtn.setOnAction(e -> {
+            getTeacherQuestions();
+            searchQuestions();
         });
     }
 
@@ -176,12 +191,48 @@ public class QuizCreatorController {
         alert.showAndWait();
     }
 
+    private Visibility getVisibility() {
+        Visibility selected = visibilityComboBox.getValue();
+        if (selected == null) {
+            throw new IllegalArgumentException("You must select a visibility.");
+        }
+        return selected;
+    }
+
     private void saveQuiz(List<Question> questions) {
+        System.out.println("Attempting Save Quiz.");
         if (checkInvalidName()) {
             showAlert("Please enter a valid quiz name");
         } else if (checkInvalidQuiz()) {
             showAlert("ERROR: Quiz Must Contain Questions");
         }
-        System.out.println("Need Save Quiz Implementation!");
+        quizName = nameField.getText().trim();
+        try {
+            List<Integer> questionIds = questions.stream()
+                    .map(Question::getQuestionId)
+                    .toList();
+
+            CreateQuizRequest quizRequest = new CreateQuizRequest(
+                    quizName,
+                    getVisibility(),
+                    questionIds
+            );
+            Quiz quiz = new Quiz(
+                    0,
+                    quizName,
+                    getVisibility()
+            );
+
+            apiService.createQuizAsync(quizRequest)
+                    .thenAccept(q -> System.out.println("Quiz saved:" + quizName))
+                    .exceptionally(e -> {
+                        e.printStackTrace();
+                        return null;
+                    })
+                    .join();
+
+        } catch (IllegalArgumentException ex){
+            showAlert(ex.getMessage());
+        }
     }
 }

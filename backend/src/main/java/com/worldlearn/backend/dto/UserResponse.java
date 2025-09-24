@@ -1,5 +1,6 @@
 package com.worldlearn.backend.dto;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class UserResponse {
@@ -19,7 +20,9 @@ public class UserResponse {
     private String password;
 
     @JsonProperty("role")
+    @JsonAlias({"userRole"})
     private String role;
+
 
     // Default constructor for Jackson
     public UserResponse() {}

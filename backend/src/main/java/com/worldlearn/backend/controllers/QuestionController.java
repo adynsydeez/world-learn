@@ -32,7 +32,6 @@ public class QuestionController {
     }
 
     public void createQuestion(Context ctx) {
-        System.out.println("hey");
         try {
             int teacherId = Integer.parseInt(ctx.queryParam("teacherId"));
             System.out.println("teacherId param: " + ctx.queryParam("teacherId"));

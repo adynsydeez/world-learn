@@ -3,22 +3,16 @@ package com.worldlearn.frontend.test;
 import com.worldlearn.backend.database.*;
 import com.worldlearn.backend.models.*;
 
-
-
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
-
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
 public class QuizTest {
 
-    public Quiz quiz;
-    public Teacher teacher;   // assuming Teacher extends User in your codebase
-    public ArrayList<Question> questions;
+    private Quiz quiz;
+    private Teacher teacher;   // Teacher extends User
+    private ArrayList<Question> questions;
 
     @BeforeEach
     void setUp() {
@@ -39,62 +33,42 @@ public class QuizTest {
         @Test
         @DisplayName("constructor rejects null author")
         void constructorRejectsNullAuthor() {
-            assertThrows(IllegalArgumentException.class, () -> new Quiz(questions, null));
+            assertThrows(IllegalArgumentException.class, () -> new Quiz(questions, null, null));
         }
 
         @Test
         @DisplayName("constructor rejects null questions")
         void constructorRejectsNullQuestions() {
-            assertThrows(IllegalArgumentException.class, () -> new Quiz(null, teacher));
+            assertThrows(IllegalArgumentException.class, () -> new Quiz(null, null, teacher));
         }
-
-
-    }
-=======
-import static org.junit.jupiter.api.Assertions.*;
-
-public Quiz quiz;
-public User user;
-
-public class QuizTest {
-    @BeforeEach void seUp() {
-        User teacher = new Teacher("teacher", "teacher");
-        Quiz quiz = new Quiz();
     }
 
     @Nested
-    @DisplayName("firstName validation")
-    class emptyTest {
+    @DisplayName("Author Validation")
+    class AuthorValidationTest {
 
-            @ParameterizedTest
-            @ValueSource(strings = {""," "})
-            void emptyInput(String empty) {
-                assertThrows(IllegalArgumentException.class, () -> quiz.setQuestion(empty));
-            }
-
-            @Test
-            void rejectsNull() {assertThrows(IllegalArgumentException.class, () -> quiz.setQuestion(null));}
-      
         @Test
-        @DisplayName("rejects null author")
-        void rejectsNullAuthor() {
+        @DisplayName("rejects null author setter")
+        void rejectsNullAuthorSetter() {
             assertThrows(IllegalArgumentException.class, () -> quiz.setAuthor(null));
         }
-
-        @Test
-        @DisplayName("constructor rejects null author")
-        void constructorRejectsNullAuthor() {
-            assertThrows(IllegalArgumentException.class, () -> new Quiz(questions, null));
-        }
     }
 
     @Nested
-    @DisplayName("QuestionsValidation")
-    class questionsTest {
+    @DisplayName("Questions Validation")
+    class QuestionsTest {
 
+        @Test
         @DisplayName("rejects null list")
         void rejectsNullList() {
             assertThrows(IllegalArgumentException.class, () -> quiz.setQuestions(null));
+        }
+
+        @Test
+        @DisplayName("rejects empty list")
+        void rejectsEmptyList() {
+            ArrayList<Question> emptyList = new ArrayList<>();
+            assertThrows(IllegalArgumentException.class, () -> quiz.setQuestions(emptyList));
         }
 
         @Test
@@ -102,14 +76,23 @@ public class QuizTest {
         void rejectsWhenAnyNullPresent() {
             ArrayList<Question> qs = new ArrayList<>();
             qs.add(new Question());
-            qs.add(null);                 // <- triggers rejection
+            qs.add(null);  // <- should trigger rejection
             qs.add(new Question());
 
             IllegalArgumentException ex =
                     assertThrows(IllegalArgumentException.class, () -> quiz.setQuestions(qs));
 
-            // matches your setter message: "questions[<i>] cannot be null"
             assertTrue(ex.getMessage().contains("questions[1]"));
+        }
+
+        @Test
+        @DisplayName("accepts valid non-empty list of questions")
+        void acceptsValidList() {
+            ArrayList<Question> validList = new ArrayList<>();
+            validList.add(new Question());
+            validList.add(new Question());
+
+            assertDoesNotThrow(() -> quiz.setQuestions(validList));
         }
     }
 }

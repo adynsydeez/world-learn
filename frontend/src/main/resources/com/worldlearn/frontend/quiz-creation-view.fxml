@@ -28,7 +28,7 @@
     <VBox spacing="5">
         <Label text="Quiz Name"/>
         <TextField fx:id="nameField" promptText="Enter a Quiz Name..."/>
-        <ComboBox fx:id="visibilityCombo"/>
+        <ComboBox fx:id="visibilityComboBox"/>
     </VBox>
 
     <HBox spacing="20" alignment="TOP_LEFT">
@@ -51,6 +51,6 @@
             <ListView fx:id="quizQuestionsList"/>
         </VBox>
     </HBox>
-
+    <Button fx:id="loadBtn" text="Load Questions"/>
     <Button fx:id="addToQuizBtn" text="Add Selected Questions"/>
 </VBox>

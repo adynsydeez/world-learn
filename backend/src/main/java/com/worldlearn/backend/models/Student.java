@@ -7,8 +7,8 @@ public class Student extends User {
         setRole("student");
     }
 
-    public Student(int userId, String email, String password, String first, String last, String student) {
-        super(userId,email, password, first, last, student);
+    public Student(String email, String password, String first, String last, String student) {
+        super(email, password, first, last, student);
     }
 
 

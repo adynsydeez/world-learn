@@ -8,6 +8,7 @@ import com.worldlearn.backend.dto.UserResponse;
 import com.worldlearn.backend.models.*;
 import com.worldlearn.backend.config.ApiConfig;
 import com.worldlearn.frontend.Session;
+import com.worldlearn.backend.dto.CreateQuizRequest;
 
 import java.net.http.*;
 import java.net.URI;
@@ -525,4 +526,34 @@ public class ApiService {
         });
     }
 
+    public CompletableFuture<Quiz> createQuizAsync(CreateQuizRequest quizRequest) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                String jsonBody = objectMapper.writeValueAsString(quizRequest);
+                int teacherId = Session.getCurrentUser().getId();
+                String url = baseUrl + "/quizzes?teacherId=" + teacherId;
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .header("Content-Type", "application/json")
+                        .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
+                        .timeout(Duration.ofSeconds(30))
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request,
+                        HttpResponse.BodyHandlers.ofString());
+
+                if (response.statusCode() == 201) {
+                    return objectMapper.readValue(response.body(), Quiz.class);
+                } else {
+                    throw new RuntimeException("Failed to create quiz: " + response.statusCode() +
+                            " - " + response.body());
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Error creating quiz: " + e.getMessage(), e);
+            }
+        });
+    }
+
 }
+
