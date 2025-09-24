@@ -51,4 +51,13 @@ public class QuizController {
             ctx.status(500).result("Internal server error: " + e.getMessage());
         }
     }
+
+    public void getAllQuizzes(Context ctx) {
+        try {
+            List<Quiz> questions = quizService.getAllQuizzes();
+            ctx.json(questions);
+        } catch (Exception e) {
+            ctx.status(500).result("Internal server error: " + e.getMessage());
+        }
+    }
 }

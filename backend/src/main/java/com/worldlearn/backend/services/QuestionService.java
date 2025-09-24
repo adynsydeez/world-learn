@@ -20,6 +20,7 @@ public class QuestionService {
         Question saved = questionDAO.createQuestion(question, teacherId);
         System.out.println("Linking teacherId=" + teacherId + " to questionId=" + saved.getQuestionId());
         questionDAO.saveTeacherToQuestion(saved.getQuestionId(), teacherId);
+        System.out.println("service:" + question.getAnswer());
 
         return saved;
     }

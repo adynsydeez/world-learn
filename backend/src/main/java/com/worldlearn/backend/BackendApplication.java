@@ -75,6 +75,7 @@ public class BackendApplication {
 
         // Question API endpoints
         app.post("/api/questions", questionController::createQuestion);
+        app.get("/api/questions", questionController::getAllQuestions);
         app.get("/api/questions/public", questionController::getPublicQuestions);
 
         // Quiz API endpoints

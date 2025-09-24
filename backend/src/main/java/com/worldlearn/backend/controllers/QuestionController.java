@@ -4,6 +4,7 @@ import com.worldlearn.backend.models.Question;
 import com.worldlearn.backend.services.QuestionService;
 import io.javalin.http.Context;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,10 +35,13 @@ public class QuestionController {
     public void createQuestion(Context ctx) {
         try {
             int teacherId = Integer.parseInt(ctx.queryParam("teacherId"));
-            System.out.println("teacherId param: " + ctx.queryParam("teacherId"));
+            String body = ctx.body();
             Question question = ctx.bodyAsClass(Question.class);
+            System.out.println("Raw JSON received: " + body);
+            System.out.println("Deserialized: answer=" + question.getAnswer() + ", options=" + Arrays.toString(question.getOptions()));
             Question createdQuestion = questionService.createQuestion(question, teacherId);
             ctx.status(201).json(createdQuestion);
+            System.out.println(createdQuestion.getAnswer());
         } catch (IllegalArgumentException e) {
             ctx.status(400).result("Validation error: " + e.getMessage());
         } catch (Exception e) {

@@ -14,6 +14,7 @@ import com.worldlearn.frontend.services.ApiService;
 import javafx.scene.control.*;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Arrays;
 
 public class QuestionCreatorController {
     @FXML private Button saveBtn;
@@ -132,7 +133,7 @@ public class QuestionCreatorController {
 
 
 
-    private String[] getOptions() {
+    public String[] getOptions() {
         TextField[] fields = {option1, option2, option3, option4};
         String[] options = new String[fields.length];
 
@@ -185,7 +186,7 @@ public class QuestionCreatorController {
                     getPoints(),
                     getVisibility()
             );
-
+            System.out.println("Frontend: " + question.getAnswer() + " / " + Arrays.toString(question.getOptions()));
             apiService.createQuestionAsync(question)
                     .thenAccept(q -> System.out.println("Question saved: " + q.getQuestionId()))
                     .exceptionally(e -> {

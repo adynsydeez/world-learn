@@ -46,30 +46,30 @@ public class QuizDAO {
         return null;
     }
 
-    public List<Question> getAllQuestions() throws SQLException {
-        List<Question> questions = new ArrayList<>();
-        String sql = "SELECT question_id, question_name, answer, options, prompt, type, points_worth, visibility FROM questions";
+    public List<Quiz> getAllQuizzes() throws SQLException {
+        List<Quiz> quizzes = new ArrayList<>();
+        String sql = "SELECT quiz_id, quiz_name, visibility FROM quizzes";
 
         try (Connection conn = database.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
+            String visibilityStr = rs.getString("visibility");
+            Visibility visibility = null;
+            if (visibilityStr != null) {
+                visibility = Visibility.fromDbValue(visibilityStr);
+            }
+
             while (rs.next()) {
-                String[] options = (String[]) rs.getArray("options").getArray();
-                Question q = new Question(
-                        rs.getInt("question_id"),
-                        rs.getString("question_name"),
-                        rs.getString("answer"),
-                        options,
-                        rs.getString("prompt"),
-                        QuestionType.fromDbValue(rs.getString("type")),
-                        rs.getInt("points_worth"),
-                        Visibility.fromDbValue(rs.getString("visibility"))
+                Quiz q = new Quiz(
+                        rs.getInt("quiz_id"),
+                        rs.getString("quiz_name"),
+                        visibility
                 );
-                questions.add(q);
+                quizzes.add(q);
             }
         }
-        return questions;
+        return quizzes;
     }
 /*
     public List<Question> getAllTeacherQuestions(int userId) throws SQLException {

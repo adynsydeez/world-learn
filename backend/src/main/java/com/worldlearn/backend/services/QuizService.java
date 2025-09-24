@@ -42,9 +42,9 @@ public class QuizService {
     //     return questionDAO.deleteQuestion(id);
     //}
 //
-    //public List<Question> getAllQuestions() throws SQLException {
-    //    return questionDAO.getAllQuestions();
-    //}
+    public List<Quiz> getAllQuizzes() throws SQLException {
+        return quizDAO.getAllQuizzes();
+    }
 //
     //public List<Question> getAllTeacherQuestions(int userId) throws SQLException {
     //    return questionDAO.getAllTeacherQuestions(userId);

@@ -22,7 +22,7 @@ public class QuestionDAO {
     INSERT INTO questions (question_name, answer, options, prompt, type, points_worth, visibility)
     VALUES (?, ?, ?, ?, ?::question_type, ?, ?::visibility_type)
 """;
-
+        System.out.println("DAO:"+question.getAnswer());
         try (Connection conn = database.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
