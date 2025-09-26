@@ -261,4 +261,69 @@ public class QuizDAO {
             throw new RuntimeException("Failed to insert into teacher_quiz", e);
         }
     }
+
+    public List<Question> getQuizQuestions(int quizId) throws SQLException {
+        List<Question> questions = new ArrayList<>();
+        String sql = """
+        SELECT q.question_id, q.question_name, q.answer, 
+        q.options, q.prompt, q.type, q.points_worth, q.visibility
+        FROM questions q INNER JOIN quiz_question qq
+        ON q.question_id = qq.question_id
+        WHERE qq.quiz_id = ?
+        """;
+
+        try (Connection conn = database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, quizId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    // Fetch options array safely
+                    String[] options = null;
+                    try {
+                        Array optionsArray = rs.getArray("options");
+                        if (optionsArray != null) {
+                            options = (String[]) optionsArray.getArray();
+                        }
+                    } catch (SQLException e) {
+                        System.err.println("Failed to fetch options array for question_id="
+                                + rs.getInt("question_id") + ": " + e.getMessage());
+                        options = null;
+                    }
+
+                    // Fetch other fields safely
+                    String typeStr = rs.getString("type");
+                    QuestionType type = null;
+                    if (typeStr != null) {
+                        type = QuestionType.fromDbValue(typeStr);
+                    }
+
+                    String visibilityStr = rs.getString("visibility");
+                    Visibility visibility = null;
+                    if (visibilityStr != null) {
+                        visibility = Visibility.fromDbValue(visibilityStr);
+                    }
+
+                    Question q = new Question(
+                            rs.getInt("question_id"),
+                            rs.getString("question_name"),
+                            rs.getString("answer"),
+                            options,
+                            rs.getString("prompt"),
+                            type,
+                            rs.getInt("points_worth"),
+                            visibility
+                    );
+
+                    // Debug print for each row
+                    System.out.println("Loaded question: " + q.getQuestionId() + ", prompt=" + q.getPrompt());
+
+                    questions.add(q);
+                }
+            }
+        }
+
+        return questions;
+    }
 }

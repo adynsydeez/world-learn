@@ -17,7 +17,7 @@ public class QuestionDAO {
         this.database = database;
     }
 
-    public Question createQuestion(Question question, int teacherId) throws SQLException {
+    public Question createQuestion(Question question) throws SQLException {
         String sql = """
     INSERT INTO questions (question_name, answer, options, prompt, type, points_worth, visibility)
     VALUES (?, ?, ?, ?, ?::question_type, ?, ?::visibility_type)
@@ -179,6 +179,8 @@ public class QuestionDAO {
 
         try (Connection conn = database.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {

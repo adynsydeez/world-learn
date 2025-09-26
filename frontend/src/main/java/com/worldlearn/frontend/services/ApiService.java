@@ -2,13 +2,10 @@ package com.worldlearn.frontend.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.worldlearn.backend.dto.LoginRequest;
-import com.worldlearn.backend.dto.UserRequest;
-import com.worldlearn.backend.dto.UserResponse;
+import com.worldlearn.backend.dto.*;
 import com.worldlearn.backend.models.*;
 import com.worldlearn.backend.config.ApiConfig;
 import com.worldlearn.frontend.Session;
-import com.worldlearn.backend.dto.CreateQuizRequest;
 
 import java.net.http.*;
 import java.net.URI;
@@ -551,6 +548,90 @@ public class ApiService {
                 }
             } catch (Exception e) {
                 throw new RuntimeException("Error creating quiz: " + e.getMessage(), e);
+            }
+        });
+    }
+
+    public CompletableFuture<List<Question>> getQuizQuestionsAsync(int id) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                // Make sure the URL matches the backend route
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(baseUrl + "/quizzes/"+id+"/questions"))
+                        .header("Accept", "application/json")
+                        .GET()
+                        .timeout(Duration.ofSeconds(30))
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request,
+                        HttpResponse.BodyHandlers.ofString());
+
+
+                if (response.statusCode() == 200) {
+                    Question[] questions = objectMapper.readValue(response.body(), Question[].class);
+                    return List.of(questions);
+                } else {
+                    throw new RuntimeException("Failed to get questions: " + response.statusCode() +
+                            " - " + response.body());
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Error getting questions: " + e.getMessage(), e);
+            }
+        });
+    }
+
+    public CompletableFuture<Lesson> createLessonAsync(CreateLessonRequest lessonRequest) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                String jsonBody = objectMapper.writeValueAsString(lessonRequest);
+                int teacherId = Session.getCurrentUser().getId();
+                String url = baseUrl + "/lessons?teacherId=" + teacherId;
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .header("Content-Type", "application/json")
+                        .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
+                        .timeout(Duration.ofSeconds(30))
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request,
+                        HttpResponse.BodyHandlers.ofString());
+
+                if (response.statusCode() == 201) {
+                    return objectMapper.readValue(response.body(), Lesson.class);
+                } else {
+                    throw new RuntimeException("Failed to create Lesson: " + response.statusCode() +
+                            " - " + response.body());
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Error creating Lesson: " + e.getMessage(), e);
+            }
+        });
+    }
+    public CompletableFuture<List<Quiz>> getLessonQuizzes(int lessonId) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                // Make sure the URL matches the backend route
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(baseUrl + "/lessons/" + lessonId))
+                        .header("Accept", "application/json")
+                        .GET()
+                        .timeout(Duration.ofSeconds(30))
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request,
+                        HttpResponse.BodyHandlers.ofString());
+
+                System.out.println("Fetching");
+                if (response.statusCode() == 200) {
+                    Quiz[] quizzes = objectMapper.readValue(response.body(), Quiz[].class);
+                    return List.of(quizzes);
+                } else {
+                    throw new RuntimeException("Failed to get quizzes: " + response.statusCode() +
+                            " - " + response.body());
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Error getting quizzes: " + e.getMessage(), e);
             }
         });
     }

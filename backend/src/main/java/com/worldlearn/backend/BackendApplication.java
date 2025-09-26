@@ -5,11 +5,9 @@ import com.worldlearn.backend.controllers.QuestionController;
 import com.worldlearn.backend.controllers.QuizController;
 import com.worldlearn.backend.controllers.UserController;
 import com.worldlearn.backend.controllers.ClassController;
+import com.worldlearn.backend.controllers.LessonController;
 import com.worldlearn.backend.database.*;
-import com.worldlearn.backend.services.ClassService;
-import com.worldlearn.backend.services.QuestionService;
-import com.worldlearn.backend.services.UserService;
-import com.worldlearn.backend.services.QuizService;
+import com.worldlearn.backend.services.*;
 import io.javalin.Javalin;
 import io.javalin.plugin.bundled.CorsPluginConfig;
 import io.javalin.json.JavalinJackson;
@@ -22,17 +20,22 @@ public class BackendApplication {
         ClassDAO classDAO = new ClassDAO(database);
         QuestionDAO questionDAO = new QuestionDAO(database);
         QuizDAO quizDAO = new QuizDAO(database);
+        LessonDAO lessonDAO = new LessonDAO(database);
 
 
         UserService userService = new UserService(userDAO);
         ClassService classService = new ClassService(classDAO);
         QuestionService questionService = new QuestionService((questionDAO));
         QuizService quizService = new QuizService((quizDAO));
+        LessonService lessonService = new LessonService(lessonDAO);
+
 
         UserController userController = new UserController(userService);
         ClassController classController = new ClassController(classService);
         QuestionController questionController = new QuestionController(questionService);
         QuizController quizController = new QuizController(quizService);
+        LessonController lessonController = new LessonController(lessonService);
+
         // Test database connection
         if (!database.testConnection()) {
             System.err.println("Failed to connect to database. Exiting...");
@@ -77,9 +80,16 @@ public class BackendApplication {
         app.post("/api/questions", questionController::createQuestion);
         app.get("/api/questions", questionController::getAllQuestions);
         app.get("/api/questions/public", questionController::getPublicQuestions);
+        app.get("/api/questions/{id}", questionController::getQuestionById);
 
         // Quiz API endpoints
         app.post("/api/quizzes", quizController::createQuiz);
+        app.get("/api/quizzes/{id}/questions", quizController::getQuizQuestions);
+
+        // Lesson API endpoints
+        app.post("/api/lessons", lessonController::createLesson);
+        app.get("/api/lessons", lessonController::getAllLessons);
+        app.get("/api/lessons/{id}", lessonController::getLessonQuizzes);
 
         // Graceful shutdown
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {

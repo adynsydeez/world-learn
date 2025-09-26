@@ -86,12 +86,12 @@ public class TeacherDashboardController {
 
     @FXML
     protected void onCreateLessonClick() {
-        openPopup("lesson-creation-view.fxml", "Create Class");
+        openPopup("lesson-creation-view.fxml", "Create Lesson");
     }
 
     @FXML
     protected void onCreateQuizClick() {
-        openPopup("quiz-creation-view.fxml", "Create Class");
+        openPopup("quiz-creation-view.fxml", "Create Quiz");
     }
 
 

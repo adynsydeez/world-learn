@@ -39,7 +39,7 @@
             </HBox>
 
             <!-- Create Button -->
-            <Button fx:id="createLessonBtn" text="Create Lesson"
+            <Button fx:id="createLessonBtn" text="Create Lesson" onMouseClicked="#handleCreateLesson"
                     style="-fx-background-color: #8e44ad; -fx-text-fill: white; -fx-font-size: 16; -fx-font-weight: bold; -fx-padding: 12 40;"/>
 
         </VBox>
