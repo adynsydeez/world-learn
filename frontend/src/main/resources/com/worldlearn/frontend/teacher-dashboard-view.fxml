@@ -14,6 +14,10 @@
             <Button text="Profile" style="-fx-background-radius: 50%; -fx-pref-width:80; -fx-pref-height:80;" />
             <Button text="Home" style="-fx-background-radius: 50%; -fx-pref-width:80; -fx-pref-height:80;" />
             <Button text="Settings" style="-fx-background-radius: 50%; -fx-pref-width:80; -fx-pref-height:80;" />
+            <Button fx:id="logoutBtn"
+                    text="Logout"
+                    style="-fx-background-color: #ff4d4d; -fx-text-fill: white; -fx-font-weight: bold; -fx-pref-width:80; -fx-pref-height:40;"
+                    onAction="#onLogoutButtonClick"/>
         </VBox>
     </left>
 

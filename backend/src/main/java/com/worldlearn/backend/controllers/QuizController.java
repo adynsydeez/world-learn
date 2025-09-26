@@ -60,4 +60,14 @@ public class QuizController {
             ctx.status(500).result("Internal server error: " + e.getMessage());
         }
     }
+
+    public void getQuizQuestions(Context ctx) {
+        try {
+            int quizId = Integer.parseInt(ctx.pathParam("id"));
+            List<Question> questions = quizService.getQuizQuestions(quizId);
+            ctx.json(questions);
+        } catch (Exception e) {
+            ctx.status(500).result("Failed to get questions: " + e.getMessage());
+        }
+    }
 }

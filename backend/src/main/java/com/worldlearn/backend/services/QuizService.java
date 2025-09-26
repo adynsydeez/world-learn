@@ -33,30 +33,13 @@ public class QuizService {
     public Optional<Quiz> getQuizById(int id) throws SQLException {
         return quizDAO.getQuizByID(id);
     }
-//
-    //public boolean deleteQuestion(int id) throws SQLException {
-    //    if (id <= 0) {
-    //        throw new IllegalArgumentException("Invalid user ID");
-    //    }
-//
-    //     return questionDAO.deleteQuestion(id);
-    //}
-//
+
+    public List<Question> getQuizQuestions(int id) throws SQLException {
+        return quizDAO.getQuizQuestions(id);
+    }
+
     public List<Quiz> getAllQuizzes() throws SQLException {
         return quizDAO.getAllQuizzes();
     }
-//
-    //public List<Question> getAllTeacherQuestions(int userId) throws SQLException {
-    //    return questionDAO.getAllTeacherQuestions(userId);
-    //}
-
-    //public List<Question> getPublicQuestions() throws SQLException {
-    //   return questionDAO.getPublicQuestions();
-    //}
-
-    //public Question updateQuestion(Question question) throws SQLException {
-    //    return questionDAO.updateQuestion(question);
-    //}
-
 
 }

@@ -217,11 +217,6 @@ public class QuizCreatorController {
                     getVisibility(),
                     questionIds
             );
-            Quiz quiz = new Quiz(
-                    0,
-                    quizName,
-                    getVisibility()
-            );
 
             apiService.createQuizAsync(quizRequest)
                     .thenAccept(q -> System.out.println("Quiz saved:" + quizName))

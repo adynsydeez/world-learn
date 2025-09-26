@@ -35,6 +35,7 @@ public class Question {
     }
 
     /// ////GETTERS AND SETTERS
+
     // QUESTION ID
     public void setQuestionId(int id) {
         if (id < 0) {

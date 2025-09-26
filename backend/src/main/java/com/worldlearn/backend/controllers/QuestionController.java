@@ -15,7 +15,7 @@ public class QuestionController {
         this.questionService = questionService;
     }
 
-    public void getUserById(Context ctx) {
+    public void getQuestionById(Context ctx) {
         try {
             int id = Integer.parseInt(ctx.pathParam("id"));
             Optional<Question> question = questionService.getQuestionById(id);

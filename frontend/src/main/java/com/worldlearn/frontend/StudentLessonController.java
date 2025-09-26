@@ -1,88 +1,92 @@
 package com.worldlearn.frontend;
 
-import com.worldlearn.backend.services.AuthenticationService;
+import com.worldlearn.backend.models.Quiz;
 import com.worldlearn.backend.models.User;
 import com.worldlearn.frontend.services.AuthClientService;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-
+import com.worldlearn.frontend.services.ApiService;
 public class StudentLessonController {
     private User user;
     private Stage stage;
     private AuthClientService auth;
 
+    @FXML private Button homeButtonLessonPage;
+    @FXML private Button profileButtonLessonPage;
+    @FXML private Button classesView;
+    @FXML private VBox quizListContainer;
+    private final com.worldlearn.frontend.services.ApiService api = new com.worldlearn.frontend.services.ApiService();
     public void init(User user, Stage stage, AuthClientService auth) {
         this.user = user;
         this.stage = stage;
         this.auth  = auth;
+        loadQuizzesFromApi();
     }
 
-    @FXML private Button homeButtonLessonPage;
-    @FXML private Button profileButtonLessonPage;
-    @FXML private Button classesView; // ok to keep, even though name matches a method
+    private void loadQuizzesFromApi() {
+        quizListContainer.getChildren().clear();
+        api.getAllQuizzesAsync()
+                .thenAccept(quizzes -> javafx.application.Platform.runLater(() -> {
+                    quizListContainer.getChildren().clear();
+                    for (Quiz q : quizzes) {
+                        Button b = new Button(q.getQuizName());
+                        b.setMaxWidth(Double.MAX_VALUE);
+                        // inline styles to mimic your old “pill” rows
+                        b.setStyle("-fx-background-color:#dbdbdb; -fx-background-radius:20; -fx-padding:20; -fx-cursor:hand; -fx-font-size:18; -fx-font-weight:bold;");
+                        b.setOnAction(e -> openQuiz(q));
+                        quizListContainer.getChildren().add(b);
+                    }
+                }))
+                .exceptionally(ex -> { ex.printStackTrace(); return null; });
+    }
+
+    private void openQuiz(Quiz q){
+        try{
+            FXMLLoader loader = new FXMLLoader(HelloApplication.class.getResource("student-question-view.fxml"));
+            Scene scene = new Scene(loader.load(),800,600);
+            StudentQuestionViewController c = loader.getController();
+            c.init(user,stage,auth);
+            c.setQuiz(q.getQuizID(),q.getQuizName());
+            stage.setScene(scene);
+        }catch(Exception ex){ex.printStackTrace();}
+    }
 
     @FXML
     protected void onHomeButtonClickLessonPage() throws Exception {
         FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("student-dashboard-view.fxml"));
-        Scene scene = new Scene(fxml.load(), 800, 600);
+        Scene scene = new Scene(fxml.load(),800,600);
         StudentDashboardController c = fxml.getController();
-        c.init(user, stage, auth);
+        c.init(user,stage,auth);
         stage.setScene(scene);
     }
 
     @FXML
     protected void onProfileButtonClickLessonPage() throws Exception {
         FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("profile-view.fxml"));
-        Scene scene = new Scene(fxml.load(), 800, 600);
+        Scene scene = new Scene(fxml.load(),800,600);
         ProfileController c = fxml.getController();
-        c.init(user, stage, auth);
-        stage.setScene(scene);
-    }
-
-    @FXML
-    protected void quizSelected(javafx.scene.input.MouseEvent e) throws Exception {
-
-        javafx.scene.Node n = (javafx.scene.Node) e.getTarget();
-        while (n != null && !(n instanceof javafx.scene.layout.HBox)) n = n.getParent();
-        if (n == null) return;
-        javafx.scene.layout.HBox row = (javafx.scene.layout.HBox) n;
-
-       //find what quiz was selected
-        String quizTitle = null;
-        for (javafx.scene.Node child : row.getChildren()) {
-            if (child instanceof javafx.scene.control.Label) {
-                javafx.scene.control.Label lbl = (javafx.scene.control.Label) child;
-                quizTitle = lbl.getText();
-                break;
-            }
-        }
-
-        if (quizTitle == null) {
-            int idx = ((javafx.scene.layout.VBox) row.getParent()).getChildren().indexOf(row) + 1;
-            quizTitle = "Quiz " + idx;
-        }
-
-
-        FXMLLoader loader = new FXMLLoader(HelloApplication.class.getResource("student-question-view.fxml"));
-        Scene scene = new Scene(loader.load(), 800, 600);
-
-        StudentQuestionViewController c = loader.getController();
-        c.init(user, stage, auth);
-        c.setLessonTitle(quizTitle);
-
+        c.init(user,stage,auth);
         stage.setScene(scene);
     }
 
     @FXML
     protected void classesView() throws Exception {
         FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("student-classes-view.fxml"));
-        Scene scene = new Scene(fxml.load(), 800, 600);
+        Scene scene = new Scene(fxml.load(),800,600);
         StudentClassesController c = fxml.getController();
+        c.init(user,stage,auth);
+        stage.setScene(scene);
+    }
+    @FXML
+    protected void quizView() throws Exception {
+        FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("student-lesson-view.fxml"));
+        Scene scene = new Scene(fxml.load(), 800, 600);
+        StudentLessonController c = fxml.getController();
         c.init(user, stage, auth);
-
         stage.setScene(scene);
     }
 }

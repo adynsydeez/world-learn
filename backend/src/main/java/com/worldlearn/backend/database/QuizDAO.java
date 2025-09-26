@@ -54,19 +54,17 @@ public class QuizDAO {
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
-            String visibilityStr = rs.getString("visibility");
-            Visibility visibility = null;
-            if (visibilityStr != null) {
-                visibility = Visibility.fromDbValue(visibilityStr);
-            }
-
             while (rs.next()) {
-                Quiz q = new Quiz(
+                String visibilityStr = rs.getString("visibility");
+                Visibility visibility = (visibilityStr != null)
+                        ? Visibility.fromDbValue(visibilityStr)
+                        : null;
+
+                quizzes.add(new Quiz(
                         rs.getInt("quiz_id"),
                         rs.getString("quiz_name"),
                         visibility
-                );
-                quizzes.add(q);
+                ));
             }
         }
         return quizzes;
@@ -169,19 +167,22 @@ public class QuizDAO {
 */
 
     public Optional<Quiz> getQuizByID(int id) throws SQLException {
-        String sql = """
-        SELECT quiz_id, quiz_name, visibility FROM quizzes WHERE quiz_id = ?
-    """;
+        String sql = "SELECT quiz_id, quiz_name, visibility FROM quizzes WHERE quiz_id = ?";
 
         try (Connection conn = database.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            try (ResultSet  rs = stmt.executeQuery()) {
+            stmt.setInt(1, id);
+
+            try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
+                    String visStr = rs.getString("visibility");
+                    Visibility vis = (visStr != null) ? Visibility.fromDbValue(visStr) : null;
+
                     Quiz q = new Quiz(
                             rs.getInt("quiz_id"),
-                            rs.getString("quiz"),
-                            Visibility.fromDbValue(rs.getString("visibility"))
+                            rs.getString("quiz_name"),
+                            vis
                     );
                     return Optional.of(q);
                 }
@@ -189,6 +190,7 @@ public class QuizDAO {
         }
         return Optional.empty();
     }
+
 
 
     public Question updateQuestion(Question question) throws SQLException {
@@ -260,5 +262,70 @@ public class QuizDAO {
         } catch (SQLException e) {
             throw new RuntimeException("Failed to insert into teacher_quiz", e);
         }
+    }
+
+    public List<Question> getQuizQuestions(int quizId) throws SQLException {
+        List<Question> questions = new ArrayList<>();
+        String sql = """
+        SELECT q.question_id, q.question_name, q.answer, 
+        q.options, q.prompt, q.type, q.points_worth, q.visibility
+        FROM questions q INNER JOIN quiz_question qq
+        ON q.question_id = qq.question_id
+        WHERE qq.quiz_id = ?
+        """;
+
+        try (Connection conn = database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, quizId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    // Fetch options array safely
+                    String[] options = null;
+                    try {
+                        Array optionsArray = rs.getArray("options");
+                        if (optionsArray != null) {
+                            options = (String[]) optionsArray.getArray();
+                        }
+                    } catch (SQLException e) {
+                        System.err.println("Failed to fetch options array for question_id="
+                                + rs.getInt("question_id") + ": " + e.getMessage());
+                        options = null;
+                    }
+
+                    // Fetch other fields safely
+                    String typeStr = rs.getString("type");
+                    QuestionType type = null;
+                    if (typeStr != null) {
+                        type = QuestionType.fromDbValue(typeStr);
+                    }
+
+                    String visibilityStr = rs.getString("visibility");
+                    Visibility visibility = null;
+                    if (visibilityStr != null) {
+                        visibility = Visibility.fromDbValue(visibilityStr);
+                    }
+
+                    Question q = new Question(
+                            rs.getInt("question_id"),
+                            rs.getString("question_name"),
+                            rs.getString("answer"),
+                            options,
+                            rs.getString("prompt"),
+                            type,
+                            rs.getInt("points_worth"),
+                            visibility
+                    );
+
+                    // Debug print for each row
+                    System.out.println("Loaded question: " + q.getQuestionId() + ", prompt=" + q.getPrompt());
+
+                    questions.add(q);
+                }
+            }
+        }
+
+        return questions;
     }
 }

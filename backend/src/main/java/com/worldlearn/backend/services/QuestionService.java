@@ -17,7 +17,7 @@ public class QuestionService {
     }
 
     public Question createQuestion(Question question, int teacherId) throws SQLException {
-        Question saved = questionDAO.createQuestion(question, teacherId);
+        Question saved = questionDAO.createQuestion(question);
         System.out.println("Linking teacherId=" + teacherId + " to questionId=" + saved.getQuestionId());
         questionDAO.saveTeacherToQuestion(saved.getQuestionId(), teacherId);
         System.out.println("service:" + question.getAnswer());
