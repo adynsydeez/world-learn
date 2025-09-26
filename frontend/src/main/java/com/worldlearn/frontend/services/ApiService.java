@@ -523,6 +523,28 @@ public class ApiService {
         });
     }
 
+    public CompletableFuture<List<Quiz>> getAllQuizzesAsync() {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                HttpRequest req = HttpRequest.newBuilder()
+                        .uri(URI.create(baseUrl + "/quizzes"))   // baseUrl should already be http://localhost:7000/api
+                        .header("Accept", "application/json")
+                        .GET()
+                        .timeout(Duration.ofSeconds(30))
+                        .build();
+
+                HttpResponse<String> res = httpClient.send(req, HttpResponse.BodyHandlers.ofString());
+                if (res.statusCode() == 200) {
+                    Quiz[] arr = objectMapper.readValue(res.body(), Quiz[].class);
+                    return List.of(arr);
+                }
+                throw new RuntimeException("Failed to get quizzes: " + res.statusCode() + " - " + res.body());
+            } catch (Exception e) {
+                throw new RuntimeException("Error getting quizzes: " + e.getMessage(), e);
+            }
+        });
+    }
+
     public CompletableFuture<Quiz> createQuizAsync(CreateQuizRequest quizRequest) {
         return CompletableFuture.supplyAsync(() -> {
             try {

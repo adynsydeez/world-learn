@@ -83,8 +83,13 @@ public class BackendApplication {
         app.get("/api/questions/{id}", questionController::getQuestionById);
 
         // Quiz API endpoints
+
         app.post("/api/quizzes", quizController::createQuiz);
+        app.get("/api/quizzes", quizController::getAllQuizzes);
         app.get("/api/quizzes/{id}/questions", quizController::getQuizQuestions);
+
+
+
 
         // Lesson API endpoints
         app.post("/api/lessons", lessonController::createLesson);

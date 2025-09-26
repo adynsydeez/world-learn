@@ -114,7 +114,6 @@ public class MultipleChoiceQuestionController {
         String base = (String) b.getProperties().getOrDefault("baseStyle", b.getStyle());
         b.setStyle(base + extra);
     }
-
     @FXML
     private void onBack() throws Exception {
         FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("student-question-view.fxml"));
@@ -123,4 +122,6 @@ public class MultipleChoiceQuestionController {
         c.init(user, stage, auth);
         stage.setScene(scene);
     }
+
+
 }

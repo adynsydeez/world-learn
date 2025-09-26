@@ -54,19 +54,17 @@ public class QuizDAO {
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
-            String visibilityStr = rs.getString("visibility");
-            Visibility visibility = null;
-            if (visibilityStr != null) {
-                visibility = Visibility.fromDbValue(visibilityStr);
-            }
-
             while (rs.next()) {
-                Quiz q = new Quiz(
+                String visibilityStr = rs.getString("visibility");
+                Visibility visibility = (visibilityStr != null)
+                        ? Visibility.fromDbValue(visibilityStr)
+                        : null;
+
+                quizzes.add(new Quiz(
                         rs.getInt("quiz_id"),
                         rs.getString("quiz_name"),
                         visibility
-                );
-                quizzes.add(q);
+                ));
             }
         }
         return quizzes;
@@ -169,19 +167,22 @@ public class QuizDAO {
 */
 
     public Optional<Quiz> getQuizByID(int id) throws SQLException {
-        String sql = """
-        SELECT quiz_id, quiz_name, visibility FROM quizzes WHERE quiz_id = ?
-    """;
+        String sql = "SELECT quiz_id, quiz_name, visibility FROM quizzes WHERE quiz_id = ?";
 
         try (Connection conn = database.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            try (ResultSet  rs = stmt.executeQuery()) {
+            stmt.setInt(1, id);
+
+            try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
+                    String visStr = rs.getString("visibility");
+                    Visibility vis = (visStr != null) ? Visibility.fromDbValue(visStr) : null;
+
                     Quiz q = new Quiz(
                             rs.getInt("quiz_id"),
-                            rs.getString("quiz"),
-                            Visibility.fromDbValue(rs.getString("visibility"))
+                            rs.getString("quiz_name"),
+                            vis
                     );
                     return Optional.of(q);
                 }
@@ -189,6 +190,7 @@ public class QuizDAO {
         }
         return Optional.empty();
     }
+
 
 
     public Question updateQuestion(Question question) throws SQLException {
