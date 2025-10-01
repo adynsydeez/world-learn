@@ -1,6 +1,8 @@
 package com.worldlearn.backend.database;
 
 import com.worldlearn.backend.dto.CreateClassRequest;
+import com.worldlearn.backend.models.Lesson;
+import com.worldlearn.backend.models.Question;
 import com.worldlearn.backend.models.User;
 import com.worldlearn.backend.models.WlClass;
 import com.worldlearn.backend.services.ClassService;
@@ -8,12 +10,35 @@ import com.worldlearn.backend.services.ClassService;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class ClassDAO {
     private final Database database;
 
     public ClassDAO(Database database) {
         this.database = database;
+    }
+
+    public Optional<WlClass> getClassById(int id) throws SQLException {
+        String sql = "SELECT class_id, class_name, join_code FROM classes WHERE class_id = ?";
+
+        try (Connection conn = database.getConnection()){
+            PreparedStatement stmt = conn.prepareStatement(sql);
+
+            stmt.setInt(1, id);
+
+            try (ResultSet rs = stmt.executeQuery()){
+                if (rs.next()){
+                    WlClass c = new WlClass(
+                            rs.getInt("class_id"),
+                            rs.getString("class_name"),
+                            rs.getInt("join_code")
+                    );
+                    return Optional.of(c);
+                }
+            }
+        }
+        return Optional.empty();
     }
 
     // Simple class creation - just inserts into Classes table for testing
@@ -170,6 +195,46 @@ public class ClassDAO {
         } catch (SQLException e) {
             throw new RuntimeException("Failed to insert into student_class", e);
         }
+    }
+
+    public List<Lesson> getClassLessons(int classId) throws SQLException {
+        List<Lesson> lessons = new ArrayList<>();
+        String sql = """
+        SELECT l.lesson_id, l.lesson_name, l.visibility
+        FROM lessons l INNER JOIN class_lesson cl
+        ON l.lesson_id = cl.lesson_id
+        WHERE cl.class_id = ?
+        """;
+
+        try (Connection conn = database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, classId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+
+                    String visibilityStr = rs.getString("visibility");
+                    Question.Visibility visibility = null;
+                    if (visibilityStr != null) {
+                        visibility = Question.Visibility.fromDbValue(visibilityStr);
+                    }
+
+                    Lesson l = new Lesson(
+                            rs.getInt("lesson_id"),
+                            rs.getString("lesson_name"),
+                            visibility
+                    );
+
+                    // Debug print for each row
+                    System.out.println("Loaded question: " + l.getLessonId() + ", name=" + l.getLessonName());
+
+                    lessons.add(l);
+                }
+            }
+        }
+
+        return lessons;
     }
 
 

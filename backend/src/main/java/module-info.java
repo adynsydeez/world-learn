@@ -5,6 +5,7 @@ module com.worldlearn.backend {
     requires com.fasterxml.jackson.databind;
     requires java.xml.crypto;
     requires java.desktop;
+    //requires com.worldlearn.backend;
     exports com.worldlearn.backend.models;
     exports com.worldlearn.backend.services;
     exports com.worldlearn.backend.config;

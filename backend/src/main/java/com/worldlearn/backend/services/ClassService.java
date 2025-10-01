@@ -7,12 +7,17 @@ import com.worldlearn.backend.models.WlClass;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 public class ClassService {
     private final ClassDAO classDAO;
 
     public ClassService(ClassDAO classDAO) {
         this.classDAO = classDAO;
+    }
+
+    public Optional<WlClass> getClassById(int id) throws SQLException{
+        return classDAO.getClassById(id);
     }
 
     // Simple class creation - just inserts into Classes table
@@ -28,6 +33,10 @@ public class ClassService {
 
     public List<WlClass> getAllClassesForUser(User user) throws SQLException {
         return classDAO.getAllClassesForUser(user);
+    }
+
+    public List<Lesson> getClassLessons(int classId) throws SQLException {
+        return classDAO.getClassLessons(classId);
     }
 
     public static int generateJoinCode(WlClass wlClass) {

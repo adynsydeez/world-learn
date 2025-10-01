@@ -1,5 +1,6 @@
 package com.worldlearn.backend.controllers;
 
+import com.worldlearn.backend.database.ClassDAO;
 import com.worldlearn.backend.database.Database;
 import com.worldlearn.backend.database.UserDAO;
 import com.worldlearn.backend.dto.AssignStudentRequest;
@@ -14,6 +15,7 @@ import io.javalin.http.Context;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class ClassController {
     private final ClassService classService;
@@ -62,6 +64,32 @@ public class ClassController {
 
         } catch (NumberFormatException e) {
             ctx.status(400).json(Map.of("error", "Invalid user id"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            ctx.status(500).json(Map.of("error", "Database error: " + e.getMessage()));
+        }
+    }
+
+    public void getClassLessons(Context ctx) {
+        try {
+            // Extract class ID from path
+            int classId = Integer.parseInt(ctx.pathParam("id"));
+
+            ClassService classService = new ClassService(new ClassDAO(new Database()));
+            Optional<WlClass> wlClass = classService.getClassById(classId); // make sure this returns User with role
+            if (wlClass.isEmpty()) {
+                ctx.status(404).json(Map.of("error", "Class not found"));
+                return;
+            }
+
+            // Fetch classes
+            List<Lesson> lessons = classService.getClassLessons(classId);
+
+            // Always return JSON array (empty if no classes)
+            ctx.status(200).json(lessons);
+
+        } catch (NumberFormatException e) {
+            ctx.status(400).json(Map.of("error", "Invalid class id"));
         } catch (Exception e) {
             e.printStackTrace();
             ctx.status(500).json(Map.of("error", "Database error: " + e.getMessage()));

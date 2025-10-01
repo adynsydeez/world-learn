@@ -336,6 +336,33 @@ public class ApiService {
         }
     }
 
+    public CompletableFuture<List<Lesson>> getClassLessons(int classId) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(baseUrl + "/classes/" + classId + "/lessons"))
+                        .header("Accept", "application/json")
+                        .GET()
+                        .timeout(Duration.ofSeconds(30))
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request,
+                        HttpResponse.BodyHandlers.ofString());
+
+
+                if (response.statusCode() == 200) {
+                    Lesson[] lessons = objectMapper.readValue(response.body(), Lesson[].class);
+                    return List.of(lessons);
+                } else {
+                    throw new RuntimeException("Failed to get lessons: " + response.statusCode() +
+                            " - " + response.body());
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Error getting lessons: " + e.getMessage(), e);
+            }
+        });
+    }
+
 
     // ===== QUESTION OPERATIONS =====
     // Create question
