@@ -1,7 +1,9 @@
 package com.worldlearn.backend.database;
 
+import com.worldlearn.backend.dto.CreateClassRequest;
 import com.worldlearn.backend.models.User;
 import com.worldlearn.backend.models.WlClass;
+import com.worldlearn.backend.services.ClassService;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -16,31 +18,46 @@ public class ClassDAO {
 
     // Simple class creation - just inserts into Classes table for testing
     public WlClass createClass(WlClass wlClass) throws SQLException {
-        String sql = "INSERT INTO Classes (class_name, join_code) VALUES (?, ?) RETURNING class_id;";
+        String insertSql = "INSERT INTO Classes (class_name, join_code) VALUES (?, ?) RETURNING class_id;";
+        String updateSql = "UPDATE Classes SET join_code = ? WHERE class_id = ?;";
 
-        try (Connection conn = database.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = database.getConnection()) {
+            conn.setAutoCommit(false);
 
-            stmt.setString(1, wlClass.getClassName());
-            stmt.setInt(2, wlClass.getJoinCode());
+            int classId;
 
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    int classId = rs.getInt("class_id");
+            try (PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
+                insertStmt.setString(1, wlClass.getClassName());
+                insertStmt.setInt(2, 0); // temporary value
 
-                    // Create a new WlClass object with the generated ID
-                    WlClass createdClass = new WlClass();
-                    createdClass.setId(classId);
-                    createdClass.setClassName(wlClass.getClassName());
-                    createdClass.setJoinCode(wlClass.getJoinCode());
-
-                    return createdClass;
-                } else {
-                    throw new SQLException("Creating class failed, no ID obtained.");
+                try (ResultSet rs = insertStmt.executeQuery()) {
+                    if (rs.next()) {
+                        classId = rs.getInt("class_id");
+                    } else {
+                        conn.rollback();
+                        throw new SQLException("Creating class failed, no ID obtained.");
+                    }
                 }
             }
+
+            wlClass.setId(classId);
+            int joinCode = ClassService.generateJoinCode(wlClass);
+            wlClass.setJoinCode(joinCode);
+
+            try (PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
+                updateStmt.setInt(1, joinCode);
+                updateStmt.setInt(2, classId);
+                updateStmt.executeUpdate();
+            }
+
+            conn.commit();
+            return wlClass;
+
+        } catch (SQLException e) {
+            throw new SQLException("Error creating class: " + e.getMessage(), e);
         }
     }
+
 
     public List<WlClass> getAllClassesForUser(User user) throws SQLException {
         List<WlClass> classes = new ArrayList<>();
@@ -70,7 +87,7 @@ public class ClassDAO {
                     String class_name = rs.getString("class_name");
                     int join_code = rs.getInt("join_code");
 
-                    WlClass wlClass = new WlClass(class_name, join_code);
+                    WlClass wlClass = new WlClass(class_id, class_name, join_code);
                     wlClass.setId(class_id);
                     classes.add(wlClass);
                 }
@@ -112,89 +129,65 @@ public class ClassDAO {
         return classId;
     }
 
+    public void saveTeacherToClass(int classId, int teacherId) throws SQLException {
+        String sql = "INSERT INTO teacher_class(teacher_role, class_id, user_id) VALUES (?::teacher_role_type, ?, ?)";
 
-    // Future method: Create class and assign owner in a transaction
-    // public WlClass createClassWithOwner(WlClass wlClass, User creator) throws SQLException {
-    //     String sql1 = "INSERT INTO Classes (class_name, join_code) VALUES (?, ?) RETURNING class_id;";
-    //     String sql2 = "INSERT INTO Teacher_Class (teacher_role, class_id, user_id) VALUES (?::teacher_role_type, ?, ?)";
+        try (Connection conn = database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, "creator");
+            stmt.setInt(2, classId);
+            stmt.setInt(3, teacherId);
+            System.out.println("Saving teacherId=" + teacherId + " classId=" + classId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to insert into teacher_class", e);
+        }
+    }
 
-    //     Connection conn = null;
-    //     try {
-    //         conn = database.getConnection();
-    //         conn.setAutoCommit(false);
+    public void saveLessonToClass(int classId, int lessonId) throws SQLException {
+        String sql = "INSERT INTO class_lesson(class_id, lesson_id) VALUES (?, ?)";
 
-    //         int classId;
+        try (Connection conn = database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, classId);
+            stmt.setInt(2, lessonId);
+            System.out.println("Saving lessonId=" + lessonId + " classId=" + classId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to insert into class_lesson", e);
+        }
+    }
 
-    //         // 1. Insert into Classes
-    //         try (PreparedStatement stmt1 = conn.prepareStatement(sql1)) {
-    //             stmt1.setString(1, wlClass.getClassName());
-    //             stmt1.setInt(2, wlClass.getJoinCode());
+    public void saveStudentToClass(int classId, int studentId) throws SQLException {
+        String sql = "INSERT INTO student_class(class_id, user_id) VALUES (?, ?)";
 
-    //             try (ResultSet rs = stmt1.executeQuery()) {
-    //                 if (rs.next()) {
-    //                     classId = rs.getInt("class_id");
-    //                 } else {
-    //                     throw new SQLException("Creating class failed, no ID obtained.");
-    //                 }
-    //             }
-    //         }
+        try (Connection conn = database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, classId);
+            stmt.setInt(2, studentId);
+            System.out.println("Saving studentId=" + studentId + " classId=" + classId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to insert into student_class", e);
+        }
+    }
 
-    //         // 2. Insert creator as owner
-    //         try (PreparedStatement stmt2 = conn.prepareStatement(sql2)) {
-    //             stmt2.setString(1, "owner");
-    //             stmt2.setInt(2, classId);
-    //             stmt2.setInt(3, creator.getId());
-
-    //             if (stmt2.executeUpdate() == 0) {
-    //                 throw new SQLException("Creating Teacher_Class failed, no rows affected.");
-    //             }
-    //         }
-
-    //         conn.commit();
-
-    //         WlClass createdClass = new WlClass();
-    //         createdClass.setId(classId);
-    //         createdClass.setClassName(wlClass.getClassName());
-    //         createdClass.setJoinCode(wlClass.getJoinCode());
-
-    //         return createdClass;
-
-    //     } catch (SQLException e) {
-    //         if (conn != null) {
-    //             try {
-    //                 conn.rollback();
-    //             } catch (SQLException rollbackEx) {
-    //                 e.addSuppressed(rollbackEx);
-    //             }
-    //         }
-    //         throw e;
-    //     } finally {
-    //         if (conn != null) {
-    //             try {
-    //                 conn.setAutoCommit(true);
-    //                 conn.close();
-    //             } catch (SQLException e) {
-    //                 System.err.println("Error restoring auto-commit or closing connection: " + e.getMessage());
-    //             }
-    //         }
-    //     }
-    // }
 
     // Future method: Remove user from class
-    // public void removeUserFromClass(int classId, int userId) throws SQLException {
-    //     String sql = "DELETE FROM Teacher_Class WHERE class_id = ? AND user_id = ?";
+    public void removeTeacherFromClass(int classId, int userId) throws SQLException {
+         String sql = "DELETE FROM teacher_class WHERE class_id = ? AND user_id = ?";
 
-    //     try (Connection conn = database.getConnection();
-    //          PreparedStatement stmt = conn.prepareStatement(sql)) {
+         try (Connection conn = database.getConnection();
+              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-    //         stmt.setInt(1, classId);
-    //         stmt.setInt(2, userId);
+             stmt.setInt(1, classId);
+             stmt.setInt(2, userId);
 
-    //         if (stmt.executeUpdate() == 0) {
-    //             throw new SQLException("Removing user from class failed, no rows affected.");
-    //         }
-    //     }
-    // }
+             if (stmt.executeUpdate() == 0) {
+                 throw new SQLException("Removing user from class failed, no rows affected.");
+             }
+         }
+    }
 
     // Future method: Update user role in class
     // public void updateUserRole(int classId, int userId, String newRole) throws SQLException {

@@ -82,7 +82,7 @@ public class TeacherDashboardController {
     private void onLogoutButtonClick() {
         try {
             // 1) Clear session (adjust for your Session API)
-            Session.setCurrentUser(null);
+            Session.clearSession();
 
             // 2) Get the current window from the button (NOT the null 'stage' field)
             Stage currentStage = (Stage) logoutBtn.getScene().getWindow();

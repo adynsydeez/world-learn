@@ -11,7 +11,7 @@
     <left>
         <VBox spacing="12" alignment="TOP_CENTER" style="-fx-padding: 12; -fx-background-color: #a0a0a0;" prefWidth="140">
             <Button fx:id="homeBtn" text="Home" onAction="#handleHome" />
-            <Button text="Create Class" disable="true"/>
+            <Button fx:id="createBtn" text="Create Class" onMouseClicked="#createClass"/>
             <Separator/>
             <Label text="Class Tools" style="-fx-font-weight: bold;"/>
         </VBox>

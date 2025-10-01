@@ -1,13 +1,18 @@
 package com.worldlearn.frontend;
 
+import com.worldlearn.backend.dto.CreateClassRequest;
+import com.worldlearn.backend.dto.CreateQuizRequest;
 import com.worldlearn.backend.models.Question;
 import com.worldlearn.backend.models.User;
+import com.worldlearn.backend.models.WlClass;
 import com.worldlearn.frontend.services.ApiService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
 import java.io.IOException;
+import java.util.List;
+
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -21,6 +26,7 @@ public class ClassCreatorController {
     @FXML private Button homeBtn;
     @FXML private TextField studentEmailField;
     @FXML private ListView<String> studentList;
+    @FXML private Button createBtn;
 
     @FXML
     protected void handleHome() throws IOException {
@@ -29,6 +35,8 @@ public class ClassCreatorController {
         Scene scene = new Scene(fxmlLoader.load(), 1200, 700);
         stage.setScene(scene);
     }
+
+
 
     @FXML
     protected void handleAddStudent() {
@@ -44,6 +52,32 @@ public class ClassCreatorController {
         String selected = studentList.getSelectionModel().getSelectedItem();
         if (selected != null) {
             studentList.getItems().remove(selected);
+        }
+    }
+
+    @FXML
+    private void createClass() {
+        String className = "Class Test Create";
+        List<Integer> lessonIds = new java.util.ArrayList<>(List.of());
+        lessonIds.add(1);
+        lessonIds.add(2);
+        lessonIds.add(3);
+        System.out.println(lessonIds);
+
+        CreateClassRequest classRequest = new CreateClassRequest(0, className, 0, lessonIds);
+        final ApiService apiService = new ApiService();
+
+        try{
+            apiService.createClassAsync(classRequest)
+                    .thenAccept(q -> System.out.println("Class saved:" + className))
+                    .exceptionally(e -> {
+                        e.printStackTrace();
+                        return null;
+                    })
+                    .join();
+
+        } catch (IllegalArgumentException ex){
+            System.out.println(ex.getMessage());
         }
     }
 }

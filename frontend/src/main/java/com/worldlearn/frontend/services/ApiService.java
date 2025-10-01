@@ -252,12 +252,15 @@ public class ApiService {
     // ===== CLASS OPERATIONS =====
 
     // Create Class
-    public CompletableFuture<User> createClassAsync(WlClass wlClass) {
+    public CompletableFuture<WlClass> createClassAsync(CreateClassRequest classRequest) {
         return CompletableFuture.supplyAsync(() -> {
             try {
-                String jsonBody = objectMapper.writeValueAsString(wlClass);
+                String jsonBody = objectMapper.writeValueAsString(classRequest);
+                int teacherId = Session.getCurrentUser().getId();
+                String url = baseUrl + "/classes?teacherId=" + teacherId;
+
                 HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(baseUrl + "/users"))
+                        .uri(URI.create(url))
                         .header("Content-Type", "application/json")
                         .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
                         .timeout(Duration.ofSeconds(30))
@@ -267,16 +270,17 @@ public class ApiService {
                         HttpResponse.BodyHandlers.ofString());
 
                 if (response.statusCode() == 201) {
-                    return objectMapper.readValue(response.body(), User.class);
+                    return objectMapper.readValue(response.body(), WlClass.class);
                 } else {
                     throw new RuntimeException("Failed to create class: " + response.statusCode() +
                             " - " + response.body());
                 }
             } catch (Exception e) {
-                throw new RuntimeException("Error creating user: " + e.getMessage(), e);
+                throw new RuntimeException("Error creating class: " + e.getMessage(), e);
             }
         });
     }
+
 
     // Get all classes for specific user
     public CompletableFuture<List<WlClass>> getAllClassesForUser(User user) {
@@ -630,6 +634,7 @@ public class ApiService {
             }
         });
     }
+
     public CompletableFuture<List<Quiz>> getLessonQuizzes(int lessonId) {
         return CompletableFuture.supplyAsync(() -> {
             try {

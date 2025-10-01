@@ -1,20 +1,22 @@
-package com.worldlearn.backend.models;
+package com.worldlearn.backend.dto;
 
-import java.util.Random;
 
-public class WlClass {
+import java.util.List;
+
+public class CreateClassRequest {
     private int id;
     private String className;
     private int joinCode;
-    private final Random random = new Random();
+    private List<Integer> lessonIds;
 
-    public WlClass() {
+    public CreateClassRequest() {
     }
 
-    public WlClass(int id, String className, int joinCode) {
+    public CreateClassRequest(int id, String className, int joinCode, List<Integer> lessonIds) {
         this.id = id;
         this.className = className;
         this.joinCode = joinCode;
+        this.lessonIds = lessonIds;
     }
 
     public int getId() { return this.id; }
@@ -25,6 +27,12 @@ public class WlClass {
 
     public int getJoinCode() { return this.joinCode; }
     public void setJoinCode(int joinCode) { this.joinCode = joinCode; }
+
+    public void setLessonIds(List<Integer> lessonIds) {
+        // validation
+        this.lessonIds = lessonIds;
+    }
+    public List<Integer> getLessonIds() { return lessonIds; }
 
     @Override
     public String toString() {

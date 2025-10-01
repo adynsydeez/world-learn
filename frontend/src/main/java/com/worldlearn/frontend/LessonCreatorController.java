@@ -65,10 +65,10 @@ public class LessonCreatorController {
                 quizIds
         );
 
-        apiService.getLessonQuizzes(3)
-                .thenAccept(quizzes -> Platform.runLater(() -> {
-                    System.out.println("Fetched " + quizzes.size() + " quizzes");
-                    System.out.println(quizzes.getFirst().getQuizName());
+        apiService.getQuizQuestionsAsync(22)
+                .thenAccept(questions -> Platform.runLater(() -> {
+                    System.out.println("Fetched " + questions.size() + " question(s)");
+                    //System.out.println(questions.getFirst().getQuestionName());
                 }))
                 .exceptionally(e -> {
                     e.printStackTrace();

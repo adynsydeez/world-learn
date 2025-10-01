@@ -3,6 +3,9 @@ package com.worldlearn.backend.controllers;
 import com.worldlearn.backend.database.Database;
 import com.worldlearn.backend.database.UserDAO;
 import com.worldlearn.backend.dto.AssignStudentRequest;
+import com.worldlearn.backend.dto.CreateClassRequest;
+import com.worldlearn.backend.dto.CreateLessonRequest;
+import com.worldlearn.backend.models.Lesson;
 import com.worldlearn.backend.models.User;
 import com.worldlearn.backend.services.UserService;
 import com.worldlearn.backend.models.WlClass;
@@ -21,9 +24,16 @@ public class ClassController {
 
     public void createClass(Context ctx) {
         try {
-            WlClass wlClass = ctx.bodyAsClass(WlClass.class);
-            WlClass createdClass = classService.createClass(wlClass);
+            int teacherId = Integer.parseInt(ctx.queryParam("teacherId"));
+            System.out.println("teacherId param: " + ctx.queryParam("teacherId"));
+
+            CreateClassRequest req = ctx.bodyAsClass(CreateClassRequest.class);
+
+            WlClass classroom = new WlClass(0, req.getClassName(), 0);
+            WlClass createdClass = classService.createClass(classroom, teacherId, req.getLessonIds());
+
             ctx.status(201).json(createdClass);
+
         } catch (IllegalArgumentException e) {
             ctx.status(400).result("Validation error: " + e.getMessage());
         } catch (Exception e) {
