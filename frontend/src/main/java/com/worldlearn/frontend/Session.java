@@ -1,15 +1,14 @@
 package com.worldlearn.frontend;
 
-import com.worldlearn.backend.models.Lesson;
-import com.worldlearn.backend.models.Quiz;
-import com.worldlearn.backend.models.Student;
-import com.worldlearn.backend.models.User;
+import com.worldlearn.backend.models.*;
 import javafx.scene.control.Alert;
 
+import javax.sound.midi.SysexMessage;
 import java.util.Objects;
 
 public class Session {
     private static User currentUser;
+    private static WlClass currentClass;
     private static Lesson currentLesson;
     private static Quiz currentQuiz;
 
@@ -23,9 +22,20 @@ public class Session {
 
     public static void clearSession(){
         currentUser = null;
+        currentClass = null;
         currentLesson = null;
         currentQuiz = null;
 
+    }
+
+    public void setCurrentClass(WlClass wlclass) { this.currentClass = wlclass; }
+
+    public WlClass getCurrentClass() {
+        if (currentClass != null) {
+            return currentClass;
+        }
+        System.out.println("No Class Selected");
+        return null;
     }
 
     public void setCurrentLesson(Lesson lesson) {
