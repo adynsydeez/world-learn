@@ -26,7 +26,7 @@ public class StudentLessonController {
         this.user = user;
         this.stage = stage;
         this.auth  = auth;
-        loadQuizzesFromApi();
+
     }
 
     private void loadQuizzesFromApi() {
