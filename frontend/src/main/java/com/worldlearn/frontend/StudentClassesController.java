@@ -12,10 +12,15 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
-
+import com.worldlearn.frontend.services.ApiService;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import com.worldlearn.backend.models.Lesson;
+import javafx.scene.layout.VBox;
+import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
+import javafx.scene.control.Button;
 
 public class StudentClassesController {
     private User user;
@@ -24,7 +29,7 @@ public class StudentClassesController {
     private final ApiService apiService = new ApiService();
 
     @FXML private HBox classBox;
-
+    @FXML private HBox lessonsRow;
     @FXML private Button homeButton;
     @FXML private Button lessonButton;
 
@@ -37,35 +42,31 @@ public class StudentClassesController {
     }
 
     private void loadClasses() {
-        CompletableFuture<List<WlClass>> future = apiService.getAllClassesForUser(this.user);
+        apiService.getAllClassesForUser(this.user)
+                .thenAccept(classes -> Platform.runLater(() -> {
+                    classBox.getChildren().clear();
 
-        future.thenAccept(classes -> {
-            Platform.runLater(() -> {
-                // Clear existing class buttons but keep space fresh
-                classBox.getChildren().clear();
+                    ToggleGroup group = new ToggleGroup();
+                    for (WlClass wlClass : classes) {
+                        ToggleButton btn = new ToggleButton(wlClass.getClassName());
+                        btn.setToggleGroup(group);
 
-                ToggleGroup group = new ToggleGroup();
 
-                for (WlClass wlClass : classes) {
-                    ToggleButton btn = new ToggleButton(wlClass.getClassName());
-                    btn.setToggleGroup(group);
+                        btn.setOnAction(e -> {
+                            Integer classId =
 
-                    btn.setOnAction(e -> {
-                        System.out.println("Selected class: " + wlClass.getClassName());
-                    });
+                                    wlClass.getId();
+                            loadLessonsForClass(classId);
+                        });
 
-                    classBox.getChildren().add(btn);
-                }
+                        classBox.getChildren().add(btn);
+                    }
 
-                // Add Join Class button at the end
-                Button joinBtn = new Button("Join Class");
-                joinBtn.setOnAction(e -> onJoinButtonClick());
-                classBox.getChildren().add(joinBtn);
-            });
-        }).exceptionally(ex -> {
-            ex.printStackTrace();
-            return null;
-        });
+                    Button joinBtn = new Button("Join Class");
+                    joinBtn.setOnAction(e -> onJoinButtonClick());
+                    classBox.getChildren().add(joinBtn);
+                }))
+                .exceptionally(ex -> { ex.printStackTrace(); return null; });
     }
 
 
@@ -126,5 +127,49 @@ public class StudentClassesController {
         c.init(user, stage, auth);
 
         stage.setScene(scene);
+    }
+    private void loadLessonsForClass(int classId) {
+        apiService.getClassLessons(classId)
+                .thenAccept(lessons -> Platform.runLater(() -> {
+                    lessonsRow.getChildren().clear();
+
+                    for (Lesson l : lessons) {
+                        VBox card = buildLessonCard(l);
+                        lessonsRow.getChildren().add(card);
+                    }
+                }))
+                .exceptionally(ex -> { ex.printStackTrace(); return null; });
+    }
+
+    private VBox buildLessonCard(Lesson l) {
+        VBox card = new VBox(6);
+        card.setStyle("-fx-padding:10; -fx-background-color:#f3edf9; -fx-background-radius:12; -fx-pref-width:180;");
+        card.getChildren().addAll(
+                new Label(String.valueOf(l.getLessonId())) {{
+                    setStyle("-fx-font-size:60;");
+                }},
+                new Label(l.getLessonName()) {{
+                    setStyle("-fx-font-weight:bold;");
+                }},
+                new Label("Updated recently") {{
+                    setStyle("-fx-text-fill:#666; -fx-font-size:11;");
+                }}
+        );
+
+        card.setOnMouseClicked(ev -> openLesson(l));
+        return card;
+    }
+
+    private void openLesson(Lesson l) {
+        try {
+            FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("student-lesson-view.fxml"));
+            Scene scene = new Scene(fxml.load(), 800, 600);
+
+            StudentLessonController c = fxml.getController();
+            c.init(user, stage, auth);
+            c.setLesson(l.getLessonId(), l.getLessonName()); // <-- pass lesson id & name
+
+            stage.setScene(scene);
+        } catch (Exception ex) { ex.printStackTrace(); }
     }
 }

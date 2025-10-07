@@ -34,39 +34,5 @@
     </HBox>
 
     <!-- lesson placeholders -->
-    <HBox spacing="16">
-
-        <VBox spacing="6"
-              onMouseClicked="#onLessonButtonClick"
-              style="-fx-padding:10; -fx-background-color:#f3edf9; -fx-background-radius:12; -fx-pref-width:180;">
-            <Label text="1" style="-fx-font-size:60;"/>
-            <Label text="Lesson 1" style="-fx-font-weight:bold;"/>
-            <Label text="Updated today" style="-fx-text-fill:#666; -fx-font-size:11;"/>
-        </VBox>
-
-        <VBox spacing="6"
-              onMouseClicked="#onLessonButtonClick"
-              style="-fx-padding:10; -fx-background-color:#f3edf9; -fx-background-radius:12; -fx-pref-width:180;">
-            <Label text="2" style="-fx-font-size:60;"/>
-            <Label text="Lesson 2" style="-fx-font-weight:bold;"/>
-            <Label text="Updated yesterday" style="-fx-text-fill:#666; -fx-font-size:11;"/>
-        </VBox>
-
-        <VBox spacing="6"
-              onMouseClicked="#onLessonButtonClick"
-              style="-fx-padding:10; -fx-background-color:#f3edf9; -fx-background-radius:12; -fx-pref-width:180;">
-            <Label text="3" style="-fx-font-size:60;"/>
-            <Label text="Lesson 3" style="-fx-font-weight:bold;"/>
-            <Label text="Updated 4 days ago" style="-fx-text-fill:#666; -fx-font-size:11;"/>
-        </VBox>
-
-        <VBox spacing="6"
-              onMouseClicked="#onLessonButtonClick"
-              style="-fx-padding:10; -fx-background-color:#f3edf9; -fx-background-radius:12; -fx-pref-width:180;">
-            <Label text="4" style="-fx-font-size:60;"/>
-            <Label text="Lesson 4" style="-fx-font-weight:bold;"/>
-            <Label text="Updated 6 days ago" style="-fx-text-fill:#666; -fx-font-size:11;"/>
-        </VBox>
-
-    </HBox>
+    <HBox fx:id="lessonsRow" spacing="16"/>
 </VBox>
