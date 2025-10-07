@@ -14,6 +14,8 @@ public class StudentLessonController {
     private User user;
     private Stage stage;
     private AuthClientService auth;
+    private Integer lessonId;    // <-- NEW
+    private String lessonName;
 
     @FXML private Button homeButtonLessonPage;
     @FXML private Button profileButtonLessonPage;
@@ -50,9 +52,9 @@ public class StudentLessonController {
             Scene scene = new Scene(loader.load(),800,600);
             StudentQuestionViewController c = loader.getController();
             c.init(user,stage,auth);
-            c.setQuiz(q.getQuizID(),q.getQuizName());
+            c.setQuiz(q.getQuizID(), q.getQuizName()); // next screen loads questions for this quiz
             stage.setScene(scene);
-        }catch(Exception ex){ex.printStackTrace();}
+        } catch(Exception ex){ ex.printStackTrace(); }
     }
 
     @FXML
@@ -88,5 +90,25 @@ public class StudentLessonController {
         StudentLessonController c = fxml.getController();
         c.init(user, stage, auth);
         stage.setScene(scene);
+    }
+    public void setLesson(int lessonId, String lessonName) {
+        this.lessonId = lessonId;
+        this.lessonName = lessonName;
+        loadQuizzesForLesson();
+    }
+    private void loadQuizzesForLesson() {
+        quizListContainer.getChildren().clear();
+        api.getLessonQuizzes(lessonId)   // uses existing ApiService method
+                .thenAccept(quizzes -> javafx.application.Platform.runLater(() -> {
+                    quizListContainer.getChildren().clear();
+                    for (Quiz q : quizzes) {
+                        Button b = new Button(q.getQuizName());
+                        b.setMaxWidth(Double.MAX_VALUE);
+                        b.setStyle("-fx-background-color:#dbdbdb; -fx-background-radius:20; -fx-padding:20; -fx-cursor:hand; -fx-font-size:18; -fx-font-weight:bold;");
+                        b.setOnAction(e -> openQuiz(q));
+                        quizListContainer.getChildren().add(b);
+                    }
+                }))
+                .exceptionally(ex -> { ex.printStackTrace(); return null; });
     }
 }
