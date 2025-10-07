@@ -10,7 +10,8 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
-
+import com.worldlearn.backend.models.Quiz;
+import com.worldlearn.frontend.services.ApiService;
 import java.util.List;
 
 public class MultipleChoiceQuestionController {
@@ -116,10 +117,18 @@ public class MultipleChoiceQuestionController {
     }
     @FXML
     private void onBack() throws Exception {
+        Quiz current = Session.instance.getCurrentQuiz();  // ← read from Session
+
         FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("student-question-view.fxml"));
         Scene scene = new Scene(fxml.load(), 800, 600);
         StudentQuestionViewController c = fxml.getController();
         c.init(user, stage, auth);
+
+        // IMPORTANT: call setQuiz so the list loads
+        if (current != null) {
+            c.setQuiz(current.getQuizID(), current.getQuizName());
+        }
+
         stage.setScene(scene);
     }
 

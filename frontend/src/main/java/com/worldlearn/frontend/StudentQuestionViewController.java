@@ -1,4 +1,5 @@
 package com.worldlearn.frontend;
+import com.worldlearn.backend.models.Question;
 
 import com.worldlearn.backend.models.Question;
 import com.worldlearn.backend.models.User;
@@ -70,7 +71,12 @@ public class StudentQuestionViewController {
 
     private void openQuestion(Question q, int questionNumber) {
         try {
-            FXMLLoader loader = new FXMLLoader(HelloApplication.class.getResource("multiple-choice-question-view.fxml"));
+            // save the selected question in session
+            Session.setCurrentQuestion(q);
+
+            FXMLLoader loader = new FXMLLoader(
+                    HelloApplication.class.getResource("multiple-choice-question-view.fxml")
+            );
             Scene mcScene = new Scene(loader.load(), 800, 600);
 
             MultipleChoiceQuestionController c = loader.getController();
@@ -82,7 +88,6 @@ public class StudentQuestionViewController {
                     choices,
                     q.getAnswer(),
                     null);
-
 
             stage.setScene(mcScene);
         } catch (Exception ex) {

@@ -7,10 +7,12 @@ import javax.sound.midi.SysexMessage;
 import java.util.Objects;
 
 public class Session {
+    public static final Session instance = new Session();
     private static User currentUser;
     private static WlClass currentClass;
     private static Lesson currentLesson;
     private static Quiz currentQuiz;
+    private static Question currentQuestion;
 
     public static void setCurrentUser(User user) {
         currentUser = user;
@@ -64,5 +66,11 @@ public class Session {
         }
         System.out.println("No Quiz Selected");
         return null;
+    }
+    public static Question getCurrentQuestion() {
+        return currentQuestion;
+    }
+    public static void setCurrentQuestion(Question question) {
+        currentQuestion = question;
     }
 }

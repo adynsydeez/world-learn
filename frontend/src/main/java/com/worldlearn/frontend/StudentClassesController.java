@@ -13,6 +13,8 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import com.worldlearn.frontend.services.ApiService;
+
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -156,20 +158,26 @@ public class StudentClassesController {
                 }}
         );
 
-        card.setOnMouseClicked(ev -> openLesson(l));
+        card.setOnMouseClicked(ev -> {
+            try {
+                openLesson(l);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
         return card;
     }
 
-    private void openLesson(Lesson l) {
-        try {
-            FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("student-lesson-view.fxml"));
-            Scene scene = new Scene(fxml.load(), 800, 600);
 
-            StudentLessonController c = fxml.getController();
-            c.init(user, stage, auth);
-            c.setLesson(l.getLessonId(), l.getLessonName()); // <-- pass lesson id & name
+    private void openLesson(Lesson l) throws IOException {
 
-            stage.setScene(scene);
-        } catch (Exception ex) { ex.printStackTrace(); }
+        Session.instance.setCurrentLesson(l);  // remember lesson
+
+        FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("student-lesson-view.fxml"));
+        Scene scene = new Scene(fxml.load(), 800, 600);
+        StudentLessonController c = fxml.getController();
+        c.init(user, stage, auth);
+        c.setLesson(l.getLessonId(), l.getLessonName());  // triggers load for this lesson
+        stage.setScene(scene);
     }
 }

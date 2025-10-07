@@ -9,7 +9,12 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import com.worldlearn.backend.models.Quiz;
+import com.worldlearn.backend.models.Lesson;
 import com.worldlearn.frontend.services.ApiService;
+
+import java.io.IOException;
+
 public class StudentLessonController {
     private User user;
     private Stage stage;
@@ -27,8 +32,14 @@ public class StudentLessonController {
         this.stage = stage;
         this.auth  = auth;
 
-    }
 
+        if (this.lessonId == null) {
+            Lesson saved = Session.instance.getCurrentLesson();
+            if (saved != null) {
+                setLesson(saved.getLessonId(), saved.getLessonName());
+            }
+        }
+    }
     private void loadQuizzesFromApi() {
         quizListContainer.getChildren().clear();
         api.getAllQuizzesAsync()
@@ -39,22 +50,27 @@ public class StudentLessonController {
                         b.setMaxWidth(Double.MAX_VALUE);
                         // inline styles to mimic your old “pill” rows
                         b.setStyle("-fx-background-color:#dbdbdb; -fx-background-radius:20; -fx-padding:20; -fx-cursor:hand; -fx-font-size:18; -fx-font-weight:bold;");
-                        b.setOnAction(e -> openQuiz(q));
+                        b.setOnAction(e -> {
+                            try {
+                                openQuiz(q);
+                            } catch (IOException ex) {
+                                throw new RuntimeException(ex);
+                            }
+                        });
                         quizListContainer.getChildren().add(b);
                     }
                 }))
                 .exceptionally(ex -> { ex.printStackTrace(); return null; });
     }
 
-    private void openQuiz(Quiz q){
-        try{
-            FXMLLoader loader = new FXMLLoader(HelloApplication.class.getResource("student-question-view.fxml"));
-            Scene scene = new Scene(loader.load(),800,600);
-            StudentQuestionViewController c = loader.getController();
-            c.init(user,stage,auth);
-            c.setQuiz(q.getQuizID(), q.getQuizName()); // next screen loads questions for this quiz
-            stage.setScene(scene);
-        } catch(Exception ex){ ex.printStackTrace(); }
+    private void openQuiz(Quiz q) throws IOException {
+        Session.instance.setCurrentQuiz(q);  // remember quiz
+        FXMLLoader loader = new FXMLLoader(HelloApplication.class.getResource("student-question-view.fxml"));
+        Scene scene = new Scene(loader.load(), 800, 600);
+        StudentQuestionViewController c = loader.getController();
+        c.init(user, stage, auth);
+        c.setQuiz(q.getQuizID(), q.getQuizName());
+        stage.setScene(scene);
     }
 
     @FXML
@@ -80,7 +96,7 @@ public class StudentLessonController {
         FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("student-classes-view.fxml"));
         Scene scene = new Scene(fxml.load(),800,600);
         StudentClassesController c = fxml.getController();
-        c.init(user,stage,auth);
+        c.init(Session.instance.getCurrentUser(), stage, auth);
         stage.setScene(scene);
     }
     @FXML
@@ -105,7 +121,13 @@ public class StudentLessonController {
                         Button b = new Button(q.getQuizName());
                         b.setMaxWidth(Double.MAX_VALUE);
                         b.setStyle("-fx-background-color:#dbdbdb; -fx-background-radius:20; -fx-padding:20; -fx-cursor:hand; -fx-font-size:18; -fx-font-weight:bold;");
-                        b.setOnAction(e -> openQuiz(q));
+                        b.setOnAction(e -> {
+                            try {
+                                openQuiz(q);
+                            } catch (IOException ex) {
+                                throw new RuntimeException(ex);
+                            }
+                        });
                         quizListContainer.getChildren().add(b);
                     }
                 }))
