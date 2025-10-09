@@ -1,7 +1,6 @@
 package com.worldlearn.frontend;
 
 import com.worldlearn.backend.models.User;
-import com.worldlearn.backend.services.AuthenticationService;
 import com.worldlearn.frontend.services.AuthClientService;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -18,8 +17,10 @@ public class MultipleChoiceQuestionController {
     private User user;
     private Stage stage;
     private AuthClientService auth;
+    private ApiService apiService;
 
     private String correctAnswer;
+    private int questionId;
 
     @FXML private Label headerLabel, questionLabel;
     @FXML private ImageView mapView;
@@ -35,12 +36,14 @@ public class MultipleChoiceQuestionController {
 
     public void init(User user, Stage stage, AuthClientService auth,
                      int questionNumber, String region, String question,
-                     List<String> choices, String correct, String mapResource) {
+                     List<String> choices, String correct, int pointsWorth, int questionId, String mapResource) {
 
         this.user = user;
         this.stage = stage;
         this.auth  = auth;
         this.correctAnswer = correct;
+        this.apiService = new ApiService(); // Initialize API service
+        this.questionId = questionId;
 
         headerLabel.setText("Question " + questionNumber + (region != null ? " - " + region : ""));
 
@@ -79,28 +82,78 @@ public class MultipleChoiceQuestionController {
         if (chosen == null) return;
 
         String picked = chosen.getText();
-        boolean isCorrect = picked.equalsIgnoreCase(correctAnswer);
 
-        // Lock input
-        aBtn.setDisable(true); bBtn.setDisable(true); cBtn.setDisable(true); dBtn.setDisable(true);
+        // Lock input immediately
+        disableAllButtons();
+
+        // Submit answer via API service
+        apiService.submitAnswerAsync(this.questionId, user.getId(), picked)
+                .thenAccept(response -> {
+                    // Update UI on JavaFX thread
+                    javafx.application.Platform.runLater(() -> {
+                        displayResult(chosen, response.isCorrect(), response.getPointsEarned());
+                    });
+                })
+                .exceptionally(ex -> {
+                    // Handle error on JavaFX thread
+                    javafx.application.Platform.runLater(() -> {
+                        System.err.println("Error submitting answer: " + ex.getMessage());
+                        showErrorAlert("Failed to submit answer. Please try again.");
+                        enableAllButtons();
+                    });
+                    return null;
+                });
+    }
+
+    private void disableAllButtons() {
+        aBtn.setDisable(true);
+        bBtn.setDisable(true);
+        cBtn.setDisable(true);
+        dBtn.setDisable(true);
         submitBtn.setDisable(true);
+    }
 
+    private void enableAllButtons() {
+        aBtn.setDisable(false);
+        bBtn.setDisable(false);
+        cBtn.setDisable(false);
+        dBtn.setDisable(false);
+        submitBtn.setDisable(false);
+    }
+
+    private void displayResult(ToggleButton chosenButton, boolean isCorrect, int pointsEarned) {
         resetToBaseStyles();
 
         if (isCorrect) {
-            apply(chosen, CORRECT_HILITE);
+            apply(chosenButton, CORRECT_HILITE);
+            showSuccessAlert("Correct! You earned " + pointsEarned + " points!");
         } else {
-            apply(chosen, WRONG_HILITE);
-            // mark the correct option too
+            apply(chosenButton, WRONG_HILITE);
+            // Mark the correct option
             for (Toggle t : answersGroup.getToggles()) {
                 ToggleButton b = (ToggleButton) t;
                 if (b.getText().equalsIgnoreCase(correctAnswer)) {
                     apply(b, CORRECT_HILITE);
                 }
             }
+            showErrorAlert("Incorrect. You earned " + pointsEarned + " points.");
         }
+    }
 
-        // TODO: record attempt + navigate next if required
+    private void showSuccessAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Result");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private void showErrorAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Result");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
     private void resetToBaseStyles() {
@@ -115,22 +168,20 @@ public class MultipleChoiceQuestionController {
         String base = (String) b.getProperties().getOrDefault("baseStyle", b.getStyle());
         b.setStyle(base + extra);
     }
+
     @FXML
     private void onBack() throws Exception {
-        Quiz current = Session.instance.getCurrentQuiz();  // ← read from Session
+        Quiz current = Session.instance.getCurrentQuiz();
 
         FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("student-question-view.fxml"));
         Scene scene = new Scene(fxml.load(), 800, 600);
         StudentQuestionViewController c = fxml.getController();
         c.init(user, stage, auth);
 
-        // IMPORTANT: call setQuiz so the list loads
         if (current != null) {
             c.setQuiz(current.getQuizID(), current.getQuizName());
         }
 
         stage.setScene(scene);
     }
-
-
 }

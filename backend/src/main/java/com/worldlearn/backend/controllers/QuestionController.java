@@ -122,6 +122,13 @@ public class QuestionController {
             String givenAnswer = body.getGivenAnswer();
             int userId = body.getUserId(); // Get userId from request body, not context attribute
 
+            // Check if student has already answered
+            Optional<AnswerResponse> existingAnswer = questionService.getStudentAnswer(questionId, userId);
+            if (existingAnswer.isPresent()) {
+                ctx.status(400).json(existingAnswer.get()); // Return their previous answer
+                return;
+            }
+
             System.out.println("Submitting answer: questionId=" + questionId + ", userId=" + userId + ", answer=" + givenAnswer);
 
             // Call your DAO
@@ -135,6 +142,24 @@ public class QuestionController {
         } catch (Exception e) {
             e.printStackTrace();
             ctx.status(500).result("Internal server error: " + e.getMessage());
+        }
+    }
+
+    public void getStudentAnswer(Context ctx) {
+        try {
+            int questionId = Integer.parseInt(ctx.pathParam("id"));
+            int userId = Integer.parseInt(ctx.queryParam("userId"));
+
+            Optional<AnswerResponse> answer = questionService.getStudentAnswer(questionId, userId);
+
+            if (answer.isPresent()) {
+                ctx.status(200).json(answer.get());
+            } else {
+                ctx.status(404).result("No answer found");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            ctx.status(500).result("Error: " + e.getMessage());
         }
     }
 }

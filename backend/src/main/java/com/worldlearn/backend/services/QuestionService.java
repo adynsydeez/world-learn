@@ -59,4 +59,8 @@ public class QuestionService {
     public AnswerResponse submitAnswer(int questionId, int userId, String givenAnswer) throws SQLException {
         return questionDAO.submitAnswer(questionId, userId, givenAnswer);
     }
+
+    public Optional<AnswerResponse> getStudentAnswer(int questionId, int userId) throws SQLException {
+        return questionDAO.getStudentAnswer(questionId, userId);
+    }
 }

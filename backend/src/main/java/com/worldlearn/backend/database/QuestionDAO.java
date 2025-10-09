@@ -323,4 +323,44 @@ public class QuestionDAO {
 
         throw new SQLException("Failed to submit answer");
     }
+
+    public Optional<AnswerResponse> getStudentAnswer(int questionId, int userId) throws SQLException {
+        String sql = """
+        SELECT sa.question_id, sa.user_id, sa.given_answer, sa.points_earned, sa.answered_at,
+               q.answer as correct_answer
+        FROM student_answer sa
+        JOIN questions q ON sa.question_id = q.question_id
+        WHERE sa.question_id = ? AND sa.user_id = ?
+    """;
+
+        try (Connection conn = database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, questionId);
+            stmt.setInt(2, userId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    String givenAnswer = rs.getString("given_answer");
+                    String correctAnswer = rs.getString("correct_answer");
+                    boolean isCorrect = givenAnswer.trim().equalsIgnoreCase(correctAnswer.trim());
+
+                    Timestamp timestamp = rs.getTimestamp("answered_at");
+                    String answeredAt = timestamp.toLocalDateTime().toString();
+
+                    AnswerResponse response = new AnswerResponse(
+                            rs.getInt("question_id"),
+                            rs.getInt("user_id"),
+                            givenAnswer,
+                            rs.getInt("points_earned"),
+                            answeredAt,
+                            isCorrect
+                    );
+
+                    return Optional.of(response);
+                }
+            }
+        }
+        return Optional.empty();
+    }
 }
