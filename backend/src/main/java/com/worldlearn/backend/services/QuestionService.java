@@ -1,6 +1,8 @@
 package com.worldlearn.backend.services;
 
 import com.worldlearn.backend.database.Database;
+import com.worldlearn.backend.dto.AnswerRequest;
+import com.worldlearn.backend.dto.AnswerResponse;
 import com.worldlearn.backend.models.Question;
 import com.worldlearn.backend.database.QuestionDAO;
 
@@ -54,4 +56,7 @@ public class QuestionService {
     }
 
 
+    public AnswerResponse submitAnswer(int questionId, int userId, String givenAnswer) throws SQLException {
+        return questionDAO.submitAnswer(questionId, userId, givenAnswer);
+    }
 }
