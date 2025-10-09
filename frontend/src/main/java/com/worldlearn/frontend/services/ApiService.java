@@ -6,6 +6,8 @@ import com.worldlearn.backend.dto.*;
 import com.worldlearn.backend.models.*;
 import com.worldlearn.backend.config.ApiConfig;
 import com.worldlearn.frontend.Session;
+import javafx.scene.control.ToggleButton;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import java.net.http.*;
 import java.net.URI;
@@ -36,6 +38,7 @@ public class ApiService {
                 .connectTimeout(Duration.ofSeconds(10))
                 .build();
         this.objectMapper = new ObjectMapper();
+
     }
 
     // Health check
@@ -686,6 +689,67 @@ public class ApiService {
                 }
             } catch (Exception e) {
                 throw new RuntimeException("Error getting quizzes: " + e.getMessage(), e);
+            }
+        });
+    }
+
+    // ===== ANSWER SUBMISSION =====
+    public CompletableFuture<AnswerResponse> submitAnswerAsync(int questionId, int userId, String givenAnswer) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                // Create JSON payload
+                ObjectNode payload = objectMapper.createObjectNode();
+                payload.put("givenAnswer", givenAnswer);
+                payload.put("userId", userId);
+
+                String jsonPayload = objectMapper.writeValueAsString(payload);
+
+                // Build request
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(baseUrl + "/questions/submit?questionId=" + questionId))
+                        .header("Content-Type", "application/json")
+                        .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
+                        .timeout(Duration.ofSeconds(30))
+                        .build();
+
+                // Send request
+                HttpResponse<String> response = httpClient.send(request,
+                        HttpResponse.BodyHandlers.ofString());
+
+                if (response.statusCode() == 201 || response.statusCode() == 200) {
+                    return objectMapper.readValue(response.body(), AnswerResponse.class);
+                } else {
+                    throw new RuntimeException("Failed to submit answer: " + response.statusCode() +
+                            " - " + response.body());
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Error submitting answer: " + e.getMessage(), e);
+            }
+        });
+    }
+
+    public CompletableFuture<AnswerResponse> getStudentAnswer(int questionId, int userId) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(baseUrl + "/questions/" + questionId + "/student-answer?userId=" + userId))
+                        .header("Accept", "application/json")
+                        .GET()
+                        .timeout(Duration.ofSeconds(30))
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request,
+                        HttpResponse.BodyHandlers.ofString());
+
+                if (response.statusCode() == 200) {
+                    return objectMapper.readValue(response.body(), AnswerResponse.class);
+                } else if (response.statusCode() == 404) {
+                    return null; // No answer found - student hasn't answered yet
+                } else {
+                    throw new RuntimeException("Failed to get answer: " + response.statusCode());
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Error getting student answer: " + e.getMessage(), e);
             }
         });
     }

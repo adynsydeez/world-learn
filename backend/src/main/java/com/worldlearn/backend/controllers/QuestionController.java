@@ -1,5 +1,7 @@
 package com.worldlearn.backend.controllers;
 
+import com.worldlearn.backend.dto.AnswerRequest;
+import com.worldlearn.backend.dto.AnswerResponse;
 import com.worldlearn.backend.models.Question;
 import com.worldlearn.backend.services.QuestionService;
 import io.javalin.http.Context;
@@ -73,7 +75,7 @@ public class QuestionController {
             List<Question> questions = questionService.getPublicQuestions();
             ctx.json(questions);
         } catch (Exception e) {
-            ctx.status(500).result("Failed to get questions:" +e.getMessage());
+            ctx.status(500).result("Failed to get questions:" + e.getMessage());
         }
     }
 
@@ -108,6 +110,56 @@ public class QuestionController {
             ctx.status(400).result("Invalid question ID");
         } catch (Exception e) {
             ctx.status(500).result("Internal server error: " + e.getMessage());
+        }
+    }
+
+    public void submitAnswer(Context ctx) {
+        try {
+            int questionId = Integer.parseInt(ctx.queryParam("questionId"));
+
+            // Parse the request body to get BOTH givenAnswer and userId
+            AnswerRequest body = ctx.bodyAsClass(AnswerRequest.class);
+            String givenAnswer = body.getGivenAnswer();
+            int userId = body.getUserId(); // Get userId from request body, not context attribute
+
+            // Check if student has already answered
+            Optional<AnswerResponse> existingAnswer = questionService.getStudentAnswer(questionId, userId);
+            if (existingAnswer.isPresent()) {
+                ctx.status(400).json(existingAnswer.get()); // Return their previous answer
+                return;
+            }
+
+            System.out.println("Submitting answer: questionId=" + questionId + ", userId=" + userId + ", answer=" + givenAnswer);
+
+            // Call your DAO
+            AnswerResponse result = questionService.submitAnswer(questionId, userId, givenAnswer);
+
+            ctx.status(201).json(result);
+        } catch (NumberFormatException e) {
+            ctx.status(400).result("Invalid question ID format");
+        } catch (IllegalArgumentException e) {
+            ctx.status(400).result("Validation error: " + e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            ctx.status(500).result("Internal server error: " + e.getMessage());
+        }
+    }
+
+    public void getStudentAnswer(Context ctx) {
+        try {
+            int questionId = Integer.parseInt(ctx.pathParam("id"));
+            int userId = Integer.parseInt(ctx.queryParam("userId"));
+
+            Optional<AnswerResponse> answer = questionService.getStudentAnswer(questionId, userId);
+
+            if (answer.isPresent()) {
+                ctx.status(200).json(answer.get());
+            } else {
+                ctx.status(404).result("No answer found");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            ctx.status(500).result("Error: " + e.getMessage());
         }
     }
 }

@@ -9,11 +9,13 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -71,25 +73,52 @@ public class StudentQuestionViewController {
 
     private void openQuestion(Question q, int questionNumber) {
         try {
-            // save the selected question in session
-            Session.setCurrentQuestion(q);
 
-            FXMLLoader loader = new FXMLLoader(
-                    HelloApplication.class.getResource("multiple-choice-question-view.fxml")
-            );
-            Scene mcScene = new Scene(loader.load(), 800, 600);
+            api.getStudentAnswer(q.getQuestionId(), this.user.getId())
+                    .thenAccept(previousAnswer -> {
+                        javafx.application.Platform.runLater(() -> {
+                            if (previousAnswer != null) {
+                                // Show their previous answer
+                                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                                alert.setTitle("Already Answered");
+                                alert.setHeaderText("You've already answered this question!");
+                                alert.setContentText(
+                                        "Your answer: " + previousAnswer.getGivenAnswer() + "\n" +
+                                                "Points earned: " + previousAnswer.getPointsEarned() + "\n" +
+                                                "Answered at: " + previousAnswer.getAnsweredAt() + "\n" +
+                                                "Result: " + (previousAnswer.isCorrect() ? "Correct ✓" : "Incorrect ✗")
+                                );
+                                alert.showAndWait();
+                            } else {
+                                // save the selected question in session
+                                Session.setCurrentQuestion(q);
 
-            MultipleChoiceQuestionController c = loader.getController();
-            List<String> choices = (q.getOptions() == null) ? List.of() : Arrays.asList(q.getOptions());
-            c.init(user, stage, auth,
-                    questionNumber,
-                    null,
-                    q.getPrompt(),
-                    choices,
-                    q.getAnswer(),
-                    null);
+                                FXMLLoader loader = new FXMLLoader(
+                                        HelloApplication.class.getResource("multiple-choice-question-view.fxml")
+                                );
+                                Scene mcScene = null;
+                                try {
+                                    mcScene = new Scene(loader.load(), 800, 600);
+                                } catch (IOException e) {
+                                    throw new RuntimeException(e);
+                                }
 
-            stage.setScene(mcScene);
+                                MultipleChoiceQuestionController c = loader.getController();
+                                List<String> choices = (q.getOptions() == null) ? List.of() : Arrays.asList(q.getOptions());
+                                c.init(user, stage, auth,
+                                        questionNumber,
+                                        null,
+                                        q.getPrompt(),
+                                        choices,
+                                        q.getAnswer(),
+                                        q.getPointsWorth(),
+                                        q.getQuestionId(),
+                                        null);
+
+                                stage.setScene(mcScene);
+                            }
+                        });
+                    });
         } catch (Exception ex) {
             ex.printStackTrace();
         }

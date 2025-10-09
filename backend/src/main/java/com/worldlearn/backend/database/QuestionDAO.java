@@ -1,11 +1,13 @@
 package com.worldlearn.backend.database;
 
+import com.worldlearn.backend.dto.AnswerResponse;
 import com.worldlearn.backend.models.Question;
 import com.worldlearn.backend.models.Question.QuestionType;
 import com.worldlearn.backend.models.Question.Visibility;
 
 import javax.xml.crypto.Data;
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -258,5 +260,107 @@ public class QuestionDAO {
             stmt.setInt(1, id);
             return stmt.executeUpdate() > 0;
         }
+    }
+
+    public AnswerResponse submitAnswer(int questionId, int userId, String givenAnswer) throws SQLException {
+        // First, get the correct answer and points from the question
+        String getQuestionSql = "SELECT answer, points_worth FROM questions WHERE question_id = ?";
+
+        try (Connection conn = database.getConnection();
+             PreparedStatement getStmt = conn.prepareStatement(getQuestionSql)) {
+
+            getStmt.setInt(1, questionId);
+
+            try (ResultSet rs = getStmt.executeQuery()) {
+                if (!rs.next()) {
+                    throw new SQLException("Question not found with id: " + questionId);
+                }
+
+                String correctAnswer = rs.getString("answer");
+                int pointsWorth = rs.getInt("points_worth");
+
+                // Check if the answer is correct (case-insensitive)
+                boolean isCorrect = correctAnswer.trim().equalsIgnoreCase(givenAnswer.trim());
+                int pointsEarned = isCorrect ? pointsWorth : 0;
+
+                // Insert the answer submission into the database
+                String insertSql = """
+                INSERT INTO student_answer (question_id, user_id, given_answer, points_earned, answered_at)
+                VALUES (?, ?, ?, ?, NOW())
+                RETURNING answered_at
+            """;
+
+                try (PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
+                    insertStmt.setInt(1, questionId);
+                    insertStmt.setInt(2, userId);
+                    insertStmt.setString(3, givenAnswer);
+                    insertStmt.setInt(4, pointsEarned);
+
+                    try (ResultSet insertRs = insertStmt.executeQuery()) {
+                        if (insertRs.next()) {
+                            Timestamp timestamp = insertRs.getTimestamp("answered_at");
+                            LocalDateTime answeredAt = timestamp.toLocalDateTime();
+
+                            System.out.println("Answer submitted: userId=" + userId +
+                                    ", questionId=" + questionId +
+                                    ", correct=" + isCorrect +
+                                    ", points=" + pointsEarned);
+
+                            // Create and return the response DTO
+                            return new AnswerResponse(
+                                    questionId,
+                                    userId,
+                                    givenAnswer,
+                                    pointsEarned,
+                                    answeredAt.toString(),
+                                    isCorrect
+                            );
+                        }
+                    }
+                }
+            }
+        }
+
+        throw new SQLException("Failed to submit answer");
+    }
+
+    public Optional<AnswerResponse> getStudentAnswer(int questionId, int userId) throws SQLException {
+        String sql = """
+        SELECT sa.question_id, sa.user_id, sa.given_answer, sa.points_earned, sa.answered_at,
+               q.answer as correct_answer
+        FROM student_answer sa
+        JOIN questions q ON sa.question_id = q.question_id
+        WHERE sa.question_id = ? AND sa.user_id = ?
+    """;
+
+        try (Connection conn = database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, questionId);
+            stmt.setInt(2, userId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    String givenAnswer = rs.getString("given_answer");
+                    String correctAnswer = rs.getString("correct_answer");
+                    boolean isCorrect = givenAnswer.trim().equalsIgnoreCase(correctAnswer.trim());
+
+                    Timestamp timestamp = rs.getTimestamp("answered_at");
+                    String answeredAt = timestamp.toLocalDateTime().toString();
+
+                    AnswerResponse response = new AnswerResponse(
+                            rs.getInt("question_id"),
+                            rs.getInt("user_id"),
+                            givenAnswer,
+                            rs.getInt("points_earned"),
+                            answeredAt,
+                            isCorrect
+                    );
+
+                    return Optional.of(response);
+                }
+            }
+        }
+        return Optional.empty();
     }
 }
