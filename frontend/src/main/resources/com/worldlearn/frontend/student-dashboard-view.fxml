@@ -13,35 +13,51 @@
            stylesheets="@dashboard.css"
            styleClass="star-bg">
 
-    <!-- Main two-column layout -->
+
     <HBox spacing="16" alignment="CENTER_LEFT">
         <padding><Insets top="16" right="16" bottom="16" left="16"/></padding>
 
         <!-- === LEFT SIDEBAR === -->
         <VBox spacing="16" alignment="TOP_CENTER" styleClass="sidebar" prefWidth="96" minWidth="96" maxWidth="96">
-            <!-- Logo coin -->
+            <!-- Logo -->
             <StackPane styleClass="logo-coin">
                 <ImageView fitWidth="64" fitHeight="64" preserveRatio="true">
                     <image>
-                        <Image url="@img/logo.png"/>
+                        <Image url="@img/logosm.png"/>
                     </image>
                 </ImageView>
             </StackPane>
 
             <!-- Sidebar buttons -->
-            <VBox spacing="24" alignment="TOP_CENTER">
-                <VBox spacing="6" alignment="CENTER" onMouseClicked="#setProfileButtonClick" styleClass="side-item">
-                    <Label text="👤" styleClass="side-icon"/>
-                    <Label text="PROFILE" styleClass="side-label"/>
-                    <!-- keeps your original handler wired -->
-                    <Button fx:id="profileButton" visible="false" managed="false" onAction="#setProfileButtonClick"/>
-                </VBox>
+            <!-- PROFILE -->
+            <Button text="PROFILE" onAction="#setProfileButtonClick" contentDisplay="TOP" graphicTextGap="8" prefWidth="96"
+                    style="-fx-background-color: transparent;
+               -fx-text-fill: #e8f0ff; -fx-font-size: 12px; -fx-font-weight: 700;
+               -fx-padding: 12 6 12 6; -fx-background-radius:16;">
+                <graphic>
 
-                <VBox spacing="6" alignment="CENTER" styleClass="side-item">
-                    <Label text="⚙" styleClass="side-icon"/>
-                    <Label text="SETTINGS" styleClass="side-label"/>
-                </VBox>
-            </VBox>
+                    <Label text="&#xE77B;"
+                           style="-fx-font-family:'Segoe MDL2 Assets';
+                      -fx-font-size:26;
+                      -fx-text-fill:#e8f0ff;
+                      -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.35), 8, 0.25, 0, 0);" />
+                </graphic>
+            </Button>
+
+            <!-- SETTINGS -->
+            <Button text="SETTINGS" contentDisplay="TOP" graphicTextGap="8" prefWidth="96"
+                    style="-fx-background-color: transparent;
+               -fx-text-fill: #e8f0ff; -fx-font-size: 12px; -fx-font-weight: 700;
+               -fx-padding: 12 6 12 6; -fx-background-radius:16;">
+                <graphic>
+
+                    <Label text="&#xE713;"
+                           style="-fx-font-family:'Segoe MDL2 Assets';
+                      -fx-font-size:26;
+                      -fx-text-fill:#e8f0ff;
+                      -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.35), 8, 0.25, 0, 0);" />
+                </graphic>
+            </Button>
 
             <Region VBox.vgrow="ALWAYS"/>
 
@@ -59,11 +75,10 @@
 
 
 
-            <!-- Select / Join a Class -->
-            <!-- Classes -->
 
 
-                <!-- back arrow + title + menu -->
+
+
                 <HBox spacing="10" alignment="CENTER_LEFT">
 
                     <Label text="Your Classes" style="-fx-font-size:22; -fx-font-weight:bold;"/>
