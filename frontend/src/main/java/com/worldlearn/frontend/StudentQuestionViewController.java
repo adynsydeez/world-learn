@@ -98,7 +98,7 @@ public class StudentQuestionViewController {
                                 );
                                 Scene mcScene = null;
                                 try {
-                                    mcScene = new Scene(loader.load(), 800, 600);
+                                    mcScene = new Scene(loader.load(), 1280, 720);
                                 } catch (IOException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -126,7 +126,7 @@ public class StudentQuestionViewController {
     @FXML
     protected void onHomeButtonClickLessonPage() throws Exception {
         FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("student-dashboard-view.fxml"));
-        Scene scene = new Scene(fxml.load(),800,600);
+        Scene scene = new Scene(fxml.load(),1280,720);
         StudentDashboardController c = fxml.getController();
         c.init(user,stage,auth);
         stage.setScene(scene);
@@ -135,7 +135,7 @@ public class StudentQuestionViewController {
     @FXML
     protected void onProfileButtonClickLessonPage() throws Exception {
         FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("profile-view.fxml"));
-        Scene scene = new Scene(fxml.load(),800,600);
+        Scene scene = new Scene(fxml.load(),1280,720);
         ProfileController c = fxml.getController();
         c.init(user,stage,auth);
         stage.setScene(scene);
@@ -143,7 +143,7 @@ public class StudentQuestionViewController {
     @FXML
     protected void quizView() throws Exception {
         FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("student-lesson-view.fxml"));
-        Scene scene = new Scene(fxml.load(), 800, 600);
+        Scene scene = new Scene(fxml.load(), 1280, 720);
         StudentLessonController c = fxml.getController();
         c.init(user, stage, auth);
         stage.setScene(scene);

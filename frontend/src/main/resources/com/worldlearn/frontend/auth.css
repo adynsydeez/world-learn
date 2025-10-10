@@ -1,0 +1,71 @@
+
+.star-bg {
+  -fx-background-color: #0b163d;
+  -fx-background-image: url("img/stars.png");
+  -fx-background-repeat: repeat;
+  -fx-background-position: 0 0;
+}
+
+
+.world-wrap {
+    -fx-background-color: transparent;
+    -fx-background-radius: 9999;
+    -fx-padding: 16;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.45), 30, 0.2, 0, 10);
+    -fx-alignment: center;
+}
+.world-ring-lg {
+    -fx-background-color: rgba(255,255,255,0.06);
+    -fx-background-radius: 9999;
+    -fx-max-width: 520; -fx-max-height: 520;
+    -fx-min-width: 520; -fx-min-height: 520;
+    -fx-translate-y: 2;
+}
+.world-ring-sm {
+    -fx-background-color: rgba(255,255,255,0.12);
+    -fx-background-radius: 9999;
+    -fx-max-width: 460; -fx-max-height: 460;
+    -fx-min-width: 460; -fx-min-height: 460;
+}
+
+
+.auth-card {
+    -fx-background-color: #f6f7fb;
+    -fx-background-radius: 18;
+    -fx-padding: 24;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.28), 24, 0.25, 0, 10);
+}
+
+
+.auth-tabs .tab-header-area {
+    -fx-background-color: transparent;
+}
+.auth-tabs .tab-header-area .headers-region .tab {
+    -fx-background-radius: 10 10 0 0;
+    -fx-background-insets: 0;
+    -fx-padding: 10 18 10 18;
+    -fx-background-color: transparent;
+}
+.auth-tabs .tab-header-area .headers-region .tab:selected {
+    -fx-background-color: linear-gradient(to bottom, #ffffff, #e9edf7);
+    -fx-effect: innershadow(gaussian, rgba(0,0,0,0.06), 6, 0.25, 0, 2);
+    -fx-font-weight: bold;
+}
+
+
+.text-field, .password-field, .choice-box {
+    -fx-background-radius: 10;
+    -fx-padding: 10 12 10 12;
+}
+
+
+.primary-btn {
+    -fx-background-color: #2f7ec4;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 10;
+    -fx-padding: 10 18 10 18;
+}
+.primary-btn:hover {
+    -fx-opacity: 0.95;
+}

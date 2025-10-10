@@ -1,0 +1,111 @@
+/* ===== Background ===== */
+.star-bg {
+  -fx-background-color: #0b163d;
+  -fx-background-image: url("img/stars.png");
+  -fx-background-repeat: repeat;
+}
+
+/* ===== Sidebar ===== */
+.sidebar {
+  -fx-background-color: rgba(12, 28, 68, 0.85);
+  -fx-background-radius: 16;
+  -fx-padding: 14 10;
+  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 24, 0.25, 0, 8);
+}
+
+.logo-coin {
+  -fx-background-color: rgba(66, 90, 160, 0.35);
+  -fx-background-radius: 9999;
+  -fx-padding: 8;
+}
+
+.side-item { -fx-cursor: hand; }
+.side-icon { -fx-font-size: 28px; -fx-text-fill: #e8f0ff; }
+.side-label {
+  -fx-font-size: 10px;
+  -fx-text-fill: #c7d3ff;
+  -fx-font-weight: bold;
+  -fx-letter-spacing: 0.5px;
+}
+
+.logout-btn {
+  -fx-background-color: #d44343;
+  -fx-text-fill: white;
+  -fx-font-weight: bold;
+  -fx-background-radius: 12;
+  -fx-padding: 8 12;
+}
+
+/* ===== Content Card ===== */
+.content-card {
+  -fx-background-color: #ffffff;
+  -fx-background-radius: 18;
+  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.28), 24, 0.25, 0, 10);
+}
+
+.page-title {
+  -fx-font-size: 32px;
+  -fx-font-weight: 800;
+  -fx-text-fill: #152042;
+}
+
+.section-title {
+  -fx-font-size: 18px;
+  -fx-font-weight: 700;
+  -fx-text-fill: #3a4668;
+}
+
+/* ===== Activity chips ===== */
+.activity-chip {
+  -fx-background-radius: 14;
+  -fx-padding: 14;
+  -fx-min-width: 180;
+  -fx-max-width: 180;
+  -fx-min-height: 84;
+  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 8, 0.2, 0, 2);
+}
+.chip-title { -fx-text-fill: white; -fx-font-weight: 800; -fx-font-size: 16; }
+.chip-progress { -fx-padding: 6 0 0 0; }
+
+.chip-green  { -fx-background-color: #53c65c; }
+.chip-red    { -fx-background-color: #d9534f; }
+.chip-purple { -fx-background-color: #6d5db8; }
+
+/* ===== Class chip buttons ===== */
+.chip-btn {
+  -fx-background-radius: 20;
+  -fx-background-color: #ffffff;
+  -fx-border-color: #d7ddea;
+  -fx-border-radius: 20;
+  -fx-padding: 6 12;
+}
+.chip-btn:hover { -fx-background-color: #eff3ff; }
+.chip-selected {
+  -fx-background-color: #0f1b3a;
+  -fx-text-fill: white;
+  -fx-font-weight: bold;
+}
+.pill.success {
+  -fx-background-color: #5fb266;
+  -fx-text-fill: white;
+  -fx-font-weight: bold;
+  -fx-background-radius: 20;
+  -fx-padding: 6 12;
+}
+
+/* ===== Lesson cards ===== */
+.lesson-card {
+  -fx-min-width: 220;
+  -fx-min-height: 130;
+  -fx-padding: 14;
+  -fx-background-radius: 14;
+  -fx-cursor: hand;
+  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 8, 0.2, 0, 2);
+}
+.lesson-overline { -fx-text-fill: rgba(255,255,255,0.95); -fx-font-size: 12; -fx-font-weight: 700; }
+.lesson-title    { -fx-text-fill: white; -fx-font-size: 22; -fx-font-weight: 900; }
+.lesson-progress { -fx-padding: 6 0 0 0; }
+
+.card-purple { -fx-background-color: #7c5ed6; }
+.card-amber  { -fx-background-color: #e6a522; }
+.card-green  { -fx-background-color: #50c35d; }

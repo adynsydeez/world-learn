@@ -174,7 +174,7 @@ public class MultipleChoiceQuestionController {
         Quiz current = Session.instance.getCurrentQuiz();
 
         FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("student-question-view.fxml"));
-        Scene scene = new Scene(fxml.load(), 800, 600);
+        Scene scene = new Scene(fxml.load(), 1280, 720);
         StudentQuestionViewController c = fxml.getController();
         c.init(user, stage, auth);
 

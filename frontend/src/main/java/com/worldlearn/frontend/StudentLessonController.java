@@ -66,7 +66,7 @@ public class StudentLessonController {
     private void openQuiz(Quiz q) throws IOException {
         Session.instance.setCurrentQuiz(q);  // remember quiz
         FXMLLoader loader = new FXMLLoader(HelloApplication.class.getResource("student-question-view.fxml"));
-        Scene scene = new Scene(loader.load(), 800, 600);
+        Scene scene = new Scene(loader.load(), 1280, 720);
         StudentQuestionViewController c = loader.getController();
         c.init(user, stage, auth);
         c.setQuiz(q.getQuizID(), q.getQuizName());
@@ -76,7 +76,7 @@ public class StudentLessonController {
     @FXML
     protected void onHomeButtonClickLessonPage() throws Exception {
         FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("student-dashboard-view.fxml"));
-        Scene scene = new Scene(fxml.load(),800,600);
+        Scene scene = new Scene(fxml.load(),1280,720);
         StudentDashboardController c = fxml.getController();
         c.init(user,stage,auth);
         stage.setScene(scene);
@@ -85,7 +85,7 @@ public class StudentLessonController {
     @FXML
     protected void onProfileButtonClickLessonPage() throws Exception {
         FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("profile-view.fxml"));
-        Scene scene = new Scene(fxml.load(),800,600);
+        Scene scene = new Scene(fxml.load(),1280,720);
         ProfileController c = fxml.getController();
         c.init(user,stage,auth);
         stage.setScene(scene);
@@ -93,16 +93,16 @@ public class StudentLessonController {
 
     @FXML
     protected void classesView() throws Exception {
-        FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("student-classes-view.fxml"));
-        Scene scene = new Scene(fxml.load(),800,600);
-        StudentClassesController c = fxml.getController();
+        FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("student-dashboard-view.fxml"));
+        Scene scene = new Scene(fxml.load(),1280,720);
+        StudentDashboardController c = fxml.getController();
         c.init(Session.instance.getCurrentUser(), stage, auth);
         stage.setScene(scene);
     }
     @FXML
     protected void quizView() throws Exception {
         FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("student-lesson-view.fxml"));
-        Scene scene = new Scene(fxml.load(), 800, 600);
+        Scene scene = new Scene(fxml.load(), 1280, 720);
         StudentLessonController c = fxml.getController();
         c.init(user, stage, auth);
         stage.setScene(scene);

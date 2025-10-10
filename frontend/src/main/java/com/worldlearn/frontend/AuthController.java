@@ -107,7 +107,7 @@ public class AuthController {
                             teacherController.init(stage);
                         }
 
-                        stage.setScene(new Scene(root, 800, 800));
+                        stage.setScene(new Scene(root, 1280, 720));
                         stage.show();
                     } catch (IOException e) {
                         loginErrorLabel.setText("Failed to load dashboard");

@@ -112,7 +112,7 @@ public class StudentClassesController {
     @FXML
     protected void onHomeButtonClick() throws Exception {
         FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("student-dashboard-view.fxml"));
-        Scene scene = new Scene(fxml.load(), 800, 600);
+        Scene scene = new Scene(fxml.load(), 1280, 720);
 
         StudentDashboardController c = fxml.getController();
         c.init(user, stage, auth);
@@ -123,7 +123,7 @@ public class StudentClassesController {
     @FXML
     protected void onLessonButtonClick() throws Exception {
         FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("student-lesson-view.fxml"));
-        Scene scene = new Scene(fxml.load(), 800, 600);
+        Scene scene = new Scene(fxml.load(), 1280, 720);
 
         StudentLessonController c = fxml.getController();
         c.init(user, stage, auth);
@@ -174,7 +174,7 @@ public class StudentClassesController {
         Session.instance.setCurrentLesson(l);  // remember lesson
 
         FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("student-lesson-view.fxml"));
-        Scene scene = new Scene(fxml.load(), 800, 600);
+        Scene scene = new Scene(fxml.load(), 1280, 720);
         StudentLessonController c = fxml.getController();
         c.init(user, stage, auth);
         c.setLesson(l.getLessonId(), l.getLessonName());  // triggers load for this lesson

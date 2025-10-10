@@ -25,7 +25,7 @@ public class ProfileController {
     @FXML
     protected void onHomeButtonClickProfilePage() throws Exception {
         FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("student-dashboard-view.fxml"));
-        Scene scene = new Scene(fxml.load(), 800, 600);
+        Scene scene = new Scene(fxml.load(), 1280, 720);
 
         StudentDashboardController c = fxml.getController();
         c.init(user, stage, auth);   // pass context back
