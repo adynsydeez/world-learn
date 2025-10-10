@@ -10,6 +10,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import com.worldlearn.backend.models.Quiz;
@@ -132,23 +135,99 @@ public class StudentLessonController {
     }
     private void loadQuizzesForLesson() {
         quizListContainer.getChildren().clear();
-        api.getLessonQuizzes(lessonId)   // uses existing ApiService method
+        api.getLessonQuizzes(lessonId)
                 .thenAccept(quizzes -> javafx.application.Platform.runLater(() -> {
                     quizListContainer.getChildren().clear();
+
                     for (Quiz q : quizzes) {
-                        Button b = new Button(q.getQuizName());
-                        b.setMaxWidth(Double.MAX_VALUE);
-                        b.setStyle("-fx-background-color:#dbdbdb; -fx-background-radius:20; -fx-padding:20; -fx-cursor:hand; -fx-font-size:18; -fx-font-weight:bold;");
-                        b.setOnAction(e -> {
+                        // Row container
+                        HBox pill = new HBox(12);
+                        pill.getStyleClass().setAll("quiz-pill", "quiz-idle"); // default = idle/blue
+                        pill.setMaxWidth(Double.MAX_VALUE);
+
+                        // Left: title
+                        Label title = new Label(q.getQuizName());
+                        title.getStyleClass().add("quiz-pill-title");
+
+                        // Spacer
+                        Region spacer = new Region();
+                        HBox.setHgrow(spacer, javafx.scene.layout.Priority.ALWAYS);
+
+                        // Right: score
+                        Label score = new Label("--/--");
+                        score.getStyleClass().add("quiz-pill-score");
+
+                        pill.getChildren().addAll(title, spacer, score);
+
+                        // Click → open quiz (your existing behavior)
+                        pill.setOnMouseClicked(e -> {
                             try {
                                 openQuiz(q);
                             } catch (IOException ex) {
                                 throw new RuntimeException(ex);
                             }
                         });
-                        quizListContainer.getChildren().add(b);
+
+                        quizListContainer.getChildren().add(pill);
+
+                        // Compute & paint the pill based on progress
+                        computeQuizProgress(q.getQuizID(), pill, score);
                     }
                 }))
                 .exceptionally(ex -> { ex.printStackTrace(); return null; });
+    }
+
+    /** Fetch questions + answers, compute earned/total, colorize pill and set score. */
+    private void computeQuizProgress(int quizId, HBox pill, Label scoreLabel) {
+        api.getQuizQuestionsAsync(quizId).thenCompose(questions -> {
+            // For each question, ask if the student answered
+            java.util.List<java.util.concurrent.CompletableFuture<com.worldlearn.backend.dto.AnswerResponse>> calls =
+                    new java.util.ArrayList<>();
+
+            int totalPossible = 0;
+            for (com.worldlearn.backend.models.Question q : questions) {
+                totalPossible += q.getPointsWorth();
+                calls.add(api.getStudentAnswer(q.getQuestionId(), user.getId()));
+            }
+
+            int finalTotalPossible = totalPossible;
+            return java.util.concurrent.CompletableFuture
+                    .allOf(calls.toArray(new java.util.concurrent.CompletableFuture[0]))
+                    .thenApply(v -> {
+                        int earned = 0;
+                        boolean attempted = false;
+                        for (var f : calls) {
+                            var ans = f.join(); // safe after allOf
+                            if (ans != null) {
+                                attempted = true;
+                                earned += Math.max(0, ans.getPointsEarned());
+                            }
+                        }
+                        return new int[]{earned, finalTotalPossible, attempted ? 1 : 0};
+                    });
+        }).thenAccept(arr -> javafx.application.Platform.runLater(() -> {
+            int earned = arr[0];
+            int total = Math.max(arr[1], 0);
+            boolean attempted = arr[2] == 1;
+
+            // Score text
+            if (!attempted) {
+                scoreLabel.setText("--/" + (total == 0 ? "--" : total));
+            } else {
+                scoreLabel.setText(earned + "/" + total);
+            }
+
+            // Color state
+            pill.getStyleClass().removeAll("quiz-pass", "quiz-fail", "quiz-idle");
+            if (!attempted) {
+                pill.getStyleClass().add("quiz-idle");
+            } else {
+                double pct = (total == 0) ? 0 : (earned * 1.0 / total);
+                pill.getStyleClass().add(pct >= 0.5 ? "quiz-pass" : "quiz-fail");
+            }
+        })).exceptionally(ex -> {
+            ex.printStackTrace();
+            return null;
+        });
     }
 }

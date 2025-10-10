@@ -34,7 +34,7 @@ public class StudentQuestionViewController {
 
     @FXML private Label lessonTitleLabel;
     @FXML private VBox questionListBox;
-
+    @FXML private Label pointsBadge;
     public void init(User user, Stage stage, AuthClientService auth) {
         this.user = user;
         this.stage = stage;
@@ -62,13 +62,42 @@ public class StudentQuestionViewController {
         int i = 1;
         for (Question q : questions) {
             HBox row = new HBox(10);
-            row.setStyle("-fx-background-color:#dbdbdb; -fx-background-radius:20; -fx-padding:20; -fx-cursor:hand;");
-            row.getChildren().add(new Label("Question " + i + ": " + q.getPrompt()));
+            // use style classes instead of big inline style strings
+            row.getStyleClass().add("q-row");
+
+            Label lbl = new Label("Question " + i + ": " + q.getPrompt());
+            row.getChildren().add(lbl);
+
             final int questionNumber = i;
             row.setOnMouseClicked(e -> openQuestion(q, questionNumber));
             questionListBox.getChildren().add(row);
+
+            // <-- NEW: decorate row based on student's previous answer
+            decorateRowWithStatus(row, q.getQuestionId());
+
             i++;
         }
+        computeAndShowQuizProgress(questions);
+    }
+
+    /** Ask backend if student answered this question; color the row. */
+    private void decorateRowWithStatus(HBox row, int questionId) {
+        api.getStudentAnswer(questionId, this.user.getId())
+                .thenAccept(answer -> Platform.runLater(() -> {
+                    // First clear any old status classes (if list reloaded)
+                    row.getStyleClass().removeAll("q-row--correct", "q-row--wrong");
+
+                    if (answer == null) {
+                        // unanswered → leave grey (q-row only)
+                        return;
+                    }
+                    if (answer.isCorrect()) {
+                        row.getStyleClass().add("q-row--correct");
+                    } else {
+                        row.getStyleClass().add("q-row--wrong");
+                    }
+                }))
+                .exceptionally(ex -> { ex.printStackTrace(); return null; });
     }
 
     private void openQuestion(Question q, int questionNumber) {
@@ -148,4 +177,60 @@ public class StudentQuestionViewController {
         c.init(user, stage, auth);
         stage.setScene(scene);
     }
+
+
+    private void computeAndShowQuizProgress(List<Question> questions) {
+        int possible = questions.stream().mapToInt(Question::getPointsWorth).sum();
+
+        var futures = questions.stream()
+                .map(q -> api.getStudentAnswer(q.getQuestionId(), user.getId()))
+                .toList();
+
+        java.util.concurrent.CompletableFuture
+                .allOf(futures.toArray(new java.util.concurrent.CompletableFuture[0]))
+                .thenRun(() -> {
+                    int[] earnedRef = {0};
+                    int[] answeredRef = {0};
+
+                    futures.forEach(f -> {
+                        try {
+                            var ans = f.get(); // already completed
+                            if (ans != null) {
+                                answeredRef[0]++;
+                                earnedRef[0] += Math.max(0, ans.getPointsEarned());
+                            }
+                        } catch (Exception ignored) { }
+                    });
+
+                    int earned = earnedRef[0];
+                    int answered = answeredRef[0];
+                    double pct = possible > 0 ? (earned * 100.0 / possible) : 0.0;
+
+                    javafx.application.Platform.runLater(() ->
+                            updatePointsBadge(earned, possible, answered, pct));
+                })
+                .exceptionally(ex -> { ex.printStackTrace(); return null; });
+    }
+
+    private void updatePointsBadge(int earned, int possible, int answered, double pct) {
+        String text = String.format("%d / %d (%.0f%%)", earned, possible, pct);
+        pointsBadge.setText(text);
+
+        // base style
+        String base = "-fx-font-weight:700; -fx-padding:6 10; -fx-background-radius:12;";
+        if (answered == 0) {
+            // Not started -> grey
+            pointsBadge.setStyle(base + "-fx-background-color:#e5e7eb; -fx-text-fill:#111827;");
+        } else if (pct >= 50.0) {
+            // Green
+            pointsBadge.setStyle(base + "-fx-background-color:#c9f3cf; -fx-text-fill:#0b3d1c; "
+                    + "-fx-border-color:#58b16b; -fx-border-radius:12; -fx-border-width:1;");
+        } else {
+            // Red
+            pointsBadge.setStyle(base + "-fx-background-color:#ffd6d6; -fx-text-fill:#5b1111; "
+                    + "-fx-border-color:#e36b6b; -fx-border-radius:12; -fx-border-width:1;");
+        }
+    }
+
+
 }
