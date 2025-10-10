@@ -89,7 +89,7 @@ public class TeacherDashboardController {
 
             // 3) Load auth/login view (check the file name/casing!)
             FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("auth-view.fxml"));
-            Scene scene = new Scene(fxml.load(), 900, 650);
+            Scene scene = new Scene(fxml.load(), 1280, 720);
 
             // 4) Init the auth controller with a real service + the same Stage
             AuthController authController = fxml.getController();
