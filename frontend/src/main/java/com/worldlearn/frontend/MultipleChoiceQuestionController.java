@@ -75,7 +75,16 @@ public class MultipleChoiceQuestionController {
             if (is != null) mapView.setImage(new Image(is));
         }
     }
+    @FXML
+    protected void setProfileButtonClick() throws Exception {
+        FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("profile-view.fxml"));
+        Scene scene = new Scene(fxml.load(), 1280, 720);
 
+        ProfileController controller = fxml.getController();
+        controller.init(user, stage, auth);
+
+        stage.setScene(scene);
+    }
     @FXML
     private void onSubmit() {
         ToggleButton chosen = (ToggleButton) answersGroup.getSelectedToggle();

@@ -1,34 +1,97 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.Rectangle?>
 
-<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.worldlearn.frontend.StudentQuestionViewController"
-      spacing="14" style="-fx-padding:20;">
-    <HBox spacing="10">
-        <VBox spacing="10" minWidth="100">
-            <Button fx:id="homeButtonLessonPage" text="Profile" onAction="#onProfileButtonClickLessonPage"
-                    style="-fx-background-radius:10; -fx-padding:6 12;"/>
-            <Button fx:id="profileButtonLessonPage" text="home" onAction="#onHomeButtonClickLessonPage"
-                    style="-fx-background-radius:10; -fx-padding:6 12;"/>
-            <Button text="Back" style="-fx-background-radius:10; -fx-padding:6 12;" onAction="#quizView"/>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.worldlearn.frontend.StudentQuestionViewController"
+           stylesheets="@lesson.css"
+           styleClass="star-bg">
+
+    <HBox spacing="16" alignment="CENTER_LEFT">
+        <padding><Insets top="16" right="16" bottom="16" left="16"/></padding>
+
+        <!-- ===== Sidebar (same as lesson page) ===== -->
+        <VBox spacing="16" minWidth="96" prefWidth="96" maxWidth="96" alignment="TOP_CENTER"
+              style="
+                -fx-background-color: rgba(12,28,68,0.95);
+                -fx-background-radius:16;
+                -fx-padding:14 10;
+                -fx-background-image: url('img/stars.png');
+                -fx-background-repeat: repeat;
+                -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 24, 0.25, 0, 8);
+              ">
+
+            <!-- Logo coin -->
+            <StackPane style="-fx-background-color: rgba(66,90,160,0.35); -fx-background-radius:9999; -fx-padding:8;">
+                <ImageView fitWidth="64" fitHeight="64" preserveRatio="true">
+                    <image><Image url="@img/logosm.png"/></image>
+                </ImageView>
+            </StackPane>
+
+            <VBox spacing="16" alignment="TOP_CENTER">
+                <!-- PROFILE -->
+                <Button fx:id="homeButtonLessonPage"
+                        onAction="#onProfileButtonClickLessonPage"
+                        text="PROFILE" contentDisplay="TOP" graphicTextGap="8" prefWidth="96"
+                        style="-fx-background-color: transparent;
+                               -fx-text-fill: #e8f0ff; -fx-font-size: 12px; -fx-font-weight: 700;
+                               -fx-padding: 12 6 12 6; -fx-background-radius:16;">
+                    <graphic>
+                        <Label text="&#xE77B;"
+                               style="-fx-font-family:'Segoe MDL2 Assets';
+                                      -fx-font-size:26; -fx-text-fill:#e8f0ff;
+                                      -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.35), 8, 0.25, 0, 0);" />
+                    </graphic>
+                </Button>
+
+                <!-- SETTINGS -->
+                <Button text="SETTINGS" contentDisplay="TOP" graphicTextGap="8" prefWidth="96"
+                        style="-fx-background-color: transparent;
+                               -fx-text-fill: #e8f0ff; -fx-font-size: 12px; -fx-font-weight: 700;
+                               -fx-padding: 12 6 12 6; -fx-background-radius:16;">
+                    <graphic>
+                        <Label text="&#xE713;"
+                               style="-fx-font-family:'Segoe MDL2 Assets';
+                                      -fx-font-size:26; -fx-text-fill:#e8f0ff;
+                                      -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.35), 8, 0.25, 0, 0);" />
+                    </graphic>
+                </Button>
+
+                <!-- BACK to quiz list -->
+                <Button onAction="#quizView"
+                        style="-fx-background-color:#f0f4ff; -fx-text-fill:#0f1b3a;
+                               -fx-background-radius:20; -fx-padding:10 16;
+                               -fx-font-size:13; -fx-font-weight:bold;"
+                        prefWidth="96">
+                    <text>Back</text>
+                </Button>
+            </VBox>
+
+            <Region VBox.vgrow="ALWAYS"/>
         </VBox>
 
-        <VBox spacing="10" HBox.hgrow="ALWAYS">
-            <Label fx:id="lessonTitleLabel" text="Quiz" style="-fx-font-size:22; -fx-font-weight:bold;"/>
+        <!-- ===== White content card ===== -->
+        <VBox spacing="20" HBox.hgrow="ALWAYS"
+              style="-fx-background-color:white;
+                     -fx-background-radius:18;
+                     -fx-padding:24;
+                     -fx-effect:dropshadow(gaussian, rgba(0,0,0,0.28), 24, 0.25, 0, 10);">
 
-            <HBox spacing="10">
-                <VBox>
+            <!-- Header -->
+            <Label fx:id="lessonTitleLabel"
+                   text="Quiz"
+                   style="-fx-font-size:28; -fx-font-weight:900; -fx-text-fill:#162144;"/>
 
-                    <AnchorPane prefWidth="400" prefHeight="300">
-                        <Rectangle x="0" y="0" width="20" height="500" fill="green"/>
-                    </AnchorPane>
-                </VBox>
+            <Label text="Questions"
+                   style="-fx-font-size:18; -fx-font-weight:700; -fx-text-fill:#3a4668;"/>
 
-                <!-- We will populate this with question rows -->
-                <VBox fx:id="questionListBox" spacing="10" HBox.hgrow="ALWAYS" prefWidth="2000"/>
-            </HBox>
+            <!-- Your controller will populate this with question rows -->
+            <VBox fx:id="questionListBox" spacing="10" HBox.hgrow="ALWAYS" prefWidth="2000"/>
         </VBox>
     </HBox>
-</VBox>
+</StackPane>

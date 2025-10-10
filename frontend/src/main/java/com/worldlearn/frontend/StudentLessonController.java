@@ -3,6 +3,9 @@ package com.worldlearn.frontend;
 import com.worldlearn.backend.models.Quiz;
 import com.worldlearn.backend.models.User;
 import com.worldlearn.frontend.services.AuthClientService;
+import javafx.animation.Animation;
+import javafx.animation.Interpolator;
+import javafx.animation.RotateTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -12,8 +15,12 @@ import javafx.stage.Stage;
 import com.worldlearn.backend.models.Quiz;
 import com.worldlearn.backend.models.Lesson;
 import com.worldlearn.frontend.services.ApiService;
+import javafx.util.Duration;
 
+import javax.swing.text.html.ImageView;
 import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
 
 public class StudentLessonController {
     private User user;
@@ -63,6 +70,7 @@ public class StudentLessonController {
                 .exceptionally(ex -> { ex.printStackTrace(); return null; });
     }
 
+
     private void openQuiz(Quiz q) throws IOException {
         Session.instance.setCurrentQuiz(q);  // remember quiz
         FXMLLoader loader = new FXMLLoader(HelloApplication.class.getResource("student-question-view.fxml"));
@@ -73,6 +81,16 @@ public class StudentLessonController {
         stage.setScene(scene);
     }
 
+    @FXML
+    protected void setProfileButtonClick() throws Exception {
+        FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("profile-view.fxml"));
+        Scene scene = new Scene(fxml.load(), 1280, 720);
+
+        ProfileController controller = fxml.getController();
+        controller.init(user, stage, auth);
+
+        stage.setScene(scene);
+    }
     @FXML
     protected void onHomeButtonClickLessonPage() throws Exception {
         FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("student-dashboard-view.fxml"));

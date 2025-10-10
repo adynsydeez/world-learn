@@ -24,13 +24,13 @@
             <Region styleClass="world-ring-sm"/>
 
             <StackPane style="-fx-alignment: CENTER;">
-                <ImageView fitWidth="400" fitHeight="400" preserveRatio="true">
+                <ImageView fitWidth="540" fitHeight="540" preserveRatio="true">
                     <image>
                         <Image url="@img/logo.png"/>
                     </image>
 
                     <clip>
-                        <Circle radius="200" centerX="200" centerY="200"/>
+                        <Circle radius="270" centerX="270" centerY="270"/>
                     </clip>
                 </ImageView>
             </StackPane>

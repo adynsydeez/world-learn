@@ -14,19 +14,7 @@
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.45), 30, 0.2, 0, 10);
     -fx-alignment: center;
 }
-.world-ring-lg {
-    -fx-background-color: rgba(255,255,255,0.06);
-    -fx-background-radius: 9999;
-    -fx-max-width: 520; -fx-max-height: 520;
-    -fx-min-width: 520; -fx-min-height: 520;
-    -fx-translate-y: 2;
-}
-.world-ring-sm {
-    -fx-background-color: rgba(255,255,255,0.12);
-    -fx-background-radius: 9999;
-    -fx-max-width: 460; -fx-max-height: 460;
-    -fx-min-width: 460; -fx-min-height: 460;
-}
+
 
 
 .auth-card {
