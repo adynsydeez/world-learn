@@ -12,6 +12,10 @@ public class Teacher extends User {
         this.setRole("teacher");
     }
 
+    public Teacher() {
+        super();
+    }
+
     @Override
     public String getUserRole(){
         return "teacher";

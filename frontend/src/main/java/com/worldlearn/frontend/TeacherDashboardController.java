@@ -1,5 +1,4 @@
 package com.worldlearn.frontend;
-import com.worldlearn.backend.services.AuthenticationService;
 import com.worldlearn.backend.models.User;
 import com.worldlearn.frontend.services.AuthClientService;
 import javafx.fxml.FXML;
@@ -10,7 +9,6 @@ import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import com.worldlearn.frontend.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +21,7 @@ public class TeacherDashboardController {
     private AuthClientService auth;
 
     // pass user,stage to controller
-    public void init(Stage stage) {
+    public void init(Stage stage, AuthClientService auth) {
         User user = Session.getCurrentUser();
         if(user == null){
             System.err.println("No user logged in.");

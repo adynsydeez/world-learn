@@ -11,6 +11,10 @@ public class Student extends User {
         super(email, password, first, last, student);
     }
 
+    public Student() {
+        super();
+    }
+
 
     @Override
     public String getUserRole(){
