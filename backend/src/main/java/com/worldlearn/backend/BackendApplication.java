@@ -66,6 +66,7 @@ public class BackendApplication {
         app.post("/api/users", userController::createUser);
         app.put("/api/users/{id}", userController::updateUser);
         app.delete("/api/users/{id}", userController::deleteUser);
+        app.put("/api/users/password/{id}", userController::updatePassword);
         app.get("/api/users/{id}/questions", questionController::getAllTeacherQuestions);
 
         // LOGIN endpoint

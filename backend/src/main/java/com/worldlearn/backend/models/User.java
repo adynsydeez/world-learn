@@ -1,6 +1,18 @@
 package com.worldlearn.backend.models;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "userRole"  // Matches the "userRole" field in your JSON
+)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = Student.class, name = "Student"),
+        @JsonSubTypes.Type(value = Teacher.class, name = "Teacher"),
+})
 
 public abstract class User {
     @JsonProperty("id")

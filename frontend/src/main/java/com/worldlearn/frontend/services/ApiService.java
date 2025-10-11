@@ -1,5 +1,6 @@
 package com.worldlearn.frontend.services;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.worldlearn.backend.dto.*;
@@ -30,6 +31,8 @@ public class ApiService {
                 .connectTimeout(Duration.ofSeconds(10))
                 .build();
         this.objectMapper = new ObjectMapper();
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        objectMapper.registerSubtypes(Student.class, Teacher.class);
     }
 
     public ApiService(String baseUrl) {
@@ -38,7 +41,8 @@ public class ApiService {
                 .connectTimeout(Duration.ofSeconds(10))
                 .build();
         this.objectMapper = new ObjectMapper();
-
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        objectMapper.registerSubtypes(Student.class, Teacher.class);
     }
 
     // Health check
@@ -205,7 +209,7 @@ public class ApiService {
     }
 
     // Update user
-    public CompletableFuture<User> updateUserAsync(int id, User user) {
+    public CompletableFuture<User> updateUserAsync(int id, UpdateUserProfileRequest user) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 String jsonBody = objectMapper.writeValueAsString(user);
@@ -248,6 +252,34 @@ public class ApiService {
                 return response.statusCode() == 204 || response.statusCode() == 200;
             } catch (Exception e) {
                 throw new RuntimeException("Error deleting user: " + e.getMessage(), e);
+            }
+        });
+    }
+
+    //update password
+    public CompletableFuture<User> updatePasswordAsync(int id, UpdatePasswordRequest user) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                String jsonBody = objectMapper.writeValueAsString(user);
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(baseUrl + "/users/password/" + id))
+                        .header("Content-Type", "application/json")
+                        .PUT(HttpRequest.BodyPublishers.ofString(jsonBody))
+                        .timeout(Duration.ofSeconds(30))
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request,
+                        HttpResponse.BodyHandlers.ofString());
+
+                if (response.statusCode() == 200) {
+                    return objectMapper.readValue(response.body(), User.class);
+                } else {
+                    throw new RuntimeException("Failed to update user: " + response.statusCode() +
+                            " - " + response.body());
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Error updating user: " + e.getMessage(), e);
             }
         });
     }

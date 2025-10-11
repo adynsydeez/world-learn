@@ -1,5 +1,7 @@
 package com.worldlearn.frontend.services;
 
+import com.worldlearn.backend.dto.UpdatePasswordRequest;
+import com.worldlearn.backend.dto.UpdateUserProfileRequest;
 import com.worldlearn.backend.models.Student;
 import com.worldlearn.backend.models.Teacher;
 import com.worldlearn.backend.models.User;
@@ -16,9 +18,8 @@ public class AuthClientService {
     }
 
     public User signUp(String email, String password, String role, String firstName, String lastName) {
-        // Only create UserRequest via ApiService, don't instantiate Student/Teacher locally
         User createdUser = apiService.createUserAsync(new Student(email, password, firstName, lastName, role))
-                .join(); // or just pass a simple DTO if you refactor ApiService
+                .join();
         currentUser = createdUser;
         return createdUser;
     }
@@ -43,6 +44,19 @@ public class AuthClientService {
                 });
     }
 
+    public User updateProfile(int id, String email, String password, String role, String firstName, String lastName) {
+        User updatedUser = apiService.updateUserAsync(id, new UpdateUserProfileRequest(firstName, lastName, email))
+                .join();
+        this.currentUser = updatedUser;
+        return updatedUser;
+    }
+
+    public User updatePassword(int id, String password) {
+        User updatedUser = apiService.updatePasswordAsync(id, new UpdatePasswordRequest(password))
+                .join();
+        currentUser = updatedUser;
+        return updatedUser;
+    }
 
 
     public User getCurrentUser() {

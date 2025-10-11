@@ -1,6 +1,8 @@
 package com.worldlearn.backend.controllers;
 
 import com.worldlearn.backend.dto.LoginRequest;
+import com.worldlearn.backend.dto.UpdatePasswordRequest;
+import com.worldlearn.backend.dto.UpdateUserProfileRequest;
 import com.worldlearn.backend.dto.UserRequest;
 import com.worldlearn.backend.models.Student;
 import com.worldlearn.backend.models.Teacher;
@@ -104,7 +106,7 @@ public class UserController {
     public void updateUser(Context ctx) {
         try {
             int id = Integer.parseInt(ctx.pathParam("id"));
-            User user = ctx.bodyAsClass(User.class);
+            UpdateUserProfileRequest user = ctx.bodyAsClass(UpdateUserProfileRequest.class);
             User updatedUser = userService.updateUser(id, user);
 
             if (updatedUser != null) {
@@ -133,6 +135,26 @@ public class UserController {
             }
         } catch (NumberFormatException e) {
             ctx.status(400).result("Invalid user ID");
+        } catch (Exception e) {
+            ctx.status(500).result("Internal server error: " + e.getMessage());
+        }
+    }
+
+    public void updatePassword(Context ctx) {
+        try {
+            int id = Integer.parseInt(ctx.pathParam("id"));
+            UpdatePasswordRequest user = ctx.bodyAsClass(UpdatePasswordRequest.class);
+            User updatedUser = userService.updatePassword(id, user);
+
+            if (updatedUser != null) {
+                ctx.json(updatedUser);
+            } else {
+                ctx.status(404).result("User not found");
+            }
+        } catch (NumberFormatException e) {
+            ctx.status(400).result("Invalid user ID");
+        } catch (IllegalArgumentException e) {
+            ctx.status(400).result("Validation error: " + e.getMessage());
         } catch (Exception e) {
             ctx.status(500).result("Internal server error: " + e.getMessage());
         }

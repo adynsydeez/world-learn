@@ -1,5 +1,7 @@
 package com.worldlearn.backend.database;
 
+import com.worldlearn.backend.dto.UpdatePasswordRequest;
+import com.worldlearn.backend.dto.UpdateUserProfileRequest;
 import com.worldlearn.backend.models.Student;
 import com.worldlearn.backend.models.Teacher;
 import com.worldlearn.backend.models.User;
@@ -148,8 +150,8 @@ public class UserDAO {
         return null; // invalid credentials
     }
 
-    public User updateUser(int id, User user) throws SQLException {
-        String sql = "UPDATE users SET first_name = ?, last_name = ?, email = ?, password = ?, user_role = ?::user_role_type WHERE user_id = ?";
+    public User updateUser(int id, UpdateUserProfileRequest user) throws SQLException {
+        String sql = "UPDATE users SET first_name = ?, last_name = ?, email = ? WHERE user_id = ?";
 
         try (Connection conn = database.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -157,15 +159,12 @@ public class UserDAO {
             stmt.setString(1, user.getFirstName());
             stmt.setString(2, user.getLastName());
             stmt.setString(3, user.getEmail());
-            stmt.setString(4, user.getPassword());
-            stmt.setString(5, user.getRole());
-            stmt.setInt(6, id);
+            stmt.setInt(4, id);
 
             int rowsAffected = stmt.executeUpdate();
 
             if (rowsAffected > 0) {
-                user.setId(id);
-                return user;
+                return getUserById(String.valueOf(id));
             }
 
             return null;
@@ -180,6 +179,25 @@ public class UserDAO {
 
             stmt.setInt(1, id);
             return stmt.executeUpdate() > 0;
+        }
+    }
+
+    public User updatePassword(int id, UpdatePasswordRequest user) throws SQLException {
+        String sql = "UPDATE users SET password = ? WHERE user_id = ?";
+
+        try (Connection conn = database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, user.getPassword());
+            stmt.setInt(2, id);
+
+            int rowsAffected = stmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                return getUserById(String.valueOf(id));
+            }
+
+            return null;
         }
     }
 }

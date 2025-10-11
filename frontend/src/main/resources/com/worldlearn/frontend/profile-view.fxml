@@ -27,78 +27,13 @@
         <!-- Right side info -->
         <VBox spacing="8">
             <Label text="John Student" style="-fx-font-size:20; -fx-font-weight:bold;"/>
-            <Label text="Year 9" />
 
             <Label text="Email : johnstudent@student.com"/>
-            <Label text="School : WorldLearn High School"/>
             <HBox spacing="10" style="-fx-padding:10 0 0 0;">
 
-                <Button text="Edit Profile" style="-fx-background-color:#27c55b; -fx-text-fill:white; -fx-background-radius:8;"/>
-                <Button  text="Reset Password" style="-fx-background-color:#5b7dff; -fx-text-fill:white; -fx-background-radius:8;"/>
+                <Button fx:id="editProfileButton" text="Edit Profile"  onAction="#onEditProfileButtonClick" style="-fx-background-color:#27c55b; -fx-text-fill:white; -fx-background-radius:8;"/>
+                <Button fx:id="editPasswordButton" text="Reset Password" onAction="#onResetPasswordButtonClick" style="-fx-background-color:#5b7dff; -fx-text-fill:white; -fx-background-radius:8;"/>
             </HBox>
-        </VBox>
-    </HBox>
-
-    <Label text="Badges/Rewards" style="-fx-font-size:20; -fx-font-weight:bold;"/>
-    <HBox spacing="16">
-
-        <VBox spacing="6" style="-fx-padding:10; -fx-background-color:#f3edf9; -fx-background-radius:12; -fx-pref-width:180;">
-            <Label text="badge/reward image" style="-fx-font-size:14;"/>
-            <Label text="Name of reward" style="-fx-font-weight:bold;"/>
-            <Label text="Date Awarded" style="-fx-text-fill:#666; -fx-font-size:11;"/>
-        </VBox>
-
-
-        <VBox spacing="6" style="-fx-padding:10; -fx-background-color:#f3edf9; -fx-background-radius:12; -fx-pref-width:180;">
-            <Label text="badge/reward image" style="-fx-font-size:14;"/>
-            <Label text="Name of reward" style="-fx-font-weight:bold;"/>
-            <Label text="Date Awarded" style="-fx-text-fill:#666; -fx-font-size:11;"/>
-        </VBox>
-
-
-        <VBox spacing="6" style="-fx-padding:10; -fx-background-color:#f3edf9; -fx-background-radius:12; -fx-pref-width:180;">
-            <Label text="badge/reward image" style="-fx-font-size:14;"/>
-            <Label text="Name of reward" style="-fx-font-weight:bold;"/>
-            <Label text="Date Awarded" style="-fx-text-fill:#666; -fx-font-size:11;"/>
-        </VBox>
-
-
-        <VBox spacing="6" style="-fx-padding:10; -fx-background-color:#f3edf9; -fx-background-radius:12; -fx-pref-width:180;">
-            <Label text="badge/reward image" style="-fx-font-size:14;"/>
-            <Label text="Name of reward" style="-fx-font-weight:bold;"/>
-            <Label text="Date Awarded" style="-fx-text-fill:#666; -fx-font-size:11;"/>
-        </VBox>
-    </HBox>
-
-    <!-- Current Lessons-->
-    <Label text="Class Progression/Lesson progression" style="-fx-font-size:20; -fx-font-weight:bold;"/>
-    <HBox spacing="16">
-
-        <VBox spacing="6" style="-fx-padding:10; -fx-background-color:#f3edf9; -fx-background-radius:12; -fx-pref-width:180;">
-            <Label text="Lesson/class image" style="-fx-font-size:14;"/>
-            <Label text="Name of class/lesson" style="-fx-font-weight:bold;"/>
-            <Label text="Teacher Name/class/lesson" style="-fx-text-fill:#666; -fx-font-size:11;"/>
-        </VBox>
-
-
-        <VBox spacing="6" style="-fx-padding:10; -fx-background-color:#f3edf9; -fx-background-radius:12; -fx-pref-width:180;">
-            <Label text="Lesson/class image" style="-fx-font-size:14;"/>
-            <Label text="Name of class/lesson" style="-fx-font-weight:bold;"/>
-            <Label text="Teacher Name/class/lesson" style="-fx-text-fill:#666; -fx-font-size:11;"/>
-        </VBox>
-
-
-        <VBox spacing="6" style="-fx-padding:10; -fx-background-color:#f3edf9; -fx-background-radius:12; -fx-pref-width:180;">
-            <Label text="Lesson/class image" style="-fx-font-size:14;"/>
-            <Label text="Name of class/lesson" style="-fx-font-weight:bold;"/>
-            <Label text="Teacher Name/class/lesson" style="-fx-text-fill:#666; -fx-font-size:11;"/>
-        </VBox>
-
-
-        <VBox spacing="6" style="-fx-padding:10; -fx-background-color:#f3edf9; -fx-background-radius:12; -fx-pref-width:180;">
-            <Label text="Lesson/class image" style="-fx-font-size:14;"/>
-            <Label text="Name of class/lesson" style="-fx-font-weight:bold;"/>
-            <Label text="Teacher Name/class/lesson" style="-fx-text-fill:#666; -fx-font-size:11;"/>
         </VBox>
     </HBox>
 </VBox>

@@ -1,6 +1,8 @@
 package com.worldlearn.backend.services;
 
 import com.worldlearn.backend.database.UserDAO;
+import com.worldlearn.backend.dto.UpdatePasswordRequest;
+import com.worldlearn.backend.dto.UpdateUserProfileRequest;
 import com.worldlearn.backend.models.User;
 import java.sql.SQLException;
 import java.util.List;
@@ -45,12 +47,10 @@ public class UserService {
         return userDAO.getAllUsers();
     }
 
-    public User updateUser(int id, User user) throws SQLException {
+    public User updateUser(int id, UpdateUserProfileRequest user) throws SQLException {
         if (id <= 0) {
             throw new IllegalArgumentException("Invalid user ID");
         }
-
-        validateUser(user);
 
         return userDAO.updateUser(id, user);
     }
@@ -61,6 +61,14 @@ public class UserService {
         }
 
         return userDAO.deleteUser(id);
+    }
+
+    public User updatePassword(int id, UpdatePasswordRequest user) throws SQLException {
+        if (id <= 0) {
+            throw new IllegalArgumentException("Invalid user ID");
+        }
+
+        return userDAO.updatePassword(id, user);
     }
 
     private void validateUser(User user) {
