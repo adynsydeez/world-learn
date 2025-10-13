@@ -18,6 +18,6 @@ public class Student extends User {
 
     @Override
     public String getUserRole(){
-        return "Student";
+        return "student";
     }
 }
