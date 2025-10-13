@@ -8,6 +8,7 @@ public class WlClass {
     private int joinCode;
     private final Random random = new Random();
 
+    /// //CONSTRUCTOR
     public WlClass() {
     }
 
@@ -17,15 +18,19 @@ public class WlClass {
         this.joinCode = joinCode;
     }
 
+    /// //ID
     public int getId() { return this.id; }
     public void setId(int id) { this.id = id; }
 
+    /// //CLASS NAME
     public String getClassName() { return this.className; }
     public void setClassName(String className) { this.className = className; }
 
+    /// //JOIN CODE
     public int getJoinCode() { return this.joinCode; }
     public void setJoinCode(int joinCode) { this.joinCode = joinCode; }
 
+    /// ///METHODS
     @Override
     public String toString() {
         return String.format("Class{id=%s, className='%s', joinCode='%s'}",

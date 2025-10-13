@@ -7,29 +7,39 @@ public class Lesson {
     private String lessonName;
     private Visibility visibility;
 
-    public Lesson(){}
+    public Lesson() {}
 
-    public Lesson(int lessonId, String lessonName, Visibility visibility){
+    /// //CONSTRUCTOR
+    public Lesson(int lessonId, String lessonName, Visibility visibility) {
         setLessonId(lessonId);
         setLessonName(lessonName);
         setVisibility(visibility);
     }
 
-    public void setLessonId(int id){
+    /// //LESSON ID
+    public void setLessonId(int id) {
+        if (id < 0) {
+            throw new IllegalArgumentException("lessonId must be >= 0");
+        }
         this.lessonId = id;
     }
+    public int getLessonId() { return lessonId; }
 
-    public int getLessonId(){ return lessonId; }
-
-    public void setLessonName(String lessonName){
-        this.lessonName = lessonName;
+    /// //LESSON NAME
+    public void setLessonName(String lessonName) {
+        if (lessonName == null || lessonName.isBlank()) {
+            throw new IllegalArgumentException("lessonName must not be null/blank");
+        }
+        this.lessonName = lessonName.trim();
     }
-
     public String getLessonName() { return lessonName; }
 
+    /// //VISIBILITY
     public void setVisibility(Visibility visibility) {
+        if (visibility == null) {
+            throw new IllegalArgumentException("visibility must not be null");
+        }
         this.visibility = visibility;
     }
-
     public Visibility getVisibility() { return visibility; }
 }
