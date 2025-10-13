@@ -25,7 +25,10 @@ public class Lesson {
     }
     public int getLessonId() { return lessonId; }
 
-    /// //LESSON NAME
+    /**
+     *
+     * @param lessonName
+     */
     public void setLessonName(String lessonName) {
         if (lessonName == null || lessonName.isBlank()) {
             throw new IllegalArgumentException("lessonName must not be null/blank");

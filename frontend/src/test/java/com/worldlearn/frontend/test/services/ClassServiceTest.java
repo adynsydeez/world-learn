@@ -36,35 +36,5 @@ class ClassServiceTest {
                 }
             }
         }
-
-        @Nested
-        @DisplayName("createClass")
-        class createClass {
-            @Test
-            void createClassSetsReturnsClass () throws Exception {
-                var dao = new FakeClassDAO();
-                var service = new ClassService(dao);
-
-                int teacherId = 42;
-                var input = new WlClass(0, "EE101", 0);
-                var lessons = List.of(10, 11);
-
-                WlClass c = service.createClass(input,teacherId,lessons);
-
-                assertTrue(c instanceof WlClass);
-                assertequals(teacherId,c.)
-            }
-        }
     }
-
-
-
-
-
-
-
-
-
-
-
 }
