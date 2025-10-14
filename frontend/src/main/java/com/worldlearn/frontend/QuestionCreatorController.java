@@ -49,12 +49,6 @@ public class QuestionCreatorController {
 
     @FXML
     private void initialize() {
-        // group quiz type radios
-        ToggleGroup quizTypes = new ToggleGroup();
-        mcqRadio.setToggleGroup(quizTypes);
-        writtenRadio.setToggleGroup(quizTypes);
-        mapRadio.setToggleGroup(quizTypes);
-
         // group correct answer radios
         correctAnswer = new ToggleGroup();
         correct1.setToggleGroup(correctAnswer);
@@ -68,28 +62,7 @@ public class QuestionCreatorController {
         correct4.setUserData(option4);
 
         // hide fields initially
-        showFields(null);
-
-        // handle quiz type selection
-        quizTypes.selectedToggleProperty().addListener((observable, oldVal, newVal) -> {
-            if (newVal != null) {
-                RadioButton selected = (RadioButton) newVal;
-                switch (selected.getId()) {
-                    case "mcqRadio":
-                        this.type = QuestionType.mcq;
-                        showFields(mcqFields);
-                        break;
-                    case "writtenRadio":
-                        this.type = QuestionType.written;
-                        showFields(writtenFields);
-                        break;
-                    case "mapRadio":
-                        this.type = QuestionType.map;
-                        showFields(mapFields);
-                        break;
-                }
-            }
-        });
+        //showFields(null);
 
         // populate visibility dropdown
         visibilityCombo.getItems().setAll(Visibility.values());
@@ -111,7 +84,6 @@ public class QuestionCreatorController {
     }
 
     private String getAnswer() {
-        if (type == QuestionType.mcq) {
             RadioButton selected = (RadioButton) correctAnswer.getSelectedToggle();
             if (selected == null) {
                 throw new IllegalArgumentException("Please select the correct answer.");
@@ -120,15 +92,6 @@ public class QuestionCreatorController {
             // The selected radio button is linked to its TextField
             TextField linkedOption = (TextField) selected.getUserData();
             return linkedOption.getText().trim();
-        }
-        else if (type == QuestionType.written) {
-            return null;
-        }
-        else if (type == QuestionType.map) {
-            return null;
-        }
-
-        throw new IllegalArgumentException("No Type Selected");
     }
 
 
@@ -174,15 +137,14 @@ public class QuestionCreatorController {
         if (type == QuestionType.mcq){
             options = getOptions();
         }
-        String prompt = getPrompt();
         try {
             Question question = new Question(
                     0,
-                    prompt,
+                    getPrompt(),
                     getAnswer(),
                     options,
-                    prompt,
-                    type,
+                    getPrompt(),
+                    QuestionType.mcq,
                     getPoints(),
                     getVisibility()
             );

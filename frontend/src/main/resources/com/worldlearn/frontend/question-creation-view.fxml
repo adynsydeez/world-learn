@@ -18,33 +18,27 @@
     </padding>
 
     <HBox spacing="10" alignment="CENTER_LEFT">
-        <Label text="Create A Question" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
         <Region HBox.hgrow="ALWAYS"/>
         <Button fx:id="clearBtn" text="Clear"
                 style="-fx-background-color: #ff6b6b; -fx-text-fill: white;"/>
-        <Button fx:id="saveBtn" text="Save"
-                style="-fx-background-color: #a29bfe; -fx-text-fill: white;"/>
     </HBox>
-
-    <!-- Question type selection -->
-    <VBox spacing="10">
-        <Label text="Question Type"/>
-        <RadioButton fx:id="mcqRadio" text="Multiple Choice" toggleGroup="$quizTypes"/>
-        <RadioButton fx:id="writtenRadio" text="Written Answer" toggleGroup="$quizTypes"/>
-        <RadioButton fx:id="mapRadio" text="Place Map Marker" toggleGroup="$quizTypes"/>
-    </VBox>
 
     <!-- Prompt, points, visibility -->
     <VBox spacing="5">
-        <Label text="Prompt"/>
-        <TextField fx:id="promptField" promptText="Enter Your Question Here..."/>
-        <TextField fx:id="pointsField" promptText="Points for This Question..."/>
+        <Label text="Question"/>
+        <TextField fx:id="promptField" promptText="What's 9 + 10?"/>
+        <Label text="Points Worth"/>
+        <TextField fx:id="pointsField" promptText="5"/>
+        <Label text="Question visibility"/>
+        <Label text="Private: Just for you and your students."/>
+        <Label text="Public: Other teachers can use it in their quizzes."/>
         <ComboBox fx:id="visibilityCombo" promptText="Question Visibility..."/>
     </VBox>
 
     <!-- Multiple Choice Options -->
     <VBox fx:id="mcqFields" spacing="10">
-        <Label text="Answers"/>
+        <Label text="Potential Answers"/>
+        <Label text="Use the radio buttons to select the correct answer."/>
 
         <HBox spacing="5">
             <RadioButton fx:id="correct1" toggleGroup="$correctAnswer" text=""/>
@@ -67,14 +61,10 @@
         </HBox>
     </VBox>
 
-    <!-- Written Answer -->
-    <VBox fx:id="writtenFields" spacing="10">
-        <Label text="Student responses will be available in _______."/>
-    </VBox>
-
-    <!-- Map Question -->
-    <VBox fx:id="mapFields" spacing="10">
-        <Label text="Map"/>
-    </VBox>
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="saveBtn" text="Save"
+                style="-fx-background-color: #a29bfe; -fx-text-fill: white;"/>
+    </HBox>
 
 </VBox>
