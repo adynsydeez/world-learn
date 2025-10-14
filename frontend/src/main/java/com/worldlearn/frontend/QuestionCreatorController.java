@@ -133,16 +133,12 @@ public class QuestionCreatorController {
     }
 
     private void saveQuestion() {
-        String[] options = null;
-        if (type == QuestionType.mcq){
-            options = getOptions();
-        }
         try {
             Question question = new Question(
                     0,
                     getPrompt(),
                     getAnswer(),
-                    options,
+                    getOptions(),
                     getPrompt(),
                     QuestionType.mcq,
                     getPoints(),
@@ -157,10 +153,20 @@ public class QuestionCreatorController {
                     })
                     .join();
 
+            StringBuilder message = new StringBuilder("Question Created! \n \nPrompt: "
+                    + question.getPrompt()
+                    + "\n" + "visibility: " + question.getVisibility().toString()
+                    + "\n" + "Points: " + question.getPointsWorth()
+                    + "\n" + "Answer: " + question.getAnswer()
+                    + "\n" + "Options: \n");
+            for(String option : question.getOptions()) {
+                message.append(option).append("\n");
+            }
+            showAlert(message.toString());
 
             clearFields();
         } catch (IllegalArgumentException ex) {
-            showAlert(ex.getMessage());
+            showError(ex.getMessage());
         }
     }
 
@@ -174,11 +180,32 @@ public class QuestionCreatorController {
         correctAnswer.selectToggle(null);
     }
 
-    private void showAlert(String message) {
+    private void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Validation Error");
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    private void showAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Confirmation");
+        alert.setContentText(message);
+        alert.showAndWait();
+        // Close dialog after a short delay
+        new Thread(() -> {
+            try {
+                Thread.sleep(1000);
+                javafx.application.Platform.runLater(() -> closeDialog());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
+    private void closeDialog() {
+        Stage stage = (Stage) saveBtn.getScene().getWindow();
+        stage.close();
     }
 
     public ApiService getApiService() {
