@@ -10,6 +10,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,7 +79,9 @@ public class LessonCreatorController {
 
         clearBtn.setOnAction(e -> clearLesson());
 
-        loadBtn.setOnAction(e -> getTeacherQuizzes());
+        //loadBtn.setOnAction(e -> getTeacherQuizzes());
+
+        getTeacherQuizzes();
     }
 
     private void getTeacherQuizzes() {
@@ -119,13 +122,6 @@ public class LessonCreatorController {
         return lessonQuizzes.isEmpty();
     }
 
-    private void showAlert(String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Validation Error");
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
     private Question.Visibility getVisibility() {
         Question.Visibility selected = visibilityComboBox.getValue();
         if (selected == null) {
@@ -138,11 +134,11 @@ public class LessonCreatorController {
         System.out.println("Attempting Save Lesson.");
 
         if (checkInvalidName()) {
-            showAlert("Please enter a valid lesson name");
+            showError("Please enter a valid lesson name");
             return;
         }
         if (checkInvalidLesson()) {
-            showAlert("ERROR: Lesson Must Contain Quizzes");
+            showError("ERROR: Lesson Must Contain Quizzes");
             return;
         }
 
@@ -166,8 +162,42 @@ public class LessonCreatorController {
                     })
                     .join();
 
+            StringBuilder message = new StringBuilder("Lesson Created! \n \nName: " + lessonRequest.getLessonName() + "\nvisibility: " + lessonRequest.getVisibility().toString() + "\n" + "Quizzes:\n");
+            for(Quiz quiz : quizzes) {
+                message.append(quiz.getQuizName()).append("\n");
+            }
+            showAlert(message.toString());
+
         } catch (IllegalArgumentException ex) {
-            showAlert(ex.getMessage());
+            showError(ex.getMessage());
         }
+    }
+
+    private void showError(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Validation Error");
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private void showAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Confirmation");
+        alert.setContentText(message);
+        alert.showAndWait();
+        // Close dialog after a short delay
+        new Thread(() -> {
+            try {
+                Thread.sleep(1000);
+                javafx.application.Platform.runLater(() -> closeDialog());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
+    private void closeDialog() {
+        Stage stage = (Stage) saveBtn.getScene().getWindow();
+        stage.close();
     }
 }

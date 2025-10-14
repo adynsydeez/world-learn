@@ -21,16 +21,19 @@
         <Region HBox.hgrow="ALWAYS"/>
         <Button fx:id="clearBtn" text="Clear Lesson"
                 style="-fx-background-color: #ff6b6b; -fx-text-fill: white;"/>
-        <Button fx:id="saveBtn" text="Save"
-                style="-fx-background-color: #a29bfe; -fx-text-fill: white;"/>
     </HBox>
 
     <VBox spacing="5">
         <Label text="Lesson Name"/>
         <TextField fx:id="nameField" promptText="Enter a Lesson Name..."/>
+        <Label text="Lesson visibility"/>
+        <Label text="Private: Just for you and your students."/>
+        <Label text="Public: Other teachers can use it in their classes."/>
         <ComboBox fx:id="visibilityComboBox"/>
     </VBox>
 
+
+    <Label text="Select one of your questions, or search public ones, and add them to your quiz"/>
     <HBox spacing="20" alignment="TOP_LEFT">
         <VBox>
             <Label text="Your Quizzes"/>
@@ -45,8 +48,14 @@
     </HBox>
 
     <HBox spacing="10">
-        <Button fx:id="loadBtn" text="Load Quizzes"/>
+       <!-- <Button fx:id="loadBtn" text="Load Quizzes"/> -->
         <Button fx:id="addToLessonBtn" text="Add Selected Quizzes"/>
+    </HBox>
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="saveBtn" text="Save"
+                style="-fx-background-color: #a29bfe; -fx-text-fill: white;"/>
     </HBox>
 
 </VBox>
