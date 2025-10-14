@@ -21,16 +21,18 @@
         <Region HBox.hgrow="ALWAYS"/>
         <Button fx:id="clearBtn" text="Clear Quiz"
                 style="-fx-background-color: #ff6b6b; -fx-text-fill: white;"/>
-        <Button fx:id="saveBtn" text="Save"
-                style="-fx-background-color: #a29bfe; -fx-text-fill: white;"/>
     </HBox>
 
     <VBox spacing="5">
         <Label text="Quiz Name"/>
         <TextField fx:id="nameField" promptText="Enter a Quiz Name..."/>
+        <Label text="Quiz visibility"/>
+        <Label text="Private: Just for you and your students."/>
+        <Label text="Public: Other teachers can use it in their lessons."/>
         <ComboBox fx:id="visibilityComboBox"/>
     </VBox>
 
+    <Label text="Select one of your questions, or search public ones, and add them to your quiz"/>
     <HBox spacing="20" alignment="TOP_LEFT">
         <VBox>
                 <Label text="Your Questions"/>
@@ -51,6 +53,12 @@
             <ListView fx:id="quizQuestionsList"/>
         </VBox>
     </HBox>
-    <Button fx:id="loadBtn" text="Load Questions"/>
-    <Button fx:id="addToQuizBtn" text="Add Selected Questions"/>
+    <!-- <Button fx:id="loadBtn" text="Load Questions"/> -->
+    <Button fx:id="addToQuizBtn" text="Add Selected Question"/>
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="saveBtn" text="Save"
+                style="-fx-background-color: #a29bfe; -fx-text-fill: white;"/>
+    </HBox>
 </VBox>

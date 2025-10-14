@@ -13,6 +13,7 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -124,10 +125,13 @@ public class QuizCreatorController {
             clearQuiz();
         });
 
-        loadBtn.setOnAction(e -> {
-            getTeacherQuestions();
-            searchQuestions();
-        });
+//        loadBtn.setOnAction(e -> {
+//            getTeacherQuestions();
+//            searchQuestions();
+//        });
+
+        getTeacherQuestions();
+        getTeacherQuestions();
     }
 
     private void getTeacherQuestions() {
@@ -184,11 +188,27 @@ public class QuizCreatorController {
         return quizQuestions.isEmpty();
     }
 
-    private void showAlert(String message) {
+    private void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Validation Error");
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    private void showAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Confirmation");
+        alert.setContentText(message);
+        alert.showAndWait();
+        // Close dialog after a short delay
+        new Thread(() -> {
+            try {
+                Thread.sleep(1000);
+                javafx.application.Platform.runLater(() -> closeDialog());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     private Visibility getVisibility() {
@@ -202,9 +222,9 @@ public class QuizCreatorController {
     private void saveQuiz(List<Question> questions) {
         System.out.println("Attempting Save Quiz.");
         if (checkInvalidName()) {
-            showAlert("Please enter a valid quiz name");
+            showError("Please enter a valid quiz name");
         } else if (checkInvalidQuiz()) {
-            showAlert("ERROR: Quiz Must Contain Questions");
+            showError("ERROR: Quiz Must Contain Questions");
         }
         quizName = nameField.getText().trim();
         try {
@@ -225,9 +245,19 @@ public class QuizCreatorController {
                         return null;
                     })
                     .join();
+            StringBuilder message = new StringBuilder("Quiz Created! \n \nName: " + quizRequest.getQuizName() + "\nvisibility: " + quizRequest.getVisibility().toString() + "\n" + "Questions:\n");
+            for(Question question : questions) {
+                message.append(question.getQuestionName()).append("\n");
+            }
+            showAlert(message.toString());
 
         } catch (IllegalArgumentException ex){
-            showAlert(ex.getMessage());
+            showError(ex.getMessage());
         }
+    }
+
+    private void closeDialog() {
+        Stage stage = (Stage) saveBtn.getScene().getWindow();
+        stage.close();
     }
 }
