@@ -1,13 +1,13 @@
 package com.worldlearn.frontend;
 
-import com.worldlearn.backend.models.Lesson;
-import com.worldlearn.backend.models.Question;
-import com.worldlearn.backend.models.Quiz;
+import com.worldlearn.backend.dto.CreateClassRequest;
 import com.worldlearn.backend.dto.CreateLessonRequest;
+import com.worldlearn.backend.models.*;
 import com.worldlearn.frontend.services.ApiService;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
@@ -16,6 +16,7 @@ import java.util.List;
 
 public class LessonCreatorController {
     @FXML private ListView<Quiz> teacherQuizzesList;
+    @FXML private ListView<Quiz> searchQuizzesList;
     @FXML private ListView<Quiz> lessonQuizzesList;
     @FXML private ComboBox<Question.Visibility> visibilityComboBox;
     @FXML private Button addToLessonBtn;
@@ -23,27 +24,47 @@ public class LessonCreatorController {
     @FXML private Button saveBtn;
     @FXML private Button clearBtn;
     @FXML private Button loadBtn;
+    @FXML private TextField searchField;
     @FXML private TextField nameField;
-
     private String lessonName;
 
     private ObservableList<Quiz> teacherQuizzes = FXCollections.observableArrayList();
+    private ObservableList<Quiz> searchQuizzes = FXCollections.observableArrayList();
     private ObservableList<Quiz> lessonQuizzes = FXCollections.observableArrayList();
+
+    private FilteredList<Quiz> filteredSearch;
 
     int teacherId = Session.getCurrentUser().getId();
     private final ApiService apiService = new ApiService();
 
     @FXML
     public void initialize() {
-        // Hook up lists to UI
+
         teacherQuizzesList.setItems(teacherQuizzes);
+        searchQuizzesList.setItems(searchQuizzes);
         lessonQuizzesList.setItems(lessonQuizzes);
+
+        // wrap your observable list in a FilteredList
+        filteredSearch = new FilteredList<>(searchQuizzes, q -> true);
+
+// bind filtered list to ListView
+        searchQuizzesList.setItems(filteredSearch);
 
         visibilityComboBox.getItems().setAll(Question.Visibility.values());
         visibilityComboBox.setValue(Question.Visibility.PRIVATE);
 
-        // Cell factories
-        teacherQuizzesList.setCellFactory(lv -> new ListCell<>() {
+// add listener on text field
+        searchField.textProperty().addListener((obs, oldVal, newVal) -> {
+            String filter = newVal.toLowerCase();
+            filteredSearch.setPredicate(q -> {
+                if (filter == null || filter.isEmpty()) {
+                    return true; // show all
+                }
+                return q.getQuizName().toLowerCase().contains(filter);
+            });
+        });
+
+        teacherQuizzesList.setCellFactory(lv -> new ListCell<Quiz>() {
             @Override
             protected void updateItem(Quiz item, boolean empty) {
                 super.updateItem(item, empty);
@@ -51,7 +72,7 @@ public class LessonCreatorController {
             }
         });
 
-        lessonQuizzesList.setCellFactory(lv -> new ListCell<>() {
+        searchQuizzesList.setCellFactory(lv -> new ListCell<Quiz>() {
             @Override
             protected void updateItem(Quiz item, boolean empty) {
                 super.updateItem(item, empty);
@@ -59,14 +80,25 @@ public class LessonCreatorController {
             }
         });
 
-        // Allow multi-selection
-        teacherQuizzesList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        lessonQuizzesList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        lessonQuizzesList.setCellFactory(lv -> new ListCell<Quiz>() {
+            @Override
+            protected void updateItem(Quiz item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty || item == null ? null : item.getQuizName());
+            }
+        });
 
-        // Button actions
+        // allow multi-selection in teacher list
+        teacherQuizzesList.getSelectionModel().setSelectionMode(javafx.scene.control.SelectionMode.MULTIPLE);
+        searchQuizzesList.getSelectionModel().setSelectionMode(javafx.scene.control.SelectionMode.MULTIPLE);
+        lessonQuizzesList.getSelectionModel().setSelectionMode(javafx.scene.control.SelectionMode.MULTIPLE);
+
+
         addToLessonBtn.setOnAction(e -> {
-            List<Quiz> selected = new ArrayList<>(teacherQuizzesList.getSelectionModel().getSelectedItems());
-            addToLesson(selected);
+            List<Quiz> privateSelected = new ArrayList<>(teacherQuizzesList.getSelectionModel().getSelectedItems());
+            List<Quiz> publicSelected = new ArrayList<>(searchQuizzesList.getSelectionModel().getSelectedItems());
+            addToLesson(privateSelected);
+            addToLesson(publicSelected);
         });
 
         removeBtn.setOnAction(e -> {
@@ -74,19 +106,44 @@ public class LessonCreatorController {
             removeFromLesson(selected);
         });
 
-        saveBtn.setOnAction(e -> saveLesson(lessonQuizzes));
 
-        clearBtn.setOnAction(e -> clearLesson());
+        saveBtn.setOnAction(e -> {
+            saveLesson(lessonQuizzes);
+        });
 
-        loadBtn.setOnAction(e -> getTeacherQuizzes());
+        clearBtn.setOnAction(e -> {
+            clearLesson();
+        });
+
+        loadBtn.setOnAction(e -> {
+            getQuizzes();
+        });
     }
 
-    private void getTeacherQuizzes() {
-        apiService.getAllQuizzesAsync()
-                .thenAccept(quizzes -> Platform.runLater(() -> {
-                    System.out.println("Fetched " + quizzes.size() + " quizzes");
-                    teacherQuizzes.setAll(quizzes);
-                }))
+    private void getQuizzes() {
+        apiService.getAllTeacherQuizzesAsync(teacherId)
+                .thenAccept(teacherQs -> {
+                    Platform.runLater(() -> {
+                        teacherQuizzes.setAll(teacherQs);
+                    });
+
+                    apiService.getPublicQuizzesAsync()
+                            .thenAccept(publicQuizzes -> {
+                                List<Quiz> filtered = publicQuizzes.stream()
+                                        .filter(q -> teacherQs.stream()
+                                                .noneMatch(tq -> tq.getQuizID() == q.getQuizID()))
+                                        .toList();
+
+                                Platform.runLater(() -> {
+                                    searchQuizzes.setAll(filtered);
+                                    System.out.println("Fetched " + filtered.size() + " public quizzes(s).");
+                                });
+                            })
+                            .exceptionally(e -> {
+                                e.printStackTrace();
+                                return null;
+                            });
+                })
                 .exceptionally(e -> {
                     e.printStackTrace();
                     return null;
@@ -104,7 +161,9 @@ public class LessonCreatorController {
     }
 
     private void removeFromLesson(List<Quiz> quizzes) {
-        lessonQuizzes.removeAll(quizzes);
+        for (Quiz q : quizzes) {
+            lessonQuizzes.remove(q);
+        }
     }
 
     private void clearLesson() {
@@ -112,7 +171,9 @@ public class LessonCreatorController {
     }
 
     private boolean checkInvalidName() {
-        return nameField.getText() == null || nameField.getText().trim().length() < 2;
+        if (nameField.getText() == null || nameField.getText().trim().isEmpty()) {
+            return true;
+        } else return nameField.getText().trim().length() < 2;
     }
 
     private boolean checkInvalidLesson() {
@@ -136,16 +197,13 @@ public class LessonCreatorController {
 
     private void saveLesson(List<Quiz> quizzes) {
         System.out.println("Attempting Save Lesson.");
-
         if (checkInvalidName()) {
             showAlert("Please enter a valid lesson name");
             return;
-        }
-        if (checkInvalidLesson()) {
+        } else if (checkInvalidLesson()) {
             showAlert("ERROR: Lesson Must Contain Quizzes");
             return;
         }
-
         lessonName = nameField.getText().trim();
         try {
             List<Integer> quizIds = quizzes.stream()
@@ -159,14 +217,14 @@ public class LessonCreatorController {
             );
 
             apiService.createLessonAsync(lessonRequest)
-                    .thenAccept(l -> System.out.println("Lesson saved: " + lessonName))
+                    .thenAccept(q -> System.out.println("Lesson saved:" + lessonName))
                     .exceptionally(e -> {
                         e.printStackTrace();
                         return null;
                     })
                     .join();
 
-        } catch (IllegalArgumentException ex) {
+        } catch (IllegalArgumentException ex){
             showAlert(ex.getMessage());
         }
     }

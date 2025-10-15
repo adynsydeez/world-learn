@@ -15,7 +15,6 @@ public class HelloApplication extends Application {
     public void start(Stage stage) throws IOException {
         AuthClientService auth = new AuthClientService();
 
-
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("/com/worldlearn/frontend/Auth-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 1280, 720);
 

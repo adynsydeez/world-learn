@@ -1,6 +1,7 @@
 package com.worldlearn.backend.services;
 
 import com.worldlearn.backend.database.Database;
+import com.worldlearn.backend.models.Lesson;
 import com.worldlearn.backend.models.Quiz;
 import com.worldlearn.backend.database.QuizDAO;
 import com.worldlearn.backend.models.Question;
@@ -40,6 +41,14 @@ public class QuizService {
 
     public List<Quiz> getAllQuizzes() throws SQLException {
         return quizDAO.getAllQuizzes();
+    }
+
+    public List<Quiz> getAllTeacherQuizzes(int userId) throws SQLException {
+        return quizDAO.getAllTeacherQuizzes(userId);
+    }
+
+    public List<Quiz> getPublicQuizzes() throws SQLException {
+        return quizDAO.getPublicQuizzes();
     }
 
 }

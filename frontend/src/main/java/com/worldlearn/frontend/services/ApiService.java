@@ -371,6 +371,62 @@ public class ApiService {
         }
     }
 
+    public CompletableFuture<List<Lesson>> getAllTeacherLessonsAsync(int teacherId) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                // Make sure the URL matches the backend route
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(baseUrl + "/users/" + teacherId + "/lessons"))
+                        .header("Accept", "application/json")
+                        .GET()
+                        .timeout(Duration.ofSeconds(30))
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request,
+                        HttpResponse.BodyHandlers.ofString());
+
+
+                if (response.statusCode() == 200) {
+                    Lesson[] lessons = objectMapper.readValue(response.body(), Lesson[].class);
+                    return List.of(lessons);
+                } else {
+                    throw new RuntimeException("Failed to get lessons: " + response.statusCode() +
+                            " - " + response.body());
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Error getting lessons: " + e.getMessage(), e);
+            }
+        });
+    }
+
+    public CompletableFuture<List<Lesson>> getPublicLessonsAsync() {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                // Make sure the URL matches the backend route
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(baseUrl + "/lessons/public"))
+                        .header("Accept", "application/json")
+                        .GET()
+                        .timeout(Duration.ofSeconds(30))
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request,
+                        HttpResponse.BodyHandlers.ofString());
+
+
+                if (response.statusCode() == 200) {
+                    Lesson[] lessons = objectMapper.readValue(response.body(), Lesson[].class);
+                    return List.of(lessons);
+                } else {
+                    throw new RuntimeException("Failed to get lessons: " + response.statusCode() +
+                            " - " + response.body());
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Error getting lessons: " + e.getMessage(), e);
+            }
+        });
+    }
+
     public CompletableFuture<List<Lesson>> getClassLessons(int classId) {
         return CompletableFuture.supplyAsync(() -> {
             try {
@@ -432,7 +488,6 @@ public class ApiService {
     public CompletableFuture<List<Question>> getAllTeacherQuestionsAsync(int teacherId) {
         return CompletableFuture.supplyAsync(() -> {
             try {
-                // Make sure the URL matches the backend route
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(baseUrl + "/users/" + teacherId + "/questions"))
                         .header("Accept", "application/json")
@@ -664,6 +719,62 @@ public class ApiService {
                 }
             } catch (Exception e) {
                 throw new RuntimeException("Error getting questions: " + e.getMessage(), e);
+            }
+        });
+    }
+
+    public CompletableFuture<List<Quiz>> getAllTeacherQuizzesAsync(int teacherId) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                // Make sure the URL matches the backend route
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(baseUrl + "/users/" + teacherId + "/quizzes"))
+                        .header("Accept", "application/json")
+                        .GET()
+                        .timeout(Duration.ofSeconds(30))
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request,
+                        HttpResponse.BodyHandlers.ofString());
+
+
+                if (response.statusCode() == 200) {
+                    Quiz[] quizzes = objectMapper.readValue(response.body(), Quiz[].class);
+                    return List.of(quizzes);
+                } else {
+                    throw new RuntimeException("Failed to get quizzes: " + response.statusCode() +
+                            " - " + response.body());
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Error getting quizzes: " + e.getMessage(), e);
+            }
+        });
+    }
+
+    public CompletableFuture<List<Quiz>> getPublicQuizzesAsync() {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                // Make sure the URL matches the backend route
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(baseUrl + "/quizzes/public"))
+                        .header("Accept", "application/json")
+                        .GET()
+                        .timeout(Duration.ofSeconds(30))
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request,
+                        HttpResponse.BodyHandlers.ofString());
+
+
+                if (response.statusCode() == 200) {
+                    Quiz[] quizzes = objectMapper.readValue(response.body(), Quiz[].class);
+                    return List.of(quizzes);
+                } else {
+                    throw new RuntimeException("Failed to get quizzes: " + response.statusCode() +
+                            " - " + response.body());
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Error getting quizzes: " + e.getMessage(), e);
             }
         });
     }

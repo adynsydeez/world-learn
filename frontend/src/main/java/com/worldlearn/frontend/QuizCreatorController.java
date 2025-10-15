@@ -125,34 +125,41 @@ public class QuizCreatorController {
         });
 
         loadBtn.setOnAction(e -> {
-            getTeacherQuestions();
-            searchQuestions();
+            getQuestions();
         });
     }
 
-    private void getTeacherQuestions() {
+    private void getQuestions() {
         apiService.getAllTeacherQuestionsAsync(teacherId)
-                .thenAccept(questions -> Platform.runLater(() -> {
-                    System.out.println("Fetched " + questions.size() + " questions");
-                    teacherQuestions.setAll(questions);
-                }))
+                .thenAccept(teacherQs -> {
+                    Platform.runLater(() -> {
+                        teacherQuestions.setAll(teacherQs);
+                    });
+
+                    apiService.getPublicQuestionsAsync()
+                            .thenAccept(publicQuestions -> {
+                                List<Question> filtered = publicQuestions.stream()
+                                        .filter(q -> teacherQs.stream()
+                                                .noneMatch(tq -> tq.getQuestionId() == q.getQuestionId()))
+                                        .toList();
+
+                                Platform.runLater(() -> {
+                                    searchQuestions.setAll(filtered);
+                                    System.out.println("Fetched " + filtered.size() + " public question(s).");
+                                });
+                            })
+                            .exceptionally(e -> {
+                                e.printStackTrace();
+                                return null;
+                            });
+                })
                 .exceptionally(e -> {
                     e.printStackTrace();
                     return null;
                 });
     }
 
-    private void searchQuestions() {
-        apiService.getPublicQuestionsAsync()
-                .thenAccept(questions -> Platform.runLater(() -> {
-                    System.out.println("Fetched " + questions.size() + " questions");
-                    searchQuestions.setAll(questions);
-                }))
-                .exceptionally(e -> {
-                    e.printStackTrace();
-                    return null;
-                });
-    }
+
 
     private void addToQuiz(List<Question> questions) {
         for (Question q : questions) {
@@ -203,8 +210,10 @@ public class QuizCreatorController {
         System.out.println("Attempting Save Quiz.");
         if (checkInvalidName()) {
             showAlert("Please enter a valid quiz name");
+            return;
         } else if (checkInvalidQuiz()) {
             showAlert("ERROR: Quiz Must Contain Questions");
+            return;
         }
         quizName = nameField.getText().trim();
         try {

@@ -1,10 +1,7 @@
 package com.worldlearn.backend.database;
 
 import com.worldlearn.backend.dto.CreateClassRequest;
-import com.worldlearn.backend.models.Lesson;
-import com.worldlearn.backend.models.Question;
-import com.worldlearn.backend.models.User;
-import com.worldlearn.backend.models.WlClass;
+import com.worldlearn.backend.models.*;
 import com.worldlearn.backend.services.ClassService;
 
 import java.sql.*;
@@ -43,44 +40,29 @@ public class ClassDAO {
 
     // Simple class creation - just inserts into Classes table for testing
     public WlClass createClass(WlClass wlClass) throws SQLException {
-        String insertSql = "INSERT INTO Classes (class_name, join_code) VALUES (?, ?) RETURNING class_id;";
-        String updateSql = "UPDATE Classes SET join_code = ? WHERE class_id = ?;";
+        String sql = """
+    INSERT INTO classes (class_name, join_code)
+    VALUES (?, ?)
+""";
 
-        try (Connection conn = database.getConnection()) {
-            conn.setAutoCommit(false);
+        try (Connection conn = database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            int classId;
+            stmt.setString(1, wlClass.getClassName());     // question_name
+            stmt.setInt(2, wlClass.getJoinCode());            // answer
 
-            try (PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
-                insertStmt.setString(1, wlClass.getClassName());
-                insertStmt.setInt(2, 0); // temporary value
+            int rowsAffected = stmt.executeUpdate();
 
-                try (ResultSet rs = insertStmt.executeQuery()) {
-                    if (rs.next()) {
-                        classId = rs.getInt("class_id");
-                    } else {
-                        conn.rollback();
-                        throw new SQLException("Creating class failed, no ID obtained.");
+            if (rowsAffected > 0) {
+                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        wlClass.setId(generatedKeys.getInt(1));
+                        return wlClass;
                     }
                 }
             }
-
-            wlClass.setId(classId);
-            int joinCode = ClassService.generateJoinCode(wlClass);
-            wlClass.setJoinCode(joinCode);
-
-            try (PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
-                updateStmt.setInt(1, joinCode);
-                updateStmt.setInt(2, classId);
-                updateStmt.executeUpdate();
-            }
-
-            conn.commit();
-            return wlClass;
-
-        } catch (SQLException e) {
-            throw new SQLException("Error creating class: " + e.getMessage(), e);
         }
+        return null;
     }
 
 
@@ -252,6 +234,21 @@ public class ClassDAO {
                  throw new SQLException("Removing user from class failed, no rows affected.");
              }
          }
+    }
+
+    public boolean joinCodeExists(int joinCode) {
+        String sql = "SELECT COUNT(*) FROM classes WHERE join_code = ?";
+        try (Connection conn = database.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, joinCode);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     // Future method: Update user role in class

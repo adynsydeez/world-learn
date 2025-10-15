@@ -138,4 +138,64 @@ public class LessonDAO {
         return quizzes;
     }
 
+    public List<Lesson> getAllTeacherLessons(int userId) throws SQLException {
+        List<Lesson> lessons = new ArrayList<>();
+
+        String sql = """
+        SELECT l.lesson_id, l.lesson_name, l.visibility
+        FROM lessons l
+        INNER JOIN teacher_lesson tl ON l.lesson_id = tl.lesson_id
+        WHERE tl.user_id = ?
+    """;
+
+        try (Connection conn = database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, userId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    String visibilityStr = rs.getString("visibility");
+                    Question.Visibility visibility = null;
+                    if (visibilityStr != null) {
+                        visibility = Question.Visibility.fromDbValue(visibilityStr);
+                    }
+
+                    Lesson l = new Lesson(
+                            rs.getInt("lesson_id"),
+                            rs.getString("lesson_name"),
+                            visibility
+                    );
+
+                    // Debug print for each row
+                    System.out.println("Loaded lesson: " + l.getLessonId());
+
+                    lessons.add(l);
+                }
+            }
+        }
+        return lessons;
+    }
+
+    public List<Lesson> getPublicLessons() throws SQLException {
+        List<Lesson> lessons = new ArrayList<>();
+        String sql = "SELECT lesson_id, lesson_name, visibility FROM lessons WHERE visibility = 'public'";
+
+        try (Connection conn = database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+
+                Lesson l = new Lesson(
+                        rs.getInt("lesson_id"),
+                        rs.getString("lesson_name"),
+                        Question.Visibility.fromDbValue(rs.getString("visibility"))
+                );
+                lessons.add(l);
+            }
+        }
+        return lessons;
+    }
+
 }

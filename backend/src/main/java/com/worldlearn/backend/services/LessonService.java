@@ -2,6 +2,7 @@ package com.worldlearn.backend.services;
 
 import com.worldlearn.backend.database.LessonDAO;
 import com.worldlearn.backend.models.Lesson;
+import com.worldlearn.backend.models.Question;
 import com.worldlearn.backend.models.Quiz;
 
 import java.sql.SQLException;
@@ -32,5 +33,13 @@ public class LessonService {
     public List<Quiz> getLessonQuizzes(int id) throws SQLException {
         System.out.println("Sending to DAO from Service.");
         return lessonDAO.getLessonQuizzes(id);
+    }
+
+    public List<Lesson> getAllTeacherLessons(int userId) throws SQLException {
+        return lessonDAO.getAllTeacherLessons(userId);
+    }
+
+    public List<Lesson> getPublicLessons() throws SQLException {
+        return lessonDAO.getPublicLessons();
     }
 }

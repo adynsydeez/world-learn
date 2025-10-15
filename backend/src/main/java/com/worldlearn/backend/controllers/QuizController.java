@@ -1,5 +1,6 @@
 package com.worldlearn.backend.controllers;
 
+import com.worldlearn.backend.models.Lesson;
 import com.worldlearn.backend.models.Question;
 import com.worldlearn.backend.models.Quiz;
 import com.worldlearn.backend.services.QuizService;
@@ -68,6 +69,25 @@ public class QuizController {
             ctx.json(questions);
         } catch (Exception e) {
             ctx.status(500).result("Failed to get questions: " + e.getMessage());
+        }
+    }
+
+    public void getAllTeacherQuizzes(Context ctx) {
+        try {
+            int teacherId = Integer.parseInt(ctx.pathParam("id"));
+            List<Quiz> quizzes = quizService.getAllTeacherQuizzes(teacherId);
+            ctx.json(quizzes);
+        } catch (Exception e) {
+            ctx.status(500).result("Failed to get quizzes: " + e.getMessage());
+        }
+    }
+
+    public void getPublicQuizzes(Context ctx) {
+        try {
+            List<Quiz> quizzes = quizService.getPublicQuizzes();
+            ctx.json(quizzes);
+        } catch (Exception e) {
+            ctx.status(500).result("Failed to get quizzes:" + e.getMessage());
         }
     }
 }

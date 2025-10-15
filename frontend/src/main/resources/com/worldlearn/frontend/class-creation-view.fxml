@@ -1,44 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.geometry.*?>
+<?import javafx.geometry.Insets?>
 
-<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.worldlearn.frontend.ClassCreatorController"
-            prefWidth="1000" prefHeight="700">
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.worldlearn.frontend.ClassCreatorController"
+      spacing="20">
 
-    <!-- Sidebar -->
-    <left>
-        <VBox spacing="12" alignment="TOP_CENTER" style="-fx-padding: 12; -fx-background-color: #a0a0a0;" prefWidth="140">
-            <Button fx:id="homeBtn" text="Home" onAction="#handleHome" />
-            <Button fx:id="createBtn" text="Create Class" onMouseClicked="#createClass"/>
-            <Separator/>
-            <Label text="Class Tools" style="-fx-font-weight: bold;"/>
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Pane HBox.hgrow="ALWAYS"/>
+    </HBox>
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Create A Class" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="clearBtn" text="Clear Class"
+                style="-fx-background-color: #ff6b6b; -fx-text-fill: white;"/>
+        <Button fx:id="saveBtn" text="Save"
+                style="-fx-background-color: #a29bfe; -fx-text-fill: white;"/>
+    </HBox>
+
+    <VBox spacing="5">
+        <Label text="Class Name"/>
+        <TextField fx:id="nameField" promptText="Enter a Class Name..."/>
+    </VBox>
+
+    <HBox spacing="20" alignment="TOP_LEFT">
+        <VBox>
+            <Label text="Your Lessons"/>
+            <ListView fx:id="teacherLessonsList"/>
         </VBox>
-    </left>
 
-    <!-- Main Content -->
-    <center>
-        <VBox spacing="16" alignment="TOP_LEFT" style="-fx-padding: 20;">
-            <Label text="Class Management" style="-fx-font-size: 20; -fx-font-weight: bold;"/>
-
-            <TitledPane text="Manage Students" expanded="true">
-                <VBox spacing="10" style="-fx-padding: 10;">
-                    <HBox spacing="8">
-                        <TextField fx:id="studentEmailField" promptText="Enter student email (e.g. student@school.edu)" HBox.hgrow="ALWAYS"/>
-                        <Button text="Add" onAction="#handleAddStudent"/>
-                        <Button text="Remove Selected" onAction="#handleRemoveStudent"/>
-                    </HBox>
-                    <ListView fx:id="studentList" prefHeight="320"/>
-                </VBox>
-            </TitledPane>
-
-            <TitledPane text="Lessons (coming soon)" expanded="false">
-                <VBox spacing="10" style="-fx-padding: 10;">
-                    <Label text="Lesson creation will be enabled later."/>
-                    <Button text="Add Lesson" disable="true"/>
-                </VBox>
-            </TitledPane>
+        <VBox>
+            <Label text="Search Lessons"/>
+            <HBox>
+                <TextField fx:id="searchField" promptText="Search Lessons..."/>
+            </HBox>
+            <ListView fx:id="searchLessonsList"/>
         </VBox>
-    </center>
-</BorderPane>
+
+        <VBox>
+            <Label text="Your Class"/>
+            <Button fx:id="removeBtn" text="Remove"/>
+            <ListView fx:id="classLessonsList"/>
+        </VBox>
+    </HBox>
+    <Button fx:id="loadBtn" text="Load Lessons"/>
+    <Button fx:id="addToClassBtn" text="Add Selected Lessons"/>
+</VBox>

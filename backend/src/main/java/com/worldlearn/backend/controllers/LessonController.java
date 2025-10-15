@@ -45,6 +45,25 @@ public class LessonController {
         }
     }
 
+    public void getAllTeacherLessons(Context ctx) {
+        try {
+            int teacherId = Integer.parseInt(ctx.pathParam("id"));
+            List<Lesson> lessons = lessonService.getAllTeacherLessons(teacherId);
+            ctx.json(lessons);
+        } catch (Exception e) {
+            ctx.status(500).result("Failed to get lessons: " + e.getMessage());
+        }
+    }
+
+    public void getPublicLessons(Context ctx) {
+        try {
+            List<Lesson> lessons = lessonService.getPublicLessons();
+            ctx.json(lessons);
+        } catch (Exception e) {
+            ctx.status(500).result("Failed to get lessons:" + e.getMessage());
+        }
+    }
+
     public void getLessonQuizzes(Context ctx) {
         try {
             int lessonId = Integer.parseInt(ctx.pathParam("id"));

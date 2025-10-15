@@ -34,19 +34,23 @@
     <HBox spacing="20" alignment="TOP_LEFT">
         <VBox>
             <Label text="Your Quizzes"/>
-            <ListView fx:id="teacherQuizzesList" prefHeight="300"/>
+            <ListView fx:id="teacherQuizzesList"/>
         </VBox>
 
         <VBox>
-            <Label text="Quizzes in Lesson"/>
+            <Label text="Search Quizzes"/>
+            <HBox>
+                <TextField fx:id="searchField" promptText="Search Quizzes..."/>
+            </HBox>
+            <ListView fx:id="searchQuizzesList"/>
+        </VBox>
+
+        <VBox>
+            <Label text="Your Lesson"/>
             <Button fx:id="removeBtn" text="Remove"/>
-            <ListView fx:id="lessonQuizzesList" prefHeight="300"/>
+            <ListView fx:id="lessonQuizzesList"/>
         </VBox>
     </HBox>
-
-    <HBox spacing="10">
-        <Button fx:id="loadBtn" text="Load Quizzes"/>
-        <Button fx:id="addToLessonBtn" text="Add Selected Quizzes"/>
-    </HBox>
-
+    <Button fx:id="loadBtn" text="Load Quizzes"/>
+    <Button fx:id="addToLessonBtn" text="Add Selected Quizzes"/>
 </VBox>
