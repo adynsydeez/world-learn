@@ -48,7 +48,7 @@
                 </HBox>
                 <TextField promptText="Search Classes"/>
                 <ScrollPane fitToWidth="true" prefHeight="500">
-                    <VBox spacing="10">
+                    <VBox fx:id="classList" spacing="10">
                         <Label text="Class 6G - Code: HJW8NL" style="-fx-background-color: white; -fx-padding: 10; -fx-border-color: #ccc;"/>
                         <Label text="Class 6F - Code: HJW8NH" style="-fx-background-color: white; -fx-padding: 10; -fx-border-color: #ccc;"/>
                         <Label text="Class 11H - Code: HJW8NS" style="-fx-background-color: white; -fx-padding: 10; -fx-border-color: #ccc;"/>

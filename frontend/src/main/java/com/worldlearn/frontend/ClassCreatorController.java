@@ -23,6 +23,8 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 public class ClassCreatorController {
+    private WlClass wlClass;
+
 
     @FXML private Button homeBtn;
     @FXML private TextField studentEmailField;
@@ -36,8 +38,6 @@ public class ClassCreatorController {
         Scene scene = new Scene(fxmlLoader.load(), 1200, 700);
         stage.setScene(scene);
     }
-
-
 
     @FXML
     protected void handleAddStudent() {
@@ -60,4 +60,9 @@ public class ClassCreatorController {
     private void createClass() {
         // add createclass function
     }
+
+    public void setClass(WlClass wlClass) {
+        this.wlClass = wlClass;
+    }
+
 }
