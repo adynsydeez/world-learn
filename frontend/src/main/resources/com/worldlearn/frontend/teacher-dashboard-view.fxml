@@ -69,7 +69,7 @@
                 </HBox>
                 <TextField promptText="Search Lessons"/>
                 <ScrollPane fitToWidth="true" prefHeight="500">
-                    <VBox spacing="10">
+                    <VBox fx:id="lessonList" spacing="10">
                         <Label text="Lesson 101 - Code: HJW8LH" style="-fx-background-color: white; -fx-padding: 10; -fx-border-color: #ccc;"/>
                         <Label text="Lesson 102 - Code: HJW0GH" style="-fx-background-color: white; -fx-padding: 10; -fx-border-color: #ccc;"/>
                         <Label text="Lesson 103 - Code: HAN8NH" style="-fx-background-color: white; -fx-padding: 10; -fx-border-color: #ccc;"/>

@@ -138,4 +138,43 @@ public class LessonDAO {
         return quizzes;
     }
 
+    public List<Lesson> getAllTeacherLessons(int teacherId) throws SQLException {
+        List<Lesson> lessons = new ArrayList<>();
+
+        String sql = """
+        SELECT l.lesson_id, l.lesson_name, l.visibility
+        FROM Lessons l
+        INNER JOIN teacher_lesson tl ON l.lesson_id = tl.lesson_id
+        WHERE tl.user_id = ?
+    """;
+
+        try (Connection conn = database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, teacherId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    String visibilityStr = rs.getString("visibility");
+                    Question.Visibility visibility = null;
+                    if (visibilityStr != null) {
+                        visibility = Question.Visibility.fromDbValue(visibilityStr);
+                    }
+
+                    Lesson l = new Lesson(
+                            rs.getInt("lesson_id"),
+                            rs.getString("lesson_name"),
+                            visibility
+                    );
+
+                    // Debug print for each row
+                    System.out.println("Loaded lesson: " + l.getLessonName());
+                    lessons.add(l);
+                }
+            }
+        }
+
+        return lessons;
+    }
+
 }

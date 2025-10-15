@@ -33,4 +33,8 @@ public class LessonService {
         System.out.println("Sending to DAO from Service.");
         return lessonDAO.getLessonQuizzes(id);
     }
+
+    public List<Lesson> getAllTeacherLessons(int teacherId) throws SQLException {
+        return lessonDAO.getAllTeacherLessons(teacherId);
+    }
 }

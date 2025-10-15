@@ -6,6 +6,7 @@ import com.worldlearn.backend.models.Question;
 import com.worldlearn.backend.models.Quiz;
 import com.worldlearn.backend.services.LessonService;
 import io.javalin.http.Context;
+import org.jetbrains.annotations.NotNull;
 
 import javax.sound.midi.SysexMessage;
 import java.util.Arrays;
@@ -54,6 +55,16 @@ public class LessonController {
             ctx.json(quizzes);
         } catch (Exception e) {
             ctx.status(500).result("Failed to get quizzes: " + e.getMessage());
+        }
+    }
+
+    public void getAllTeacherLessons(Context ctx) {
+        try {
+            int teacherId = Integer.parseInt(ctx.pathParam("id"));
+            List<Lesson> lessons = lessonService.getAllTeacherLessons(teacherId);
+            ctx.json(lessons);
+        } catch (Exception e) {
+            ctx.status(500).result("Failed to get lessons: " + e.getMessage());
         }
     }
 }

@@ -1,4 +1,6 @@
 package com.worldlearn.frontend;
+import com.worldlearn.backend.models.Lesson;
+import com.worldlearn.backend.models.Quiz;
 import com.worldlearn.backend.models.User;
 import com.worldlearn.backend.models.WlClass;
 import com.worldlearn.frontend.services.ApiService;
@@ -37,6 +39,7 @@ public class TeacherDashboardController {
         }
 
         loadClasses(this.user);
+        loadLessons(this.user.getId());
     }
 
     @FXML private Label lblClasses;
@@ -49,6 +52,7 @@ public class TeacherDashboardController {
     @FXML private Button createQuizBtn;
     @FXML private Button createQuestionBtn;
     @FXML private VBox classList;
+    @FXML private VBox lessonList;
 
     @FXML
     private void initialize() {
@@ -72,8 +76,26 @@ public class TeacherDashboardController {
                 .exceptionally(ex -> { ex.printStackTrace(); return null; });
     }
 
+    private void loadLessons(int teacherId) {
+        api.getAllTeacherLessonsAsync(teacherId)
+                .thenAccept(lessons -> Platform.runLater(() -> {
+                    lessonList.getChildren().clear();
+                    for (Lesson lesson : lessons) {
+                        Button btn = new Button(lesson.getLessonName());
+                        btn.setStyle("-fx-background-color: white; -fx-padding: 10; -fx-border-color: #ccc;");
+                        btn.setOnAction(e -> editLesson(lesson));
+                        lessonList.getChildren().add(btn);
+                    }
+                }))
+                .exceptionally(ex -> { ex.printStackTrace(); return null; });
+    }
+
     private void editClass(WlClass wlClass) {
         openPopup("class-creation-view.fxml", "Edit Class", wlClass);
+    }
+
+    private void editLesson(Lesson lesson) {
+        openPopup("lesson-creation-view.fxml", "Edit Class", lesson);
     }
 
     private void setupHover(Label label) {
@@ -115,6 +137,29 @@ public class TeacherDashboardController {
 
             ClassCreatorController controller = fxmlLoader.getController();
             controller.setClass(wlClass);
+
+            Stage popupStage = new Stage();
+            popupStage.setTitle(title);
+            popupStage.setScene(scene);
+            popupStage.initModality(Modality.APPLICATION_MODAL);
+
+            Stage parentStage = (Stage) createQuestionBtn.getScene().getWindow();
+            popupStage.initOwner(parentStage);
+
+            popupStage.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void openPopup(String fxmlPath, String title, Lesson lesson) {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource(fxmlPath));
+            Scene scene = new Scene(fxmlLoader.load(), 800, 600);
+
+            LessonCreatorController controller = fxmlLoader.getController();
+            controller.setLesson(lesson);
 
             Stage popupStage = new Stage();
             popupStage.setTitle(title);

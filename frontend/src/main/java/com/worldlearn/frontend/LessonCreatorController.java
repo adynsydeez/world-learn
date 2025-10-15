@@ -34,6 +34,8 @@ public class LessonCreatorController {
     int teacherId = Session.getCurrentUser().getId();
     private final ApiService apiService = new ApiService();
 
+    private Lesson lesson;
+
     @FXML
     public void initialize() {
         // Hook up lists to UI
@@ -82,6 +84,10 @@ public class LessonCreatorController {
         //loadBtn.setOnAction(e -> getTeacherQuizzes());
 
         getTeacherQuizzes();
+    }
+
+    public void setLesson(Lesson lesson) {
+        this.lesson = lesson;
     }
 
     private void getTeacherQuizzes() {
