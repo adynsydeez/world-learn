@@ -1,5 +1,6 @@
 package com.worldlearn.frontend;
 
+import com.worldlearn.backend.models.Quiz;
 import com.worldlearn.backend.models.User;
 import com.worldlearn.frontend.services.AuthClientService;
 import javafx.fxml.FXML;
@@ -26,8 +27,12 @@ public class ProfileController {
         this.user = user;
         this.stage = stage;
         this.auth = auth;
+        refreshUserProfile();
+
 
     }
+    @FXML private Label nameLabel;
+    @FXML private Label emailLabel;
 
     @FXML private Button homeButtonProfilePage;
 
@@ -38,6 +43,27 @@ public class ProfileController {
 
         StudentDashboardController c = fxml.getController();
         c.init(user, stage, this.auth);   // pass context back
+
+        stage.setScene(scene);
+    }
+    private void refreshUserProfile() {
+        if (nameLabel != null && user != null) {
+            String first = safe(user.getFirstName());
+            String last  = safe(user.getLastName());
+            nameLabel.setText((first + " " + last).trim());
+        }
+        if (emailLabel != null && user != null) {
+            emailLabel.setText("Email: " + safe(user.getEmail()));
+        }
+    }
+    private String safe(String s) { return (s == null) ? "" : s; }
+    @FXML
+    private void onBack() throws Exception {
+        FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("student-dashboard-view.fxml"));
+        Scene scene = new Scene(fxml.load(), 1280, 720);
+
+        StudentDashboardController c = fxml.getController();
+        c.init(user, stage, auth);
 
         stage.setScene(scene);
     }
@@ -90,7 +116,5 @@ public class ProfileController {
         dialogStage.showAndWait();
     }
 
-    private void refreshUserProfile() {
-        // Update any labels or fields that display user information
-    }
+
 }
