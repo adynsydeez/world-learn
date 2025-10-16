@@ -1,5 +1,6 @@
 package com.worldlearn.frontend;
 
+import com.worldlearn.backend.models.Question;
 import com.worldlearn.backend.models.User;
 import com.worldlearn.frontend.services.AuthClientService;
 import javafx.fxml.FXML;
@@ -11,6 +12,9 @@ import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import com.worldlearn.backend.models.Quiz;
 import com.worldlearn.frontend.services.ApiService;
+
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 public class MultipleChoiceQuestionController {
@@ -21,12 +25,14 @@ public class MultipleChoiceQuestionController {
 
     private String correctAnswer;
     private int questionId;
+    private int questionNumber;
 
     @FXML private Label headerLabel, questionLabel;
     @FXML private ImageView mapView;
     @FXML private ToggleGroup answersGroup;
     @FXML private ToggleButton aBtn, bBtn, cBtn, dBtn;
     @FXML private Button submitBtn;
+    @FXML private Button nextBtn;
 
     // Inline style snippets (no external CSS)
     private static final String SELECTED_HILITE = "; -fx-border-color:#64b5f6; -fx-border-width:2; -fx-background-insets:0;"
@@ -44,8 +50,11 @@ public class MultipleChoiceQuestionController {
         this.correctAnswer = correct;
         this.apiService = new ApiService(); // Initialize API service
         this.questionId = questionId;
+        this.questionNumber = questionNumber;
 
         headerLabel.setText("Question " + questionNumber + (region != null ? " - " + region : ""));
+
+        nextBtn.setDisable(true);
 
         questionLabel.setText(question);
         aBtn.setText(choices.get(0));
@@ -112,6 +121,7 @@ public class MultipleChoiceQuestionController {
                     });
                     return null;
                 });
+        nextBtn.setDisable(false);
     }
 
     private void disableAllButtons() {
@@ -176,6 +186,38 @@ public class MultipleChoiceQuestionController {
     private void apply(ToggleButton b, String extra) {
         String base = (String) b.getProperties().getOrDefault("baseStyle", b.getStyle());
         b.setStyle(base + extra);
+    }
+
+    @FXML
+    private void onNextBtnClick() {
+        List<Question> questions = Session.getQuestionsList();
+        if (questionNumber != questions.size() + 1) {
+            Question next = questions.get(questionNumber);
+            Session.setCurrentQuestion(next);
+
+            FXMLLoader loader = new FXMLLoader(
+                    HelloApplication.class.getResource("multiple-choice-question-view.fxml")
+            );
+            Scene mcScene = null;
+            try {
+                mcScene = new Scene(loader.load(), 1280, 720);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            MultipleChoiceQuestionController c = loader.getController();
+            List<String> choices = (next.getOptions() == null) ? List.of() : Arrays.asList(next.getOptions());
+            c.init(stage, auth,
+                    questionNumber + 1,
+                    null,
+                    next.getPrompt(),
+                    choices,
+                    next.getAnswer(),
+                    next.getPointsWorth(),
+                    next.getQuestionId(),
+                    null);
+            stage.setScene(mcScene);
+        }
     }
 
     @FXML

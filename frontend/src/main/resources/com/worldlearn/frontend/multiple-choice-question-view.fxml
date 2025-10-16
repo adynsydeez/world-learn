@@ -119,11 +119,16 @@
                               style="-fx-background-color:#e6f0ff; -fx-background-radius:12; -fx-padding:14; -fx-font-weight:bold; -fx-text-fill:#0f1b3a;"/>
             </GridPane>
 
-            <HBox alignment="CENTER_RIGHT">
+            <VBox alignment="CENTER_RIGHT" spacing="20">
                 <Button fx:id="submitBtn" text="SUBMIT" onAction="#onSubmit" disable="true"
                         style="-fx-background-color:#2970d6; -fx-text-fill:white; -fx-font-weight:800;
-                               -fx-background-radius:10; -fx-padding:10 18;"/>
-            </HBox>
+                   -fx-background-radius:10; -fx-padding:10 18;"/>
+
+                <Button fx:id="nextBtn" text="Next Question" onMouseClicked="#onNextBtnClick"
+                        style="-fx-background-color:#11d618; -fx-text-fill:white; -fx-font-weight:500;
+                   -fx-background-radius:10; -fx-padding:10 18;"/>
+            </VBox>
+
         </VBox>
     </HBox>
 </StackPane>

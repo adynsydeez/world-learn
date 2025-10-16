@@ -28,6 +28,7 @@ public class StudentQuestionViewController {
     private int quizId;
     private String quizName;
     private List<Question> loadedQuestions = List.of();
+    private int availableQuestion;
 
     // keep a reference to THIS scene so MC page can come back without reload
     private Scene myScene;
@@ -35,6 +36,7 @@ public class StudentQuestionViewController {
     @FXML private Label lessonTitleLabel;
     @FXML private VBox questionListBox;
     @FXML private Label pointsBadge;
+
     public void init(Stage stage, AuthClientService auth) {
         this.user = Session.getCurrentUser();
         this.stage = stage;
@@ -58,7 +60,7 @@ public class StudentQuestionViewController {
     private void renderQuestions(List<Question> questions) {
         this.loadedQuestions = questions;
         questionListBox.getChildren().clear();
-
+        this.availableQuestion = 0;
         int i = 1;
         for (Question q : questions) {
             HBox row = new HBox(10);
@@ -73,36 +75,53 @@ public class StudentQuestionViewController {
             questionListBox.getChildren().add(row);
 
             // <-- NEW: decorate row based on student's previous answer
-            decorateRowWithStatus(row, q.getQuestionId());
+            decorateRowWithStatus(row, q.getQuestionId(), questionNumber);
 
             i++;
         }
         computeAndShowQuizProgress(questions);
+
+        Session.setQuestionList(loadedQuestions);
     }
 
     /** Ask backend if student answered this question; color the row. */
-    private void decorateRowWithStatus(HBox row, int questionId) {
+    private void decorateRowWithStatus(HBox row, int questionId, int questionNumber) {
         api.getStudentAnswer(questionId, this.user.getId())
                 .thenAccept(answer -> Platform.runLater(() -> {
-                    // First clear any old status classes (if list reloaded)
-                    row.getStyleClass().removeAll("q-row--correct", "q-row--wrong");
+                    row.getStyleClass().removeAll("q-row--correct", "q-row--wrong", "q-row--disabled");
+                    row.setDisable(false);
 
                     if (answer == null) {
-                        // unanswered → leave grey (q-row only)
-                        return;
-                    }
-                    if (answer.isCorrect()) {
-                        row.getStyleClass().add("q-row--correct");
+                        this.availableQuestion = Math.min(
+                                this.availableQuestion == 0 ? questionNumber : this.availableQuestion,
+                                questionNumber
+                        );
+
+                        if (questionNumber != this.availableQuestion) {
+                            row.setDisable(true);
+                        }
+
                     } else {
-                        row.getStyleClass().add("q-row--wrong");
+                        if (answer.isCorrect()) {
+                            row.getStyleClass().add("q-row--correct");
+                        } else {
+                            row.getStyleClass().add("q-row--wrong");
+                        }
+
                     }
                 }))
-                .exceptionally(ex -> { ex.printStackTrace(); return null; });
+                .exceptionally(ex -> {
+                    ex.printStackTrace();
+                    return null;
+                });
     }
 
-    private void openQuestion(Question q, int questionNumber) {
-        try {
 
+
+
+
+    public void openQuestion(Question q, int questionNumber) {
+        try {
             api.getStudentAnswer(q.getQuestionId(), this.user.getId())
                     .thenAccept(previousAnswer -> {
                         javafx.application.Platform.runLater(() -> {
@@ -143,7 +162,6 @@ public class StudentQuestionViewController {
                                         q.getPointsWorth(),
                                         q.getQuestionId(),
                                         null);
-
                                 stage.setScene(mcScene);
                             }
                         });

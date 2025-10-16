@@ -4,6 +4,7 @@ import com.worldlearn.backend.models.*;
 import javafx.scene.control.Alert;
 
 import javax.sound.midi.SysexMessage;
+import java.util.List;
 import java.util.Objects;
 
 public class Session {
@@ -13,12 +14,13 @@ public class Session {
     private static Lesson currentLesson;
     private static Quiz currentQuiz;
     private static Question currentQuestion;
+    private static List<Question> questionList;
 
     public static void setCurrentUser(User user) {
         currentUser = user;
     }
 
-    public static User getCurrentUser(){
+    public static User getCurrentUser() {
         if (currentUser == null) {
             System.out.println("No User Logged In");
             return null;
@@ -26,7 +28,7 @@ public class Session {
         return currentUser;
     }
 
-    public static void clearSession(){
+    public static void clearSession() {
         currentUser = null;
         currentClass = null;
         currentLesson = null;
@@ -34,7 +36,9 @@ public class Session {
 
     }
 
-    public void setCurrentClass(WlClass wlclass) { this.currentClass = wlclass; }
+    public void setCurrentClass(WlClass wlclass) {
+        this.currentClass = wlclass;
+    }
 
     public WlClass getCurrentClass() {
         if (currentClass != null) {
@@ -49,7 +53,7 @@ public class Session {
     }
 
     public Lesson getCurrentLesson() {
-        if(currentLesson!=null){
+        if (currentLesson != null) {
             return currentLesson;
         }
         System.out.println("No Lesson Selected");
@@ -65,7 +69,7 @@ public class Session {
     }
 
     public Quiz getCurrentQuiz() {
-        if(Objects.equals(currentUser.getRole(), "student")) {
+        if (Objects.equals(currentUser.getRole(), "student")) {
             return currentQuiz;
         }
         System.out.println("No Quiz Selected");
@@ -80,4 +84,15 @@ public class Session {
         currentQuestion = question;
     }
 
+    public static void setQuestionList(List<Question> questions) {
+        questionList = questions;
+    }
+
+    public static List<Question> getQuestionsList() {
+        return questionList;
+    }
+
+    public static void removeQuestion(int questionIndex) {
+        questionList.remove(questionIndex);
+    }
 }
