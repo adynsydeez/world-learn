@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.worldlearn.frontend.QuestionCreatorController"
+      spacing="20">
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label fx:id="creatorTitle" text="Create A Question" style="-fx-font-size:22; -fx-font-weight:bold;"/>
+        <Pane HBox.hgrow="ALWAYS"/>
+    </HBox>
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="clearBtn" text="Clear"
+                style="-fx-background-color: #ff6b6b; -fx-text-fill: white;"/>
+    </HBox>
+
+    <!-- Prompt, points, visibility -->
+    <VBox spacing="5">
+        <Label text="Question"/>
+        <TextField fx:id="promptField" promptText="What's 9 + 10?"/>
+        <Label text="Points Worth"/>
+        <TextField fx:id="pointsField" promptText="5"/>
+        <Label text="Question visibility"/>
+        <Label text="Private: Just for you and your students."/>
+        <Label text="Public: Other teachers can use it in their quizzes."/>
+        <ComboBox fx:id="visibilityCombo" promptText="Question Visibility..."/>
+    </VBox>
+
+    <!-- Multiple Choice Options -->
+    <VBox fx:id="mcqFields" spacing="10">
+        <Label text="Potential Answers"/>
+        <Label text="Use the radio buttons to select the correct answer."/>
+
+        <HBox spacing="5">
+            <RadioButton fx:id="correct1" toggleGroup="$correctAnswer" text=""/>
+            <TextField fx:id="option1" promptText="Option 1..." style="-fx-background-color: #ffe066;"/>
+        </HBox>
+
+        <HBox spacing="5">
+            <RadioButton fx:id="correct2" toggleGroup="$correctAnswer" text=""/>
+            <TextField fx:id="option2" promptText="Option 2..." style="-fx-background-color: #ffe066;"/>
+        </HBox>
+
+        <HBox spacing="5">
+            <RadioButton fx:id="correct3" toggleGroup="$correctAnswer" text=""/>
+            <TextField fx:id="option3" promptText="Option 3..." style="-fx-background-color: #ffe066;"/>
+        </HBox>
+
+        <HBox spacing="5">
+            <RadioButton fx:id="correct4" toggleGroup="$correctAnswer" text=""/>
+            <TextField fx:id="option4" promptText="Option 4..." style="-fx-background-color: #ffe066;"/>
+        </HBox>
+    </VBox>
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="saveBtn" text="Save"
+                style="-fx-background-color: #a29bfe; -fx-text-fill: white;"/>
+    </HBox>
+
+</VBox>

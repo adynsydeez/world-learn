@@ -1,0 +1,120 @@
+/* Background */
+.star-bg {
+  -fx-background-color: #0b163d;
+  -fx-background-image: url("img/stars.png");
+  -fx-background-repeat: repeat;
+}
+
+/* Sidebar */
+.sidebar {
+  -fx-background-color: rgba(12, 28, 68, 0.85);
+  -fx-background-radius: 16;
+  -fx-padding: 14 10;
+  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 24, 0.25, 0, 8);
+}
+.logo-coin { -fx-background-color: rgba(66,90,160,0.35); -fx-background-radius: 9999; -fx-padding: 8; }
+.side-pill {
+  -fx-background-color: #f0f4ff;
+  -fx-text-fill: #0f1b3a;
+  -fx-background-radius: 12;
+  -fx-padding: 6 12;
+}
+.side-pill:hover { -fx-background-color: #e6ecff; }
+
+/* Content card */
+.content-card {
+  -fx-background-color: #ffffff;
+  -fx-background-radius: 18;
+  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.28), 24, 0.25, 0, 10);
+}
+
+.page-title { -fx-font-size: 28px; -fx-font-weight: 900; -fx-text-fill: #162144; }
+.page-subtitle { -fx-font-size: 18px; -fx-font-weight: 700; -fx-text-fill: #6b779c; }
+.section-title { -fx-font-size: 18px; -fx-font-weight: 700; -fx-text-fill: #3a4668; }
+
+.back-btn {
+  -fx-background-color: transparent;
+  -fx-text-fill: #162144;
+  -fx-font-size: 18px;
+  -fx-padding: 6 8;
+}
+
+/* Quiz rows (buttons you add programmatically) */
+.quiz-row {
+  -fx-background-color: #e6f0ff;
+  -fx-background-radius: 12;
+  -fx-padding: 14 18;
+  -fx-font-size: 16px;
+  -fx-font-weight: 700;
+  -fx-text-fill: #0f1b3a;
+}
+.quiz-row:hover { -fx-background-color: #d9e8ff; }
+.quiz-row.red   { -fx-background-color: #f7d6d6; }
+.quiz-row.green { -fx-background-color: #d8f0d9; }
+/* base pill look (already grey) */
+.q-row {
+  -fx-background-color: #dddddd;
+  -fx-background-radius: 14;
+  -fx-padding: 16;
+  -fx-cursor: hand;
+}
+
+/* answered correctly = green */
+.q-row--correct {
+  -fx-background-color: #c9f3cf;
+  -fx-border-color: #58b16b;
+  -fx-border-radius: 14;
+  -fx-border-width: 1;
+}
+
+/* answered incorrectly = red */
+.q-row--wrong {
+  -fx-background-color: #ffd6d6;
+  -fx-border-color: #e36b6b;
+  -fx-border-radius: 14;
+  -fx-border-width: 1;
+}
+
+/* === Quiz Pills === */
+.quiz-pill {
+    -fx-background-radius: 9999;           /* fully rounded */
+    -fx-padding: 12 16;                    /* internal spacing */
+    -fx-alignment: CENTER_LEFT;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 6, 0.2, 0, 2);
+    -fx-cursor: hand;
+}
+
+/* === State colors === */
+.quiz-pass {
+    -fx-background-color: #c8f7c5;
+    -fx-border-color: #59a35a;
+    -fx-border-radius: 9999;
+    -fx-border-width: 1;
+}
+
+.quiz-fail {
+    -fx-background-color: #ffd3d3;
+    -fx-border-color: #d36b6b;
+    -fx-border-radius: 9999;
+    -fx-border-width: 1;
+}
+
+.quiz-idle {
+    -fx-background-color: #e3ecff;
+    -fx-border-color: #c1d1ff;
+    -fx-border-radius: 9999;
+    -fx-border-width: 1;
+}
+
+/* === Text styles inside pill === */
+.quiz-pill-title {
+    -fx-font-weight: 700;
+    -fx-text-fill: #0f1b3a;
+    -fx-font-size: 14;
+}
+
+.quiz-pill-score {
+    -fx-text-fill: #1a1a1a99;
+    -fx-font-weight: 700;
+    -fx-font-size: 13;
+}

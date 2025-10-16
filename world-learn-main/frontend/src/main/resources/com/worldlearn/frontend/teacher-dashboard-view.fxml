@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.worldlearn.frontend.TeacherDashboardController"
+           prefWidth="1200" prefHeight="700"
+           stylesheets="@teacher-dashboard.css"
+           styleClass="star-bg">
+
+    <HBox spacing="16" alignment="CENTER_LEFT">
+        <padding><Insets top="16" right="16" bottom="16" left="16"/></padding>
+
+        <!-- === LEFT SIDEBAR === -->
+        <VBox spacing="16" alignment="TOP_CENTER" styleClass="sidebar" prefWidth="96" minWidth="96" maxWidth="96">
+            <!-- Logo -->
+            <StackPane styleClass="logo-coin">
+                <ImageView fitWidth="64" fitHeight="64" preserveRatio="true">
+                    <image>
+                        <Image url="@img/logosm.png"/>
+                    </image>
+                </ImageView>
+            </StackPane>
+
+            <!-- Sidebar buttons -->
+            <Button text="PROFILE" contentDisplay="TOP" graphicTextGap="8" prefWidth="96"
+                    style="-fx-background-color: transparent;
+               -fx-text-fill: #e8f0ff; -fx-font-size: 12px; -fx-font-weight: 700;
+               -fx-padding: 12 6 12 6; -fx-background-radius:16;">
+                <graphic>
+                    <Label text="&#xE77B;"
+                           style="-fx-font-family:'Segoe MDL2 Assets';
+                      -fx-font-size:26;
+                      -fx-text-fill:#e8f0ff;
+                      -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.35), 8, 0.25, 0, 0);" />
+                </graphic>
+            </Button>
+
+            <Button text="SETTINGS" contentDisplay="TOP" graphicTextGap="8" prefWidth="96"
+                    style="-fx-background-color: transparent;
+               -fx-text-fill: #e8f0ff; -fx-font-size: 12px; -fx-font-weight: 700;
+               -fx-padding: 12 6 12 6; -fx-background-radius:16;">
+                <graphic>
+                    <Label text="&#xE713;"
+                           style="-fx-font-family:'Segoe MDL2 Assets';
+                      -fx-font-size:26;
+                      -fx-text-fill:#e8f0ff;
+                      -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.35), 8, 0.25, 0, 0);" />
+                </graphic>
+            </Button>
+
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <Button fx:id="logoutBtn"
+                    text="Log Out"
+                    onAction="#onLogoutButtonClick"
+                    styleClass="logout-btn"/>
+        </VBox>
+
+        <!-- === MAIN CONTENT === -->
+        <VBox spacing="20" alignment="TOP_LEFT" VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS" styleClass="content-card">
+            <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
+
+            <!-- Dashboard Title -->
+            <Label text="Teacher Dashboard" styleClass="page-title"/>
+
+            <!-- MAIN GRID AREA -->
+            <HBox spacing="20" alignment="TOP_LEFT" VBox.vgrow="ALWAYS">
+
+                <!-- CLASSES (Now Tile Grid Style) -->
+                <VBox spacing="10" prefWidth="340" VBox.vgrow="ALWAYS">
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="My Classes" styleClass="section-title"/>
+                        <Button fx:id="createClassBtn"
+                                text="+ Create"
+                                onMouseClicked="#onCreateClassClick"
+                                style="-fx-background-radius:10; -fx-background-color:#6d5db8; -fx-text-fill:white;"/>
+                    </HBox>
+
+                    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" style="-fx-background-color:transparent;">
+                        <TilePane fx:id="classList"
+                                  hgap="20"
+                                  vgap="20"
+                                  prefColumns="2"
+                                  alignment="TOP_LEFT"
+                                  style="-fx-padding:20;">
+                        </TilePane>
+                    </ScrollPane>
+                </VBox>
+
+                <!-- LESSONS -->
+                <VBox spacing="10" prefWidth="260">
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="My Lessons" styleClass="section-title"/>
+                        <Button fx:id="createLessonBtn" text="+ Create" onMouseClicked="#onCreateLessonClick"/>
+                    </HBox>
+                    <ScrollPane fitToWidth="true" prefHeight="500" style="-fx-background-color:transparent;">
+                        <VBox fx:id="lessonList" spacing="10">
+                            <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+                        </VBox>
+                    </ScrollPane>
+                </VBox>
+
+                <!-- QUIZZES -->
+                <VBox spacing="10" prefWidth="260">
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="My Quizzes" styleClass="section-title"/>
+                        <Button fx:id="createQuizBtn" text="+ Create" onMouseClicked="#onCreateQuizClick"/>
+                    </HBox>
+                    <ScrollPane fitToWidth="true" prefHeight="500" style="-fx-background-color:transparent;">
+                        <VBox fx:id="quizList" spacing="10">
+                            <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+                        </VBox>
+                    </ScrollPane>
+                </VBox>
+
+                <!-- QUESTIONS -->
+                <VBox spacing="10" prefWidth="260">
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="My Questions" styleClass="section-title"/>
+                        <Button fx:id="createQuestionBtn" text="+ Create" onMouseClicked="#onCreateQuestionClick"/>
+                    </HBox>
+                    <ScrollPane fitToWidth="true" prefHeight="500" style="-fx-background-color:transparent;">
+                        <VBox fx:id="questionList" spacing="10">
+                            <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+                        </VBox>
+                    </ScrollPane>
+                </VBox>
+
+            </HBox>
+        </VBox>
+    </HBox>
+</StackPane>

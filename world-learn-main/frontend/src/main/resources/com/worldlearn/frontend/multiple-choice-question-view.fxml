@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.worldlearn.frontend.MultipleChoiceQuestionController"
+           stylesheets="@lesson.css"
+           styleClass="star-bg">
+
+    <fx:define>
+        <ToggleGroup fx:id="answersGroup"/>
+    </fx:define>
+
+    <HBox spacing="16" alignment="CENTER_LEFT">
+        <padding><Insets top="16" right="16" bottom="16" left="16"/></padding>
+
+        <!-- ===== LEFT SIDEBAR (matches lesson page) ===== -->
+        <!-- === LEFT SIDEBAR === -->
+        <VBox spacing="16" alignment="TOP_CENTER" styleClass="sidebar" prefWidth="96" minWidth="96" maxWidth="96">
+            <!-- Logo coin -->
+            <StackPane styleClass="logo-coin">
+                <ImageView fx:id="logoImage" fitWidth="64" fitHeight="64" preserveRatio="true">
+                    <image>
+                        <Image url="@img/logosm.png"/>
+                    </image>
+                </ImageView>
+            </StackPane>
+
+            <!-- Sidebar buttons -->
+            <!-- PROFILE -->
+            <Button text="PROFILE" contentDisplay="TOP" graphicTextGap="8" prefWidth="96"
+                    onAction="#setProfileButtonClick"
+                    style="-fx-background-color: transparent;
+                   -fx-text-fill: #e8f0ff; -fx-font-size: 12px; -fx-font-weight: 700;
+                   -fx-padding: 12 6 12 6; -fx-background-radius:16;">
+                <graphic>
+                    <Label text="&#xE77B;"
+                           style="-fx-font-family:'Segoe MDL2 Assets';
+                          -fx-font-size:26;
+                          -fx-text-fill:#e8f0ff;
+                          -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.35), 8, 0.25, 0, 0);" />
+                </graphic>
+            </Button>
+
+            <!-- SETTINGS -->
+            <Button text="SETTINGS" contentDisplay="TOP" graphicTextGap="8" prefWidth="96"
+                    style="-fx-background-color: transparent;
+                   -fx-text-fill: #e8f0ff; -fx-font-size: 12px; -fx-font-weight: 700;
+                   -fx-padding: 12 6 12 6; -fx-background-radius:16;">
+                <graphic>
+                    <Label text="&#xE713;"
+                           style="-fx-font-family:'Segoe MDL2 Assets';
+                          -fx-font-size:26;
+                          -fx-text-fill:#e8f0ff;
+                          -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.35), 8, 0.25, 0, 0);" />
+                </graphic>
+            </Button>
+
+
+
+            <!-- BACK BUTTON -->
+            <Button text="Back" onAction="#onBack"
+                    prefWidth="84" prefHeight="36"
+                    style="-fx-background-color:#f0f4ff; -fx-text-fill:#0f1b3a;
+                   -fx-background-radius:20; -fx-padding:10 16;
+                   -fx-font-size:13; -fx-font-weight:bold;"/>
+        </VBox>
+
+        <!-- ===== RIGHT CONTENT CARD ===== -->
+        <VBox spacing="16" HBox.hgrow="ALWAYS"
+              style="-fx-background-color:white;
+                     -fx-background-radius:18;
+                     -fx-padding:24;
+                     -fx-effect:dropshadow(gaussian, rgba(0,0,0,0.28), 24, 0.25, 0, 10);">
+
+            <!-- Header row: Back + Title -->
+            <HBox spacing="12" alignment="CENTER_LEFT">
+                <Label fx:id="headerLabel"
+                       text="Quiz"
+                       style="-fx-text-fill:#162144; -fx-font-size:28; -fx-font-weight:900;"/>
+                <Pane HBox.hgrow="ALWAYS"/>
+            </HBox>
+
+            <!-- Question stem row -->
+            <HBox spacing="16">
+                <VBox spacing="12" HBox.hgrow="ALWAYS"
+                      style="-fx-background-color:#eeeeee; -fx-background-radius:16; -fx-padding:16;">
+                    <Label fx:id="questionLabel" wrapText="true"
+                           style="-fx-text-fill:#2a2a2a; -fx-font-size:18; -fx-font-weight:700;"/>
+                </VBox>
+
+                <!-- optional image (map) -->
+                <ImageView fx:id="mapView" fitWidth="180" preserveRatio="true" smooth="true"/>
+            </HBox>
+
+            <!-- Answers grid -->
+            <GridPane hgap="12" vgap="12">
+                <columnConstraints>
+                    <ColumnConstraints hgrow="ALWAYS"/>
+                    <ColumnConstraints hgrow="ALWAYS"/>
+                </columnConstraints>
+
+                <ToggleButton fx:id="aBtn" toggleGroup="$answersGroup"
+                              GridPane.columnIndex="0" GridPane.rowIndex="0" maxWidth="Infinity"
+                              style="-fx-background-color:#e6f0ff; -fx-background-radius:12; -fx-padding:14; -fx-font-weight:bold; -fx-text-fill:#0f1b3a;"/>
+                <ToggleButton fx:id="bBtn" toggleGroup="$answersGroup"
+                              GridPane.columnIndex="1" GridPane.rowIndex="0" maxWidth="Infinity"
+                              style="-fx-background-color:#e6f0ff; -fx-background-radius:12; -fx-padding:14; -fx-font-weight:bold; -fx-text-fill:#0f1b3a;"/>
+                <ToggleButton fx:id="cBtn" toggleGroup="$answersGroup"
+                              GridPane.columnIndex="0" GridPane.rowIndex="1" maxWidth="Infinity"
+                              style="-fx-background-color:#e6f0ff; -fx-background-radius:12; -fx-padding:14; -fx-font-weight:bold; -fx-text-fill:#0f1b3a;"/>
+                <ToggleButton fx:id="dBtn" toggleGroup="$answersGroup"
+                              GridPane.columnIndex="1" GridPane.rowIndex="1" maxWidth="Infinity"
+                              style="-fx-background-color:#e6f0ff; -fx-background-radius:12; -fx-padding:14; -fx-font-weight:bold; -fx-text-fill:#0f1b3a;"/>
+            </GridPane>
+
+            <VBox alignment="CENTER_RIGHT" spacing="20">
+                <Button fx:id="submitBtn" text="SUBMIT" onAction="#onSubmit" disable="true"
+                        style="-fx-background-color:#2970d6; -fx-text-fill:white; -fx-font-weight:800;
+                   -fx-background-radius:10; -fx-padding:10 18;"/>
+
+                <Button fx:id="nextBtn" text="Next Question" onMouseClicked="#onNextBtnClick"
+                        style="-fx-background-color:#11d618; -fx-text-fill:white; -fx-font-weight:500;
+                   -fx-background-radius:10; -fx-padding:10 18;"/>
+            </VBox>
+
+        </VBox>
+    </HBox>
+</StackPane>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Circle?>
+
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.worldlearn.frontend.AuthController"
+           prefWidth="1120" prefHeight="680"
+           stylesheets="@auth.css"
+           styleClass="star-bg">
+
+
+    <HBox spacing="48" alignment="CENTER">
+        <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
+
+
+        <StackPane HBox.hgrow="ALWAYS" maxWidth="720" minWidth="520" prefWidth="640" styleClass="world-wrap">
+            <Region styleClass="world-ring-lg"/>
+            <Region styleClass="world-ring-sm"/>
+
+            <StackPane style="-fx-alignment: CENTER;">
+                <ImageView fitWidth="540" fitHeight="540" preserveRatio="true">
+                    <image>
+                        <Image url="@img/logo.png"/>
+                    </image>
+
+                    <clip>
+                        <Circle radius="270" centerX="270" centerY="270"/>
+                    </clip>
+                </ImageView>
+            </StackPane>
+        </StackPane>
+
+
+        <VBox prefWidth="520" maxWidth="520" minWidth="420" spacing="16" alignment="CENTER_LEFT" styleClass="auth-card">
+
+            <TabPane tabClosingPolicy="UNAVAILABLE" prefWidth="Infinity" styleClass="auth-tabs">
+
+                <!-- SIGN IN TAB -->
+                <Tab text="Sign In">
+                    <VBox spacing="10" alignment="CENTER_LEFT">
+                        <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+
+                        <Label text="Email"/>
+                        <TextField fx:id="loginEmailField" promptText="e.g. student1@edu.com"/>
+
+                        <Label text="Password"/>
+                        <PasswordField fx:id="loginPasswordField" promptText="Your password"/>
+
+                        <Button text="Sign In" onAction="#onLogin" defaultButton="true" styleClass="primary-btn"/>
+                        <Label fx:id="loginErrorLabel" textFill="#0e8010"/>
+                    </VBox>
+                </Tab>
+
+                <!-- SIGN UP TAB -->
+                <Tab text="Sign Up">
+                    <VBox spacing="10" alignment="CENTER_LEFT">
+                        <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+
+                        <Label text="First Name"/>
+                        <TextField fx:id="signupFirstNameField" promptText="e.g. John"/>
+
+                        <Label text="Last Name"/>
+                        <TextField fx:id="signupLastNameField" promptText="e.g. Smith"/>
+
+                        <Label text="Email"/>
+                        <TextField fx:id="signupEmailField" promptText="e.g. student1@edu.com"/>
+
+                        <Label text="Password"/>
+                        <PasswordField fx:id="signupPasswordField" promptText="Choose a password"/>
+
+                        <Label text="Role"/>
+                        <ChoiceBox fx:id="signupRoleBox"/>
+
+                        <Button text="Sign Up" onAction="#onSignup" styleClass="primary-btn"/>
+                        <Label fx:id="signupErrorLabel" textFill="#0e8010"/>
+                    </VBox>
+                </Tab>
+
+            </TabPane>
+        </VBox>
+    </HBox>
+</StackPane>

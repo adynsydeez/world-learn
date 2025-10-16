@@ -1,0 +1,100 @@
+package com.worldlearn.frontend;
+
+import com.worldlearn.backend.models.*;
+import javafx.scene.control.Alert;
+
+import javax.sound.midi.SysexMessage;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+
+public class Session {
+    public static final Session instance = new Session();
+    private static User currentUser;
+    private static WlClass currentClass;
+    private static Lesson currentLesson;
+    private static Quiz currentQuiz;
+    private static Question currentQuestion;
+    private static ArrayList<Question> questionList;
+
+    public static void setCurrentUser(User user) {
+        currentUser = user;
+    }
+
+    public static User getCurrentUser() {
+        if (currentUser == null) {
+            System.out.println("No User Logged In");
+            return null;
+        }
+        return currentUser;
+    }
+
+    public static void clearSession() {
+        currentUser = null;
+        currentClass = null;
+        currentLesson = null;
+        currentQuiz = null;
+
+    }
+
+    public void setCurrentClass(WlClass wlclass) {
+        this.currentClass = wlclass;
+    }
+
+    public WlClass getCurrentClass() {
+        if (currentClass != null) {
+            return currentClass;
+        }
+        System.out.println("No Class Selected");
+        return null;
+    }
+
+    public void setCurrentLesson(Lesson lesson) {
+        this.currentLesson = lesson;
+    }
+
+    public Lesson getCurrentLesson() {
+        if (currentLesson != null) {
+            return currentLesson;
+        }
+        System.out.println("No Lesson Selected");
+        return null;
+    }
+
+    public void setCurrentQuiz(Quiz quiz) {
+        if (currentLesson != null) {
+            if (quiz != null) {
+                this.currentQuiz = quiz;
+            }
+        }
+    }
+
+    public Quiz getCurrentQuiz() {
+        if (Objects.equals(currentUser.getRole(), "student")) {
+            return currentQuiz;
+        }
+        System.out.println("No Quiz Selected");
+        return null;
+    }
+
+    public static Question getCurrentQuestion() {
+        return currentQuestion;
+    }
+
+    public static void setCurrentQuestion(Question question) {
+        currentQuestion = question;
+    }
+
+    public static void setQuestionList(ArrayList<Question> questions) {
+        questionList = questions;
+    }
+
+    public static ArrayList<Question> getQuestionsList() {
+        return questionList;
+    }
+
+    public static void clearQuestionsList() {
+        questionList.clear();
+    }
+}

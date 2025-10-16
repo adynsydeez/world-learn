@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.worldlearn.frontend.StudentDashboardController"
+           prefWidth="1120" prefHeight="680"
+           stylesheets="@dashboard.css"
+           styleClass="star-bg">
+
+
+    <HBox spacing="16" alignment="CENTER_LEFT">
+        <padding><Insets top="16" right="16" bottom="16" left="16"/></padding>
+
+        <!-- === LEFT SIDEBAR === -->
+        <VBox spacing="16" alignment="TOP_CENTER" styleClass="sidebar" prefWidth="96" minWidth="96" maxWidth="96">
+            <!-- Logo -->
+            <StackPane styleClass="logo-coin">
+                <ImageView fitWidth="64" fitHeight="64" preserveRatio="true">
+                    <image>
+                        <Image url="@img/logosm.png"/>
+                    </image>
+                </ImageView>
+            </StackPane>
+
+            <!-- Sidebar buttons -->
+            <!-- PROFILE -->
+            <Button text="PROFILE" onAction="#setProfileButtonClick" contentDisplay="TOP" graphicTextGap="8" prefWidth="96"
+                    style="-fx-background-color: transparent;
+               -fx-text-fill: #e8f0ff; -fx-font-size: 12px; -fx-font-weight: 700;
+               -fx-padding: 12 6 12 6; -fx-background-radius:16;">
+                <graphic>
+
+                    <Label text="&#xE77B;"
+                           style="-fx-font-family:'Segoe MDL2 Assets';
+                      -fx-font-size:26;
+                      -fx-text-fill:#e8f0ff;
+                      -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.35), 8, 0.25, 0, 0);" />
+                </graphic>
+            </Button>
+
+            <!-- SETTINGS -->
+            <Button text="SETTINGS" contentDisplay="TOP" graphicTextGap="8" prefWidth="96"
+                    style="-fx-background-color: transparent;
+               -fx-text-fill: #e8f0ff; -fx-font-size: 12px; -fx-font-weight: 700;
+               -fx-padding: 12 6 12 6; -fx-background-radius:16;">
+                <graphic>
+
+                    <Label text="&#xE713;"
+                           style="-fx-font-family:'Segoe MDL2 Assets';
+                      -fx-font-size:26;
+                      -fx-text-fill:#e8f0ff;
+                      -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.35), 8, 0.25, 0, 0);" />
+                </graphic>
+            </Button>
+
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <Button fx:id="logoutButton"
+                    text="Log Out"
+                    onAction="#onLogoutButtonClick"
+                    styleClass="logout-btn"/>
+        </VBox>
+
+        <!-- === RIGHT CONTENT CARD === -->
+        <VBox spacing="20" alignment="TOP_LEFT" VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS" styleClass="content-card">
+            <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
+
+            <Label fx:id="welcomeLabel" text="Welcome StudentName!" styleClass="page-title"/>
+
+
+
+
+
+
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+
+                    <Label text="Your Classes" style="-fx-font-size:22; -fx-font-weight:bold;"/>
+                    <Pane HBox.hgrow="ALWAYS"/>
+                    <Button text="..." style="-fx-background-radius:8; -fx-padding:6 10;"/>
+                </HBox>
+
+                <!-- Teacher + Join class -->
+                <HBox fx:id="classBox" spacing="8">
+                    <ToggleButton text="Mrs Alpha"/>
+                    <ToggleButton text="Mr Bravo"/>
+                    <ToggleButton text="Ms Charlie"/>
+                    <ToggleButton text="Miss Delta"/>
+                    <Pane HBox.hgrow="ALWAYS"/>
+                    <Button fx:id="joinButton"
+                            text="+ Join Class"
+                            style="-fx-background-radius:10; -fx-padding:6 12;"/>
+                </HBox>
+
+                <!-- lesson placeholders -->
+                <HBox fx:id="lessonsRow" spacing="16"/>
+<!--            </VBox>-->
+
+
+        </VBox>
+    </HBox>
+</StackPane>
