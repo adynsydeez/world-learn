@@ -37,6 +37,32 @@ public class LessonController {
         }
     }
 
+    public void updateLesson(Context ctx) {
+        try {
+            int teacherId = Integer.parseInt(ctx.queryParam("teacherId"));
+            CreateLessonRequest req = ctx.bodyAsClass(CreateLessonRequest.class);
+
+            // Validate that lessonId is provided
+            if (req.getLessonId() <= 0) {
+                ctx.status(400).result("Lesson ID is required for update");
+                return;
+            }
+
+            Lesson lesson = new Lesson(req.getLessonId(), req.getLessonName(), req.getVisibility());
+            Lesson updatedLesson = lessonService.updateLesson(lesson, teacherId, req.getQuizIds());
+
+            ctx.status(200).json(updatedLesson);
+
+        } catch (SecurityException e) {
+            ctx.status(403).result("Forbidden: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            ctx.status(400).result("Validation error: " + e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            ctx.status(500).result("Internal server error: " + e.getMessage());
+        }
+    }
+
     public void getAllLessons(Context ctx) {
         try {
             List<Lesson> lessons = lessonService.getAllLessons();

@@ -5,9 +5,7 @@ import com.worldlearn.backend.models.Question;
 import com.worldlearn.backend.models.Quiz;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class LessonDAO {
     private final Database database;
@@ -59,7 +57,7 @@ public class LessonDAO {
         return lessons;
     }
 
-    public Optional<Lesson> getLessonById(int id) throws SQLException {
+    public Lesson getLessonById(int id) throws SQLException {
         String sql = "SELECT lesson_id, lesson_name, visibility FROM lessons WHERE lesson_id = ?";
 
         try (Connection conn = database.getConnection()){
@@ -69,18 +67,17 @@ public class LessonDAO {
 
             try (ResultSet rs = stmt.executeQuery()){
                 if (rs.next()){
-                    Lesson l = new Lesson(
+                    return new Lesson(
                             rs.getInt("lesson_id"),
                             rs.getString("lesson_name"),
                             Question.Visibility.fromDbValue(rs.getString("visibility"))
                     );
-                    return Optional.of(l);
 
                 }
             }
 
         }
-        return Optional.empty();
+        return null;
     }
 
     public void saveTeacherToLesson(int lessonId, int teacherId){
@@ -175,6 +172,74 @@ public class LessonDAO {
         }
 
         return lessons;
+    }
+
+    // Update lesson basic info
+    public void updateLesson(Lesson lesson) throws SQLException {
+        String sql = "UPDATE lessons SET lesson_name = ?, visibility = ?::visibility_type WHERE lesson_id = ?";
+
+        try (Connection conn = database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, lesson.getLessonName());
+            stmt.setString(2, lesson.getVisibility().toString().toLowerCase());
+            stmt.setInt(3, lesson.getLessonId());
+
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected == 0) {
+                throw new IllegalArgumentException("Lesson not found with ID: " + lesson.getLessonId());
+            }
+        }
+    }
+
+    // Verify teacher owns the lesson
+    public boolean verifyLessonOwnership(int lessonId, int teacherId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM teacher_lesson WHERE lesson_id = ? AND user_id = ? AND teacher_role = 'creator'";
+
+        try (Connection conn = database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, lessonId);
+            stmt.setInt(2, teacherId);
+
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+            return false;
+        }
+    }
+
+    // Get current quiz IDs for a lesson
+    public Set<Integer> getQuizIdsForLesson(int lessonId) throws SQLException {
+        Set<Integer> quizIds = new HashSet<>();
+        String sql = "SELECT quiz_id FROM lesson_quiz WHERE lesson_id = ?";
+
+        try (Connection conn = database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, lessonId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                quizIds.add(rs.getInt("quiz_id"));
+            }
+        }
+
+        return quizIds;
+    }
+
+    // Remove a quiz from a lesson
+    public void removeQuizFromLesson(int lessonId, int quizId) throws SQLException {
+        String sql = "DELETE FROM lesson_quiz WHERE lesson_id = ? AND quiz_id = ?";
+
+        try (Connection conn = database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, lessonId);
+            stmt.setInt(2, quizId);
+            stmt.executeUpdate();
+        }
     }
 
 }

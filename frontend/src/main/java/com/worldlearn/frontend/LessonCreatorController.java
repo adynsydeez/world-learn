@@ -25,6 +25,7 @@ public class LessonCreatorController {
     @FXML private Button clearBtn;
     @FXML private Button loadBtn;
     @FXML private TextField nameField;
+    @FXML private Label creatorTitle;
 
     private String lessonName;
 
@@ -77,13 +78,21 @@ public class LessonCreatorController {
             removeFromLesson(selected);
         });
 
-        saveBtn.setOnAction(e -> saveLesson(lessonQuizzes));
-
         clearBtn.setOnAction(e -> clearLesson());
 
         //loadBtn.setOnAction(e -> getTeacherQuizzes());
 
         getTeacherQuizzes();
+
+        if(this.lesson != null) {
+            getLessonQuizzes();
+            nameField.setText(this.lesson.getLessonName());
+            saveBtn.setOnAction(e -> editLesson(lessonQuizzes));
+            creatorTitle.setText("Edit Lesson");
+        }
+        else {
+            saveBtn.setOnAction(e -> saveLesson(lessonQuizzes));
+        }
     }
 
     public void setLesson(Lesson lesson) {
@@ -95,6 +104,18 @@ public class LessonCreatorController {
                 .thenAccept(quizzes -> Platform.runLater(() -> {
                     System.out.println("Fetched " + quizzes.size() + " quizzes");
                     teacherQuizzes.setAll(quizzes);
+                }))
+                .exceptionally(e -> {
+                    e.printStackTrace();
+                    return null;
+                });
+    }
+
+    private void getLessonQuizzes() {
+        apiService.getLessonQuizzes(this.lesson.getLessonId())
+                .thenAccept(quizzes -> Platform.runLater(() -> {
+                    System.out.println("Fetched " + quizzes.size() + " quizzes");
+                    lessonQuizzes.setAll(quizzes);
                 }))
                 .exceptionally(e -> {
                     e.printStackTrace();
@@ -174,6 +195,56 @@ public class LessonCreatorController {
             }
             showAlert(message.toString());
 
+        } catch (IllegalArgumentException ex) {
+            showError(ex.getMessage());
+        }
+    }
+
+    private void editLesson(List<Quiz> quizzes) {
+        System.out.println("Attempting Edit Lesson.");
+
+        if (checkInvalidName()) {
+            showError("Please enter a valid lesson name");
+            return;
+        }
+        if (checkInvalidLesson()) {
+            showError("ERROR: Lesson Must Contain Quizzes");
+            return;
+        }
+
+        lessonName = nameField.getText().trim();
+        try {
+            List<Integer> quizIds = quizzes.stream()
+                    .map(Quiz::getQuizID)
+                    .toList();
+
+            CreateLessonRequest lessonRequest = new CreateLessonRequest(
+                    this.lesson.getLessonId(),
+                    lessonName,
+                    getVisibility(),
+                    quizIds
+            );
+
+            apiService.updateLessonAsync(lessonRequest)
+                    .thenAccept(l -> {
+                        System.out.println("Lesson saved: " + lessonName);
+
+                        // Only show success alert if the update actually succeeded
+                        Platform.runLater(() -> {
+                            StringBuilder message = new StringBuilder("Lesson Updated! \n \nName: " + lessonRequest.getLessonName() + "\nvisibility: " + lessonRequest.getVisibility().toString() + "\n" + "Quizzes:\n");
+                            for(Quiz quiz : quizzes) {
+                                message.append(quiz.getQuizName()).append("\n");
+                            }
+                            showAlert(message.toString());
+                        });
+                    })
+                    .exceptionally(e -> {
+                        Platform.runLater(() -> {
+                            showError("Failed to update lesson: " + e.getMessage());
+                        });
+                        e.printStackTrace();
+                        return null;
+                    });
         } catch (IllegalArgumentException ex) {
             showError(ex.getMessage());
         }

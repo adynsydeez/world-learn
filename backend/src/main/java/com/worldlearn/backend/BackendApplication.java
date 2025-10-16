@@ -98,6 +98,7 @@ public class BackendApplication {
 
         // Lesson API endpoints
         app.post("/api/lessons", lessonController::createLesson);
+        app.put("/api/lessons/update", lessonController::updateLesson);
         app.get("/api/lessons", lessonController::getAllLessons);
         app.get("/api/lessons/{id}", lessonController::getLessonQuizzes);
 

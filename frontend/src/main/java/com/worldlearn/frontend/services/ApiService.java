@@ -724,6 +724,35 @@ public class ApiService {
         });
     }
 
+    public CompletableFuture<Lesson> updateLessonAsync(CreateLessonRequest lessonRequest) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                String jsonBody = objectMapper.writeValueAsString(lessonRequest);
+                int teacherId = Session.getCurrentUser().getId();
+                String url = baseUrl + "/lessons/update?teacherId=" + teacherId;
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .header("Content-Type", "application/json")
+                        .PUT(HttpRequest.BodyPublishers.ofString(jsonBody))
+                        .timeout(Duration.ofSeconds(30))
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request,
+                        HttpResponse.BodyHandlers.ofString());
+
+                if (response.statusCode() == 200) {
+                    return objectMapper.readValue(response.body(), Lesson.class);
+                } else {
+                    throw new RuntimeException("Failed to update Lesson: " + response.statusCode() +
+                            " - " + response.body());
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Error updating Lesson: " + e.getMessage(), e);
+            }
+        });
+    }
+
     public CompletableFuture<List<Quiz>> getLessonQuizzes(int lessonId) {
         return CompletableFuture.supplyAsync(() -> {
             try {

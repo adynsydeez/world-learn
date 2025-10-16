@@ -95,7 +95,7 @@ public class TeacherDashboardController {
     }
 
     private void editLesson(Lesson lesson) {
-        openPopup("lesson-creation-view.fxml", "Edit Class", lesson);
+        openPopup("lesson-creation-view.fxml", "Edit Lesson", lesson);
     }
 
     private void setupHover(Label label) {
@@ -156,10 +156,13 @@ public class TeacherDashboardController {
     private void openPopup(String fxmlPath, String title, Lesson lesson) {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource(fxmlPath));
-            Scene scene = new Scene(fxmlLoader.load(), 800, 600);
+            fxmlLoader.setControllerFactory(param -> {
+                LessonCreatorController controller = new LessonCreatorController();
+                controller.setLesson(lesson);
+                return controller;
+            });
 
-            LessonCreatorController controller = fxmlLoader.getController();
-            controller.setLesson(lesson);
+            Scene scene = new Scene(fxmlLoader.load(), 800, 600);
 
             Stage popupStage = new Stage();
             popupStage.setTitle(title);
@@ -168,6 +171,8 @@ public class TeacherDashboardController {
 
             Stage parentStage = (Stage) createQuestionBtn.getScene().getWindow();
             popupStage.initOwner(parentStage);
+
+            popupStage.setOnHidden(e -> loadLessons(this.user.getId()));
 
             popupStage.showAndWait();
         } catch (IOException e) {
