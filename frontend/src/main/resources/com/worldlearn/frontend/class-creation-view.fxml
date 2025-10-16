@@ -17,7 +17,7 @@
     </padding>
 
     <HBox spacing="10" alignment="CENTER_LEFT">
-        <Label text="Create A Class" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+        <Label fx:id="creatorTitle" text="Create A Class" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
         <Region HBox.hgrow="ALWAYS"/>
         <Button fx:id="clearBtn" text="Clear Class"
                 style="-fx-background-color: #ff6b6b; -fx-text-fill: white;"/>
@@ -30,6 +30,7 @@
         <TextField fx:id="nameField" promptText="Enter a Class Name..."/>
     </VBox>
 
+    <Label text="Select one of your questions, or search public ones, and add them to your quiz"/>
     <HBox spacing="20" alignment="TOP_LEFT">
         <VBox>
             <Label text="Your Lessons"/>
@@ -50,6 +51,5 @@
             <ListView fx:id="classLessonsList"/>
         </VBox>
     </HBox>
-    <Button fx:id="loadBtn" text="Load Lessons"/>
     <Button fx:id="addToClassBtn" text="Add Selected Lessons"/>
 </VBox>

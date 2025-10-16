@@ -12,6 +12,7 @@ import java.net.http.*;
 import java.net.URI;
 import java.time.Duration;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 
@@ -308,6 +309,35 @@ public class ApiService {
                 }
             } catch (Exception e) {
                 throw new RuntimeException("Error creating class: " + e.getMessage(), e);
+            }
+        });
+    }
+
+    public CompletableFuture<WlClass> updateClassAsync(CreateClassRequest classRequest) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                String jsonBody = objectMapper.writeValueAsString(classRequest);
+                int teacherId = Objects.requireNonNull(Session.getCurrentUser()).getId();
+                String url = baseUrl + "/classes/update?teacherId=" + teacherId;
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .header("Content-Type", "application/json")
+                        .PUT(HttpRequest.BodyPublishers.ofString(jsonBody))
+                        .timeout(Duration.ofSeconds(30))
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request,
+                        HttpResponse.BodyHandlers.ofString());
+
+                if (response.statusCode() == 200) {
+                    return objectMapper.readValue(response.body(), WlClass.class);
+                } else {
+                    throw new RuntimeException("Failed to update Class: " + response.statusCode() +
+                            " - " + response.body());
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Error updating Class: " + e.getMessage(), e);
             }
         });
     }

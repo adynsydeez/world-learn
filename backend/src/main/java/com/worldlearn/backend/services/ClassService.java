@@ -6,9 +6,7 @@ import com.worldlearn.backend.models.User;
 import com.worldlearn.backend.models.WlClass;
 
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 public class ClassService {
     private final ClassDAO classDAO;
@@ -17,7 +15,7 @@ public class ClassService {
         this.classDAO = classDAO;
     }
 
-    public Optional<WlClass> getClassById(int id) throws SQLException{
+    public WlClass getClassById(int id) throws SQLException{
         return classDAO.getClassById(id);
     }
 
@@ -32,6 +30,42 @@ public class ClassService {
             classDAO.saveLessonToClass(classId, l);
         }
         return saved;
+    }
+
+    public WlClass updateClass(WlClass wlClass, int teacherId, List<Integer> lessons) throws SQLException {
+        int wlClassId = wlClass.getId();
+
+        System.out.println("Updating Class: " + wlClass.getClassName());
+
+        // 1. Update basic class info
+        classDAO.updateClass(wlClass);
+        System.out.println("Updated class info for class ID: " + wlClassId);
+
+        // 2. Get current lesson associations
+        Set<Integer> currentLessonIds = classDAO.getLessonIdsForClass(wlClassId);
+        Set<Integer> newLessonIds = new HashSet<>(lessons != null ? lessons : new ArrayList<>());
+
+        // 3. Determine which lessons to add and remove
+        Set<Integer> lessonsToAdd = new HashSet<>(newLessonIds);
+        lessonsToAdd.removeAll(currentLessonIds); // Only new ones
+
+        Set<Integer> lessonsToRemove = new HashSet<>(currentLessonIds);
+        lessonsToRemove.removeAll(newLessonIds); // Only removed ones
+
+        // 4. Remove lessons that are no longer associated
+        for (Integer lessonId : lessonsToRemove) {
+            classDAO.removeLessonFromClass(wlClassId, lessonId);
+            System.out.println("Removed lesson: " + lessonId + " from class: " + wlClassId);
+        }
+
+        // 5. Add new lesson associations
+        for (Integer lessonId : lessonsToAdd) {
+            classDAO.saveLessonToClass(wlClassId, lessonId);
+            System.out.println("Added lesson: " + lessonId + " to class: " + wlClassId);
+        }
+
+        // 6. Return the updated class
+        return classDAO.getClassById(wlClassId);
     }
 
     public int generateCode() {
