@@ -1,5 +1,6 @@
 package com.worldlearn.frontend;
 
+import com.worldlearn.backend.dto.CreateLessonRequest;
 import com.worldlearn.backend.models.Quiz;
 import com.worldlearn.backend.models.Teacher;
 import com.worldlearn.backend.models.User;
@@ -13,6 +14,7 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +31,7 @@ public class QuizCreatorController {
     @FXML private Button loadBtn;
     @FXML private TextField searchField;
     @FXML private TextField nameField;
+    @FXML private Label creatorTitle;
     private String quizName;
 
     private ObservableList<Question> teacherQuestions = FXCollections.observableArrayList();
@@ -39,6 +42,8 @@ public class QuizCreatorController {
 
     int teacherId = Session.getCurrentUser().getId();
     private final ApiService apiService = new ApiService();
+
+    Quiz quiz;
 
     @FXML
     public void initialize() {
@@ -124,9 +129,24 @@ public class QuizCreatorController {
             clearQuiz();
         });
 
-        loadBtn.setOnAction(e -> {
-            getQuestions();
-        });
+        if(this.quiz != null) {
+            getQuizQuestions();
+            nameField.setText(this.quiz.getQuizName());
+            visibilityComboBox.setValue(this.quiz.getVisibility());
+            saveBtn.setOnAction(e -> editQuiz(quizQuestions));
+            creatorTitle.setText("Edit Quiz");
+        }
+
+//        loadBtn.setOnAction(e -> {
+//            getTeacherQuestions();
+//            searchQuestions();
+//        });
+
+        getTeacherQuestions();
+    }
+
+    public void setQuiz(Quiz quiz) {
+        this.quiz = quiz;
     }
 
     private void getQuestions() {
@@ -159,7 +179,29 @@ public class QuizCreatorController {
                 });
     }
 
+    private void getQuizQuestions() {
+        apiService.getQuizQuestionsAsync(this.quiz.getQuizID())
+                .thenAccept(questions -> Platform.runLater(() -> {
+                    System.out.println("Fetched " + questions.size() + " questions");
+                    quizQuestions.setAll(questions);
+                }))
+                .exceptionally(e -> {
+                    e.printStackTrace();
+                    return null;
+                });
+    }
 
+    private void searchQuestions() {
+        apiService.getPublicQuestionsAsync()
+                .thenAccept(questions -> Platform.runLater(() -> {
+                    System.out.println("Fetched " + questions.size() + " questions");
+                    searchQuestions.setAll(questions);
+                }))
+                .exceptionally(e -> {
+                    e.printStackTrace();
+                    return null;
+                });
+    }
 
     private void addToQuiz(List<Question> questions) {
         for (Question q : questions) {
@@ -192,11 +234,27 @@ public class QuizCreatorController {
         return quizQuestions.isEmpty();
     }
 
-    private void showAlert(String message) {
+    private void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Validation Error");
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    private void showAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Confirmation");
+        alert.setContentText(message);
+        alert.showAndWait();
+        // Close dialog after a short delay
+        new Thread(() -> {
+            try {
+                Thread.sleep(1000);
+                javafx.application.Platform.runLater(() -> closeDialog());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     private Visibility getVisibility() {
@@ -210,12 +268,12 @@ public class QuizCreatorController {
     private void saveQuiz(List<Question> questions) {
         System.out.println("Attempting Save Quiz.");
         if (checkInvalidName()) {
-            showAlert("Please enter a valid quiz name");
-            return;
+            showError("Please enter a valid quiz name");
+          return;
         } else if (checkInvalidQuiz()) {
-            showAlert("ERROR: Quiz Must Contain Questions");
+            showError("ERROR: Quiz Must Contain Questions");
             return;
-        }
+        } 
         quizName = nameField.getText().trim();
         try {
             List<Integer> questionIds = questions.stream()
@@ -235,9 +293,72 @@ public class QuizCreatorController {
                         return null;
                     })
                     .join();
+            StringBuilder message = new StringBuilder("Quiz Created! \n \nName: " + quizRequest.getQuizName() + "\nvisibility: " + quizRequest.getVisibility().toString() + "\n" + "Questions:\n");
+            for(Question question : questions) {
+                message.append(question.getQuestionName()).append("\n");
+            }
+            showAlert(message.toString());
+
             clearQuiz();
         } catch (IllegalArgumentException ex){
-            showAlert(ex.getMessage());
+            showError(ex.getMessage());
         }
+    }
+
+    private void editQuiz(List<Question> questions) {
+        System.out.println("Attempting Edit Quiz.");
+
+        if (checkInvalidName()) {
+            showError("Please enter a valid Quiz name");
+            return;
+        }
+        if (checkInvalidQuiz()) {
+            showError("ERROR: Quiz Must Contain Questions");
+            return;
+        }
+
+        quizName = nameField.getText().trim();
+        try {
+            List<Integer> questionIds = questions.stream()
+                    .map(Question::getQuestionId)
+                    .toList();
+
+            CreateQuizRequest quizRequest = new CreateQuizRequest(
+                    this.quiz.getQuizID(),
+                    quizName,
+                    getVisibility(),
+                    questionIds
+            );
+
+            apiService.updateQuizAsync(quizRequest)
+                    .thenAccept(l -> {
+                        System.out.println("Quiz saved: " + quizName);
+
+                        // Only show success alert if the update actually succeeded
+                        Platform.runLater(() -> {
+                            StringBuilder message = new StringBuilder("Quiz Updated! \n \nName: " + quizRequest.getQuizName() + "\nvisibility: " + quizRequest.getVisibility().toString() + "\n" + "Questions:\n");
+                            for(Question question : questions) {
+                                message.append(question.getQuestionName()).append("\n");
+                            }
+                            showAlert(message.toString());
+                        });
+                    })
+                    .exceptionally(e -> {
+                        Platform.runLater(() -> {
+                            showError("Failed to update Quiz: " + e.getMessage());
+                        });
+                        e.printStackTrace();
+                        return null;
+                    });
+        } catch (IllegalArgumentException ex) {
+            showError(ex.getMessage());
+        }
+    }
+
+
+
+    private void closeDialog() {
+        Stage stage = (Stage) saveBtn.getScene().getWindow();
+        stage.close();
     }
 }

@@ -7,15 +7,11 @@ import com.worldlearn.backend.dto.*;
 import com.worldlearn.backend.models.*;
 import com.worldlearn.backend.config.ApiConfig;
 import com.worldlearn.frontend.Session;
-import javafx.scene.control.ToggleButton;
-import com.fasterxml.jackson.databind.SerializationFeature;
 
 import java.net.http.*;
 import java.net.URI;
 import java.time.Duration;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 
@@ -371,6 +367,8 @@ public class ApiService {
         }
     }
 
+
+    // ===== LESSON OPERATIONS =====
     public CompletableFuture<List<Lesson>> getAllTeacherLessonsAsync(int teacherId) {
         return CompletableFuture.supplyAsync(() -> {
             try {
@@ -432,6 +430,34 @@ public class ApiService {
             try {
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(baseUrl + "/classes/" + classId + "/lessons"))
+                        .header("Accept", "application/json")
+                        .GET()
+                        .timeout(Duration.ofSeconds(30))
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request,
+                        HttpResponse.BodyHandlers.ofString());
+
+
+                if (response.statusCode() == 200) {
+                    Lesson[] lessons = objectMapper.readValue(response.body(), Lesson[].class);
+                    return List.of(lessons);
+                } else {
+                    throw new RuntimeException("Failed to get lessons: " + response.statusCode() +
+                            " - " + response.body());
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Error getting lessons: " + e.getMessage(), e);
+            }
+        });
+    }
+
+    public CompletableFuture<List<Lesson>> getAllTeacherLessonsAsync(int teacherId) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                // Make sure the URL matches the backend route
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(baseUrl + "/users/" + teacherId + "/lessons"))
                         .header("Accept", "application/json")
                         .GET()
                         .timeout(Duration.ofSeconds(30))
@@ -597,13 +623,13 @@ public class ApiService {
     }
 
     // Update question
-    public CompletableFuture<Question> updateQuestionAsync(int id, Question question) {
+    public CompletableFuture<Question> updateQuestionAsync(int teacherId, Question question) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 String jsonBody = objectMapper.writeValueAsString(question);
 
                 HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(baseUrl + "/questions/" + id))
+                        .uri(URI.create(baseUrl + "/questions/" + teacherId))
                         .header("Content-Type", "application/json")
                         .PUT(HttpRequest.BodyPublishers.ofString(jsonBody))
                         .timeout(Duration.ofSeconds(30))
@@ -691,6 +717,35 @@ public class ApiService {
                 }
             } catch (Exception e) {
                 throw new RuntimeException("Error creating quiz: " + e.getMessage(), e);
+            }
+        });
+    }
+
+    public CompletableFuture<Lesson> updateQuizAsync(CreateQuizRequest quizRequest) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                String jsonBody = objectMapper.writeValueAsString(quizRequest);
+                int teacherId = Session.getCurrentUser().getId();
+                String url = baseUrl + "/quizzes/update?teacherId=" + teacherId;
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .header("Content-Type", "application/json")
+                        .PUT(HttpRequest.BodyPublishers.ofString(jsonBody))
+                        .timeout(Duration.ofSeconds(30))
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request,
+                        HttpResponse.BodyHandlers.ofString());
+
+                if (response.statusCode() == 200) {
+                    return objectMapper.readValue(response.body(), Lesson.class);
+                } else {
+                    throw new RuntimeException("Failed to update Quiz: " + response.statusCode() +
+                            " - " + response.body());
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Error updating Quiz: " + e.getMessage(), e);
             }
         });
     }
@@ -804,6 +859,35 @@ public class ApiService {
                 }
             } catch (Exception e) {
                 throw new RuntimeException("Error creating Lesson: " + e.getMessage(), e);
+            }
+        });
+    }
+
+    public CompletableFuture<Lesson> updateLessonAsync(CreateLessonRequest lessonRequest) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                String jsonBody = objectMapper.writeValueAsString(lessonRequest);
+                int teacherId = Session.getCurrentUser().getId();
+                String url = baseUrl + "/lessons/update?teacherId=" + teacherId;
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .header("Content-Type", "application/json")
+                        .PUT(HttpRequest.BodyPublishers.ofString(jsonBody))
+                        .timeout(Duration.ofSeconds(30))
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request,
+                        HttpResponse.BodyHandlers.ofString());
+
+                if (response.statusCode() == 200) {
+                    return objectMapper.readValue(response.body(), Lesson.class);
+                } else {
+                    throw new RuntimeException("Failed to update Lesson: " + response.statusCode() +
+                            " - " + response.body());
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Error updating Lesson: " + e.getMessage(), e);
             }
         });
     }

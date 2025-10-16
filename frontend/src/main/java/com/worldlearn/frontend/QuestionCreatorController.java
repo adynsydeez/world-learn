@@ -12,9 +12,12 @@ import com.worldlearn.backend.models.Question.QuestionType;
 import com.worldlearn.backend.models.Question.Visibility;
 import com.worldlearn.frontend.services.ApiService;
 import javafx.scene.control.*;
+
+import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Objects;
 
 public class QuestionCreatorController {
     @FXML private Button saveBtn;
@@ -43,18 +46,17 @@ public class QuestionCreatorController {
     @FXML private TextField option3;
     @FXML private TextField option4;
 
+    @FXML private Label creatorTitle;
+
     private QuestionType type;
 
     private ApiService apiService = new ApiService();
 
+    private Question question;
+    int teacherId = Session.getCurrentUser().getId();
+
     @FXML
     private void initialize() {
-        // group quiz type radios
-        ToggleGroup quizTypes = new ToggleGroup();
-        mcqRadio.setToggleGroup(quizTypes);
-        writtenRadio.setToggleGroup(quizTypes);
-        mapRadio.setToggleGroup(quizTypes);
-
         // group correct answer radios
         correctAnswer = new ToggleGroup();
         correct1.setToggleGroup(correctAnswer);
@@ -68,28 +70,7 @@ public class QuestionCreatorController {
         correct4.setUserData(option4);
 
         // hide fields initially
-        showFields(null);
-
-        // handle quiz type selection
-        quizTypes.selectedToggleProperty().addListener((observable, oldVal, newVal) -> {
-            if (newVal != null) {
-                RadioButton selected = (RadioButton) newVal;
-                switch (selected.getId()) {
-                    case "mcqRadio":
-                        this.type = QuestionType.mcq;
-                        showFields(mcqFields);
-                        break;
-                    case "writtenRadio":
-                        this.type = QuestionType.written;
-                        showFields(writtenFields);
-                        break;
-                    case "mapRadio":
-                        this.type = QuestionType.map;
-                        showFields(mapFields);
-                        break;
-                }
-            }
-        });
+        //showFields(null);
 
         // populate visibility dropdown
         visibilityCombo.getItems().setAll(Visibility.values());
@@ -98,6 +79,24 @@ public class QuestionCreatorController {
         // bind buttons
         saveBtn.setOnAction(e -> saveQuestion());
         clearBtn.setOnAction(e -> clearFields());
+
+        if(this.question != null) {
+            promptField.setText(this.question.getPrompt());
+            pointsField.setText(Integer.toString(this.question.getPointsWorth()));
+            visibilityCombo.setValue(this.question.getVisibility());
+            String[] options = this.question.getOptions();
+            option1.setText(options[0]);
+            option2.setText(options[1]);
+            option3.setText(options[2]);
+            option4.setText(options[3]);
+            correctAnswer.selectToggle(getSelectedToggleFromAnswer(this.question.getAnswer()));
+            saveBtn.setOnAction(e -> editQuestion(this.question.getQuestionId()));
+            creatorTitle.setText("Edit Question");
+        }
+    }
+
+    public void setQuestion(Question question) {
+        this.question = question;
     }
 
     @FXML
@@ -111,7 +110,6 @@ public class QuestionCreatorController {
     }
 
     private String getAnswer() {
-        if (type == QuestionType.mcq) {
             RadioButton selected = (RadioButton) correctAnswer.getSelectedToggle();
             if (selected == null) {
                 throw new IllegalArgumentException("Please select the correct answer.");
@@ -120,18 +118,17 @@ public class QuestionCreatorController {
             // The selected radio button is linked to its TextField
             TextField linkedOption = (TextField) selected.getUserData();
             return linkedOption.getText().trim();
-        }
-        else if (type == QuestionType.written) {
-            return null;
-        }
-        else if (type == QuestionType.map) {
-            return null;
-        }
-
-        throw new IllegalArgumentException("No Type Selected");
     }
 
-
+    private Toggle getSelectedToggleFromAnswer(String answer) {
+        String[] options = this.question.getOptions();
+        for(int i = 0; i < 3; i ++) {
+            if (options[i].equals(answer)) {
+                return correctAnswer.getToggles().get(i);
+            }
+        }
+        return null;
+    }
 
     public String[] getOptions() {
         TextField[] fields = {option1, option2, option3, option4};
@@ -170,19 +167,14 @@ public class QuestionCreatorController {
     }
 
     private void saveQuestion() {
-        String[] options = null;
-        if (type == QuestionType.mcq){
-            options = getOptions();
-        }
-        String prompt = getPrompt();
         try {
             Question question = new Question(
                     0,
-                    prompt,
+                    getPrompt(),
                     getAnswer(),
-                    options,
-                    prompt,
-                    type,
+                    getOptions(),
+                    getPrompt(),
+                    QuestionType.mcq,
                     getPoints(),
                     getVisibility()
             );
@@ -195,10 +187,58 @@ public class QuestionCreatorController {
                     })
                     .join();
 
+            StringBuilder message = new StringBuilder("Question Created! \n \nPrompt: "
+                    + question.getPrompt()
+                    + "\n" + "visibility: " + question.getVisibility().toString()
+                    + "\n" + "Points: " + question.getPointsWorth()
+                    + "\n" + "Answer: " + question.getAnswer()
+                    + "\n" + "Options: \n");
+            for(String option : question.getOptions()) {
+                message.append(option).append("\n");
+            }
+            showAlert(message.toString());
 
             clearFields();
         } catch (IllegalArgumentException ex) {
-            showAlert(ex.getMessage());
+            showError(ex.getMessage());
+        }
+    }
+
+    private void editQuestion(int questionId) {
+        try {
+            Question question = new Question(
+                    questionId,
+                    getPrompt(),
+                    getAnswer(),
+                    getOptions(),
+                    getPrompt(),
+                    QuestionType.mcq,
+                    getPoints(),
+                    getVisibility()
+            );
+            System.out.println("Frontend: " + question.getAnswer() + " / " + Arrays.toString(question.getOptions()));
+            apiService.updateQuestionAsync(teacherId, question)
+                    .thenAccept(q -> System.out.println("Question updated: " + q.getQuestionId()))
+                    .exceptionally(e -> {
+                        e.printStackTrace();
+                        return null;
+                    })
+                    .join();
+
+            StringBuilder message = new StringBuilder("Question Updated! \n \nPrompt: "
+                    + question.getPrompt()
+                    + "\n" + "visibility: " + question.getVisibility().toString()
+                    + "\n" + "Points: " + question.getPointsWorth()
+                    + "\n" + "Answer: " + question.getAnswer()
+                    + "\n" + "Options: \n");
+            for(String option : question.getOptions()) {
+                message.append(option).append("\n");
+            }
+            showAlert(message.toString());
+
+            clearFields();
+        } catch (IllegalArgumentException ex) {
+            showError(ex.getMessage());
         }
     }
 
@@ -212,11 +252,32 @@ public class QuestionCreatorController {
         correctAnswer.selectToggle(null);
     }
 
-    private void showAlert(String message) {
+    private void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Validation Error");
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    private void showAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Confirmation");
+        alert.setContentText(message);
+        alert.showAndWait();
+        // Close dialog after a short delay
+        new Thread(() -> {
+            try {
+                Thread.sleep(1000);
+                javafx.application.Platform.runLater(() -> closeDialog());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
+    private void closeDialog() {
+        Stage stage = (Stage) saveBtn.getScene().getWindow();
+        stage.close();
     }
 
     public ApiService getApiService() {

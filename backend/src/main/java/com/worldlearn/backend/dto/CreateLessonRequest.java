@@ -7,6 +7,7 @@ public class CreateLessonRequest {
     private String lessonName;
     private Visibility visibility;
     private List<Integer> quizIds;
+    private int lessonId;
 
     public CreateLessonRequest(){}
 
@@ -16,9 +17,24 @@ public class CreateLessonRequest {
         this.quizIds = quizIds;
     }
 
+    public CreateLessonRequest(int lessonId, String lessonName, Visibility visibility, List<Integer> quizIds) {
+        this.lessonId = lessonId;
+        this.lessonName = lessonName;
+        this.visibility = visibility;
+        this.quizIds = quizIds;
+    }
+
     public void setLessonName(String lessonName) {
         // add validation
         this.lessonName = lessonName;
+    }
+
+    public int getLessonId() {
+        return this.lessonId;
+    }
+
+    public void setLessonId(int lessonId) {
+        this.lessonId = lessonId;
     }
 
     public String getLessonName() {return lessonName;}

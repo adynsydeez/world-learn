@@ -82,6 +82,7 @@ public class BackendApplication {
 
         // Question API endpoints
         app.post("/api/questions", questionController::createQuestion);
+        app.put("/api/questions/{id}", questionController::updateQuestion);
         app.get("/api/questions", questionController::getAllQuestions);
         app.get("/api/questions/public", questionController::getPublicQuestions);
         app.get("/api/questions/{id}", questionController::getQuestionById);
@@ -91,6 +92,7 @@ public class BackendApplication {
         // Quiz API endpoints
 
         app.post("/api/quizzes", quizController::createQuiz);
+        app.put("/api/quizzes/update", quizController::updateQuiz);
         app.get("/api/quizzes", quizController::getAllQuizzes);
         app.get("/api/quizzes/public", quizController::getPublicQuizzes);
         app.get("/api/quizzes/{id}/questions", quizController::getQuizQuestions);
@@ -98,6 +100,7 @@ public class BackendApplication {
 
         // Lesson API endpoints
         app.post("/api/lessons", lessonController::createLesson);
+        app.put("/api/lessons/update", lessonController::updateLesson);
         app.get("/api/lessons", lessonController::getAllLessons);
         app.get("/api/lessons/public", lessonController::getPublicLessons);
         app.get("/api/lessons/{id}", lessonController::getLessonQuizzes);

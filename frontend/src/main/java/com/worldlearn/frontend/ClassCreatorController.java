@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ClassCreatorController {
+    private WlClass wlClass;
+
     @FXML private ListView<Lesson> teacherLessonsList;
     @FXML private ListView<Lesson> searchLessonsList;
     @FXML private ListView<Lesson> classLessonsList;
@@ -117,6 +119,12 @@ public class ClassCreatorController {
         });
     }
 
+    @FXML
+    protected void handleAddStudent() {
+        String email = studentEmailField.getText();
+        if (email != null && !email.isBlank()) {
+            studentList.getItems().add(email.trim());
+            studentEmailField.clear();
     private void getLessons() {
         apiService.getAllTeacherLessonsAsync(teacherId)
                 .thenAccept(teacherLs -> {
@@ -218,4 +226,9 @@ public class ClassCreatorController {
             showAlert(ex.getMessage());
         }
     }
+
+    public void setClass(WlClass wlClass) {
+        this.wlClass = wlClass;
+    }
+
 }

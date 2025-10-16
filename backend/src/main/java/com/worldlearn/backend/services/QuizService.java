@@ -8,8 +8,7 @@ import com.worldlearn.backend.models.Question;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class QuizService {
     private final QuizDAO quizDAO;
@@ -31,7 +30,48 @@ public class QuizService {
         return saved;
     }
 
-    public Optional<Quiz> getQuizById(int id) throws SQLException {
+    public Quiz updateQuiz(Quiz quiz, int teacherId, List<Integer> questions) throws SQLException {
+        int quizId = quiz.getQuizID();
+
+        // 1. Verify ownership
+        if (!quizDAO.verifyQuizOwnership(quizId, teacherId)) {
+            throw new SecurityException("You do not have permission to update this Quiz");
+        }
+
+        System.out.println("Updating Quiz: " + quiz.getQuizName());
+
+        // 2. Update basic quiz info
+        quizDAO.updateQuiz(quiz);
+        System.out.println("Updated quiz info for quiz ID: " + quizId);
+
+        // 3. Get current question associations
+        Set<Integer> currentQuestionIds = quizDAO.getQuestionIdsForQuiz(quizId);
+        Set<Integer> newQuestionIds = new HashSet<>(questions != null ? questions : new ArrayList<>());
+
+        // 4. Determine which questions to add and remove
+        Set<Integer> questionsToAdd = new HashSet<>(newQuestionIds);
+        questionsToAdd.removeAll(currentQuestionIds); // Only new ones
+
+        Set<Integer> questionsToRemove = new HashSet<>(currentQuestionIds);
+        questionsToRemove.removeAll(newQuestionIds); // Only removed ones
+
+        // 5. Remove questions that are no longer associated
+        for (Integer questionId : questionsToRemove) {
+            quizDAO.removeQuestionFromQuiz(quizId, questionId);
+            System.out.println("Removed Question: " + questionId + " from Quiz: " + quizId);
+        }
+
+        // 6. Add new question associations
+        for (Integer questionId : questionsToAdd) {
+            quizDAO.saveQuestionToQuiz(quizId, questionId);
+            System.out.println("Added Question: " + questionId + " to Quiz: " + quizId);
+        }
+
+        // 7. Return the updated lesson
+        return quizDAO.getQuizByID(quizId);
+    }
+
+    public Quiz getQuizById(int id) throws SQLException {
         return quizDAO.getQuizByID(id);
     }
 

@@ -10,9 +10,7 @@ import org.eclipse.jetty.websocket.api.Session;
 
 import javax.xml.crypto.Data;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class QuizDAO {
     private final Database database;
@@ -130,7 +128,9 @@ public class QuizDAO {
         return quizzes;
     }
 
-    public Optional<Quiz> getQuizByID(int id) throws SQLException {
+*/
+
+    public Quiz getQuizByID(int id) throws SQLException {
         String sql = "SELECT quiz_id, quiz_name, visibility FROM quizzes WHERE quiz_id = ?";
 
         try (Connection conn = database.getConnection();
@@ -143,16 +143,15 @@ public class QuizDAO {
                     String visStr = rs.getString("visibility");
                     Visibility vis = (visStr != null) ? Visibility.fromDbValue(visStr) : null;
 
-                    Quiz q = new Quiz(
+                    return new Quiz(
                             rs.getInt("quiz_id"),
                             rs.getString("quiz_name"),
                             vis
                     );
-                    return Optional.of(q);
                 }
             }
         }
-        return Optional.empty();
+        return null;
     }
 
 
@@ -291,5 +290,73 @@ public class QuizDAO {
         }
 
         return questions;
+    }
+
+    // Update quiz basic info
+    public void updateQuiz(Quiz quiz) throws SQLException {
+        String sql = "UPDATE quizzes SET quiz_name = ?, visibility = ?::visibility_type WHERE quiz_id = ?";
+
+        try (Connection conn = database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, quiz.getQuizName());
+            stmt.setString(2, quiz.getVisibility().toString().toLowerCase());
+            stmt.setInt(3, quiz.getQuizID());
+
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected == 0) {
+                throw new IllegalArgumentException("Quiz not found with ID: " + quiz.getQuizID());
+            }
+        }
+    }
+
+    // Verify teacher owns the quiz
+    public boolean verifyQuizOwnership(int quizId, int teacherId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM teacher_quiz WHERE quiz_id = ? AND user_id = ? AND teacher_role = 'creator'";
+
+        try (Connection conn = database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, quizId);
+            stmt.setInt(2, teacherId);
+
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+            return false;
+        }
+    }
+
+    // Get current question IDs for a quiz
+    public Set<Integer> getQuestionIdsForQuiz(int quizId) throws SQLException {
+        Set<Integer> questionIds = new HashSet<>();
+        String sql = "SELECT question_id FROM quiz_question WHERE quiz_id = ?";
+
+        try (Connection conn = database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, quizId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                questionIds.add(rs.getInt("question_id"));
+            }
+        }
+
+        return questionIds;
+    }
+
+    // Remove a question from a quiz
+    public void removeQuestionFromQuiz(int quizId, int questionId) throws SQLException {
+        String sql = "DELETE FROM quiz_question WHERE quiz_id = ? AND question_id = ?";
+
+        try (Connection conn = database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, quizId);
+            stmt.setInt(2, questionId);
+            stmt.executeUpdate();
+        }
     }
 }

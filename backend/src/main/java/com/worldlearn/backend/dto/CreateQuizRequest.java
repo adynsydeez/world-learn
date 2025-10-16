@@ -4,6 +4,7 @@ import com.worldlearn.backend.models.Question.Visibility;
 import java.util.List;
 
 public class CreateQuizRequest {
+    private int quizId;
     private String quizName;
     private Visibility visibility;
     private List<Integer> questionIds;
@@ -14,6 +15,21 @@ public class CreateQuizRequest {
         this.quizName = quizName;
         this.visibility = visibility;
         this.questionIds = questionIds;
+    }
+
+    public CreateQuizRequest(int quizId, String quizName, Visibility visibility, List<Integer> questionIds) {
+        this.quizId = quizId;
+        this.quizName = quizName;
+        this.visibility = visibility;
+        this.questionIds = questionIds;
+    }
+
+    public void setQuizId(int quizId) {
+        this.quizId = quizId;
+    }
+
+    public int getQuizId() {
+        return this.quizId;
     }
 
     public void setQuizName(String quizName) {
