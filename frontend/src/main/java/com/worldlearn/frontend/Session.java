@@ -4,6 +4,8 @@ import com.worldlearn.backend.models.*;
 import javafx.scene.control.Alert;
 
 import javax.sound.midi.SysexMessage;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -14,7 +16,7 @@ public class Session {
     private static Lesson currentLesson;
     private static Quiz currentQuiz;
     private static Question currentQuestion;
-    private static List<Question> questionList;
+    private static ArrayList<Question> questionList;
 
     public static void setCurrentUser(User user) {
         currentUser = user;
@@ -84,15 +86,15 @@ public class Session {
         currentQuestion = question;
     }
 
-    public static void setQuestionList(List<Question> questions) {
+    public static void setQuestionList(ArrayList<Question> questions) {
         questionList = questions;
     }
 
-    public static List<Question> getQuestionsList() {
+    public static ArrayList<Question> getQuestionsList() {
         return questionList;
     }
 
-    public static void removeQuestion(int questionIndex) {
-        questionList.remove(questionIndex);
+    public static void clearQuestionsList() {
+        questionList.clear();
     }
 }

@@ -16,6 +16,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -81,7 +82,7 @@ public class StudentQuestionViewController {
         }
         computeAndShowQuizProgress(questions);
 
-        Session.setQuestionList(loadedQuestions);
+        Session.setQuestionList(new ArrayList<>(loadedQuestions));
     }
 
     /** Ask backend if student answered this question; color the row. */
@@ -115,10 +116,6 @@ public class StudentQuestionViewController {
                     return null;
                 });
     }
-
-
-
-
 
     public void openQuestion(Question q, int questionNumber) {
         try {
@@ -181,6 +178,7 @@ public class StudentQuestionViewController {
 
     @FXML
     protected void onProfileButtonClickLessonPage() throws Exception {
+        Session.clearQuestionsList();
         FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("profile-view.fxml"));
         Scene scene = new Scene(fxml.load(),1280,720);
         ProfileController c = fxml.getController();
@@ -189,6 +187,7 @@ public class StudentQuestionViewController {
     }
     @FXML
     protected void quizView() throws Exception {
+        Session.clearQuestionsList();
         FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("student-lesson-view.fxml"));
         Scene scene = new Scene(fxml.load(), 1280, 720);
         StudentLessonController c = fxml.getController();

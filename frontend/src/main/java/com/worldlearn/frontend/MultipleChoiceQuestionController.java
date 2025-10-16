@@ -14,6 +14,7 @@ import com.worldlearn.backend.models.Quiz;
 import com.worldlearn.frontend.services.ApiService;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -190,7 +191,7 @@ public class MultipleChoiceQuestionController {
 
     @FXML
     private void onNextBtnClick() {
-        List<Question> questions = Session.getQuestionsList();
+        ArrayList<Question> questions = Session.getQuestionsList();
         if (questionNumber != questions.size() + 1) {
             Question next = questions.get(questionNumber);
             Session.setCurrentQuestion(next);
