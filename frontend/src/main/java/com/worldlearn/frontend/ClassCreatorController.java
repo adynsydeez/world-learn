@@ -164,6 +164,7 @@ public class ClassCreatorController {
     }
 
     private void clearClass() {
+        nameField.clear();
         classLessons.clear();
     }
 
@@ -211,6 +212,7 @@ public class ClassCreatorController {
                         return null;
                     })
                     .join();
+            clearClass();
 
         } catch (IllegalArgumentException ex){
             showAlert(ex.getMessage());

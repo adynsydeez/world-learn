@@ -22,9 +22,9 @@ public class ProfileController {
     private Stage stage;
     private AuthClientService auth;
 
-    public void init(User user, Stage stage, AuthClientService auth) {
+    public void init(Stage stage, AuthClientService auth) {
 
-        this.user = user;
+        this.user = Session.getCurrentUser();
         this.stage = stage;
         this.auth = auth;
         refreshUserProfile();
@@ -42,7 +42,7 @@ public class ProfileController {
         Scene scene = new Scene(fxml.load(), 1280, 720);
 
         StudentDashboardController c = fxml.getController();
-        c.init(user, stage, this.auth);   // pass context back
+        c.init(stage, this.auth);   // pass context back
 
         stage.setScene(scene);
     }
@@ -63,7 +63,7 @@ public class ProfileController {
         Scene scene = new Scene(fxml.load(), 1280, 720);
 
         StudentDashboardController c = fxml.getController();
-        c.init(user, stage, auth);
+        c.init(stage, auth);
 
         stage.setScene(scene);
     }
@@ -76,7 +76,7 @@ public class ProfileController {
 
         // Get the controller and pass current user data
         com.worldlearn.frontend.EditProfileDialogController controller = loader.getController();
-        controller.initData(this.user);
+        controller.initData(Session.getCurrentUser());
 
         // Create a new stage for the popup
         Stage dialogStage = new Stage();

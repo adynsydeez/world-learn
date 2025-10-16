@@ -55,10 +55,10 @@ public class StudentDashboardController {
     @FXML private Button homeButton;
     @FXML private Button lessonButton;
 
-    public void init(User user, Stage stage) { init(user, stage, null); }
+    public void init(Stage stage) { init(stage, null); }
 
-    public void init(User user, Stage stage, AuthClientService auth) {
-        this.user = user;
+    public void init(Stage stage, AuthClientService auth) {
+        this.user = Session.getCurrentUser();
         this.stage = stage;
         this.auth  = auth;
         loadClasses();
@@ -80,7 +80,7 @@ public class StudentDashboardController {
 
         // pass context into the next controller
         StudentClassesController c = fxml.getController();
-        c.init(user, stage, auth);
+        c.init(stage, auth);
 
         stage.setScene(scene);
     }
@@ -91,7 +91,7 @@ public class StudentDashboardController {
         Scene scene = new Scene(fxml.load(), 1280, 720);
 
         ProfileController controller = fxml.getController();
-        controller.init(user, stage, auth);
+        controller.init(stage, auth);
 
         stage.setScene(scene);
     }
@@ -178,7 +178,7 @@ public class StudentDashboardController {
         Scene scene = new Scene(fxml.load(), 1280, 720);
 
         StudentDashboardController c = fxml.getController();
-        c.init(user, stage, auth);
+        c.init(stage, auth);
 
         stage.setScene(scene);
     }
@@ -189,7 +189,7 @@ public class StudentDashboardController {
         Scene scene = new Scene(fxml.load(), 1280, 720);
 
         StudentLessonController c = fxml.getController();
-        c.init(user, stage, auth);
+        c.init(stage, auth);
 
         stage.setScene(scene);
     }
@@ -239,7 +239,7 @@ public class StudentDashboardController {
         FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("student-lesson-view.fxml"));
         Scene scene = new Scene(fxml.load(), 1280, 720);
         StudentLessonController c = fxml.getController();
-        c.init(user, stage, auth);
+        c.init(stage, auth);
         c.setLesson(l.getLessonId(), l.getLessonName());  // triggers load for this lesson
         stage.setScene(scene);
     }

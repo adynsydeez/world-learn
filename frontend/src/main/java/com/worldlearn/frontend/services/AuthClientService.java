@@ -5,6 +5,7 @@ import com.worldlearn.backend.dto.UpdateUserProfileRequest;
 import com.worldlearn.backend.models.Student;
 import com.worldlearn.backend.models.Teacher;
 import com.worldlearn.backend.models.User;
+import com.worldlearn.frontend.Session;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -56,6 +57,44 @@ public class AuthClientService {
                 .join();
         currentUser = updatedUser;
         return updatedUser;
+    }
+
+    public CompletableFuture<User> refreshCurrentUser() {
+        if (currentUser == null) {
+            return CompletableFuture.failedFuture(new IllegalStateException("No user is currently logged in."));
+        }
+
+        return apiService.getUserByIdAsync(currentUser.getId())
+                .thenApply(refreshedUser -> {
+                    currentUser = switch (refreshedUser.getRole().toLowerCase()) {
+                        case "student" -> {
+                            Student s = new Student(
+                                    refreshedUser.getEmail(),
+                                    refreshedUser.getPassword(),
+                                    refreshedUser.getFirstName(),
+                                    refreshedUser.getLastName(),
+                                    refreshedUser.getRole()
+                            );
+                            s.setId(refreshedUser.getId());
+                            yield s;
+                        }
+                        case "teacher" -> {
+                            Teacher t = new Teacher(
+                                    refreshedUser.getEmail(),
+                                    refreshedUser.getPassword(),
+                                    refreshedUser.getFirstName(),
+                                    refreshedUser.getLastName(),
+                                    refreshedUser.getRole()
+                            );
+                            t.setId(refreshedUser.getId());
+                            yield t;
+                        }
+                        default -> refreshedUser;
+                    };
+
+                    Session.setCurrentUser(currentUser);
+                    return currentUser;
+                });
     }
 
 

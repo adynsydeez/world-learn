@@ -178,6 +178,7 @@ public class QuizCreatorController {
     }
 
     private void clearQuiz() {
+        nameField.clear();
         quizQuestions.clear();
     }
 
@@ -234,7 +235,7 @@ public class QuizCreatorController {
                         return null;
                     })
                     .join();
-
+            clearQuiz();
         } catch (IllegalArgumentException ex){
             showAlert(ex.getMessage());
         }

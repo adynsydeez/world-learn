@@ -46,6 +46,15 @@ public class ResetPasswordDialogController {
             successLabel.setText("Password updated successfully!");
             errorLabel.setText("");
 
+            auth.refreshCurrentUser()
+                    .thenAccept(updatedUser -> {
+                        System.out.println("Session refreshed for: " + updatedUser.getEmail());
+                    })
+                    .exceptionally(ex -> {
+                        ex.printStackTrace();
+                        return null;
+                    });
+
             // Close dialog after a short delay
             new Thread(() -> {
                 try {

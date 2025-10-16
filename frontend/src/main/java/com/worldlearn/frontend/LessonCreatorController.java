@@ -167,6 +167,7 @@ public class LessonCreatorController {
     }
 
     private void clearLesson() {
+        nameField.clear();
         lessonQuizzes.clear();
     }
 
@@ -223,6 +224,7 @@ public class LessonCreatorController {
                         return null;
                     })
                     .join();
+            clearLesson();
 
         } catch (IllegalArgumentException ex){
             showAlert(ex.getMessage());
