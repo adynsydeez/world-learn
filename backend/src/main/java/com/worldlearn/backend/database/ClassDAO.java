@@ -5,9 +5,7 @@ import com.worldlearn.backend.models.*;
 import com.worldlearn.backend.services.ClassService;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class ClassDAO {
     private final Database database;
@@ -16,7 +14,7 @@ public class ClassDAO {
         this.database = database;
     }
 
-    public Optional<WlClass> getClassById(int id) throws SQLException {
+    public WlClass getClassById(int id) throws SQLException {
         String sql = "SELECT class_id, class_name, join_code FROM classes WHERE class_id = ?";
 
         try (Connection conn = database.getConnection()){
@@ -26,16 +24,15 @@ public class ClassDAO {
 
             try (ResultSet rs = stmt.executeQuery()){
                 if (rs.next()){
-                    WlClass c = new WlClass(
+                    return new WlClass(
                             rs.getInt("class_id"),
                             rs.getString("class_name"),
                             rs.getInt("join_code")
                     );
-                    return Optional.of(c);
                 }
             }
         }
-        return Optional.empty();
+        return null;
     }
 
     // Simple class creation - just inserts into Classes table for testing
@@ -249,6 +246,55 @@ public class ClassDAO {
             e.printStackTrace();
         }
         return false;
+    }
+
+    // Update Class basic info
+    public void updateClass(WlClass wlClass) throws SQLException {
+        String sql = "UPDATE classes SET class_name = ? WHERE class_id = ?";
+
+        try (Connection conn = database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, wlClass.getClassName());
+            stmt.setInt(2, wlClass.getId());
+
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected == 0) {
+                throw new IllegalArgumentException("Class not found with ID: " + wlClass.getId());
+            }
+        }
+    }
+
+    // Get current lesson IDs for a cass
+    public Set<Integer> getLessonIdsForClass(int wLClassId) throws SQLException {
+        Set<Integer> lessonIds = new HashSet<>();
+        String sql = "SELECT lesson_id FROM class_lesson WHERE class_id = ?";
+
+        try (Connection conn = database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, wLClassId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                lessonIds.add(rs.getInt("lesson_id"));
+            }
+        }
+
+        return lessonIds;
+    }
+
+    // Remove a lesson from a class
+    public void removeLessonFromClass(int wLClassId, int lessonId) throws SQLException {
+        String sql = "DELETE FROM class_lesson WHERE class_id = ? AND lesson_id = ?";
+
+        try (Connection conn = database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, wLClassId);
+            stmt.setInt(2, lessonId);
+            stmt.executeUpdate();
+        }
     }
 
     // Future method: Update user role in class

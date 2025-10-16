@@ -43,6 +43,32 @@ public class ClassController {
         }
     }
 
+    public void updateClass(Context ctx) {
+        try {
+            int teacherId = Integer.parseInt(ctx.queryParam("teacherId"));
+            CreateClassRequest req = ctx.bodyAsClass(CreateClassRequest.class);
+
+            // Validate that lessonId is provided
+            if (req.getId() <= 0) {
+                ctx.status(400).result("Class ID is required for update");
+                return;
+            }
+
+            WlClass classroom = new WlClass(req.getId(), req.getClassName(), 0);
+            WlClass updatedClass = classService.updateClass(classroom, teacherId, req.getLessonIds());
+
+            ctx.status(200).json(updatedClass);
+
+        } catch (SecurityException e) {
+            ctx.status(403).result("Forbidden: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            ctx.status(400).result("Validation error: " + e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            ctx.status(500).result("Internal server error: " + e.getMessage());
+        }
+    }
+
     public void getAllClassesForUser(Context ctx) {
         try {
             // Extract user ID from path
@@ -76,8 +102,8 @@ public class ClassController {
             int classId = Integer.parseInt(ctx.pathParam("id"));
 
             ClassService classService = new ClassService(new ClassDAO(new Database()));
-            Optional<WlClass> wlClass = classService.getClassById(classId); // make sure this returns User with role
-            if (wlClass.isEmpty()) {
+            WlClass wlClass = classService.getClassById(classId); // make sure this returns User with role
+            if (wlClass == null) {
                 ctx.status(404).json(Map.of("error", "Class not found"));
                 return;
             }

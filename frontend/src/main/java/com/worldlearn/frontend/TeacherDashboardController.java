@@ -181,10 +181,13 @@ public class TeacherDashboardController {
     private void openPopup(String fxmlPath, String title, WlClass wlClass) {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource(fxmlPath));
-            Scene scene = new Scene(fxmlLoader.load(), 800, 600);
+            fxmlLoader.setControllerFactory(param -> {
+                ClassCreatorController controller = new ClassCreatorController();
+                controller.setClass(wlClass);
+                return controller;
+            });
 
-            ClassCreatorController controller = fxmlLoader.getController();
-            controller.setClass(wlClass);
+            Scene scene = new Scene(fxmlLoader.load(), 800, 600);
 
             Stage popupStage = new Stage();
             popupStage.setTitle(title);
@@ -193,6 +196,8 @@ public class TeacherDashboardController {
 
             Stage parentStage = (Stage) createClassBtn.getScene().getWindow();
             popupStage.initOwner(parentStage);
+
+            popupStage.setOnHidden(e -> loadClasses(this.user));
 
             popupStage.showAndWait();
         } catch (IOException e) {

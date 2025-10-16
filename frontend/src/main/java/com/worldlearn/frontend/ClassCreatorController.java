@@ -9,7 +9,9 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.stage.Stage;
 
+import java.security.cert.Extension;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +28,9 @@ public class ClassCreatorController {
     @FXML private Button loadBtn;
     @FXML private TextField searchField;
     @FXML private TextField nameField;
+    @FXML private Label creatorTitle;
+
+
     private String className;
 
     private ObservableList<Lesson> teacherLessons = FXCollections.observableArrayList();
@@ -88,9 +93,9 @@ public class ClassCreatorController {
         });
 
         // allow multi-selection in teacher list
-        teacherLessonsList.getSelectionModel().setSelectionMode(javafx.scene.control.SelectionMode.MULTIPLE);
-        searchLessonsList.getSelectionModel().setSelectionMode(javafx.scene.control.SelectionMode.MULTIPLE);
-        classLessonsList.getSelectionModel().setSelectionMode(javafx.scene.control.SelectionMode.MULTIPLE);
+        teacherLessonsList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        searchLessonsList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        classLessonsList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
 
         addToClassBtn.setOnAction(e -> {
@@ -114,9 +119,17 @@ public class ClassCreatorController {
             clearClass();
         });
 
-        loadBtn.setOnAction(e -> {
-            getLessons();
-        });
+        getLessons();
+
+        if(this.wlClass != null) {
+            getLessonQuizzes();
+            nameField.setText(this.wlClass.getClassName());
+            saveBtn.setOnAction(e -> editClass(classLessons));
+            creatorTitle.setText("Edit Class");
+        }
+        else {
+            saveBtn.setOnAction(e -> saveClass(classLessons));
+        }
     }
 
     private void getLessons() {
@@ -143,6 +156,18 @@ public class ClassCreatorController {
                                 return null;
                             });
                 })
+                .exceptionally(e -> {
+                    e.printStackTrace();
+                    return null;
+                });
+    }
+
+    private void getLessonQuizzes() {
+        apiService.getClassLessons(this.wlClass.getId())
+                .thenAccept(lessons -> Platform.runLater(() -> {
+                    System.out.println("Fetched " + lessons.size() + " lessons");
+                    classLessons.setAll(lessons);
+                }))
                 .exceptionally(e -> {
                     e.printStackTrace();
                     return null;
@@ -180,20 +205,13 @@ public class ClassCreatorController {
         return classLessons.isEmpty();
     }
 
-    private void showAlert(String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Validation Error");
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
     private void saveClass(List<Lesson> lessons) {
         System.out.println("Attempting Save Class.");
         if (checkInvalidName()) {
-            showAlert("Please enter a valid class name");
+            showError("Please enter a valid class name");
             return;
         } else if (checkInvalidClass()) {
-            showAlert("ERROR: Class Must Contain Lessons");
+            showError("ERROR: Class Must Contain Lessons");
             return;
         }
         className = nameField.getText().trim();
@@ -208,21 +226,109 @@ public class ClassCreatorController {
             );
 
             apiService.createClassAsync(classRequest)
-                    .thenAccept(q -> System.out.println("Class saved:" + className))
-                    .exceptionally(e -> {
-                        e.printStackTrace();
-                        return null;
+                    .thenAccept(q -> {
+                        Platform.runLater(() -> {
+                            StringBuilder message = new StringBuilder("Class Created! \n \nName: "
+                                    + q.getClassName()
+                                    + "\njoin code: " + q.getJoinCode()
+                                    + "\n" + "Lessons:\n");
+                            for(Lesson lesson : lessons) {
+                                message.append(lesson.getLessonName()).append("\n");
+                            }
+                            showAlert(message.toString());
+                            clearClass();
+                        });
                     })
-                    .join();
-            clearClass();
+                    .exceptionally(e -> {
+                        Platform.runLater(() -> {
+                            e.printStackTrace();
+                            showError("Failed to create class: " + e.getMessage());
+                        });
+                        return null;
+                    });
 
         } catch (IllegalArgumentException ex){
-            showAlert(ex.getMessage());
+            showError(ex.getMessage());
+        }
+    }
+
+    private void editClass(List<Lesson> lessons) {
+        System.out.println("Attempting Edit Class.");
+        if (checkInvalidName()) {
+            showError("Please enter a valid class name");
+            return;
+        } else if (checkInvalidClass()) {
+            showError("ERROR: Class Must Contain Lessons");
+            return;
+        }
+        className = nameField.getText().trim();
+        try {
+            List<Integer> lessonIds = lessons.stream()
+                    .map(Lesson::getLessonId)
+                    .toList();
+
+            CreateClassRequest classRequest = new CreateClassRequest(
+                    this.wlClass.getId(),
+                    className,
+                    lessonIds
+            );
+
+            apiService.updateClassAsync(classRequest)
+                    .thenAccept(q -> {
+                        Platform.runLater(() -> {
+                            StringBuilder message = new StringBuilder("Class Updated! \n \nName: "
+                                    + q.getClassName()
+                                    + "\njoin code: " + q.getJoinCode()
+                                    + "\n" + "Lessons:\n");
+                            System.out.println("Number of lessons: " + lessons.size());
+                            for(Lesson lesson : lessons) {
+                                message.append(lesson.getLessonName()).append("\n");
+                            }
+                            showAlert(message.toString());
+                            clearClass();
+                        });
+                    })
+                    .exceptionally(e -> {
+                        Platform.runLater(() -> {
+                            e.printStackTrace();
+                            showError("Failed to update class: " + e.getMessage());
+                        });
+                        return null;
+                    });
+        } catch (IllegalArgumentException ex){
+            showError(ex.getMessage());
         }
     }
 
     public void setClass(WlClass wlClass) {
         this.wlClass = wlClass;
+    }
+
+    private void showError(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Validation Error");
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private void showAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Confirmation");
+        alert.setContentText(message);
+        alert.showAndWait();
+        // Close dialog after a short delay
+        new Thread(() -> {
+            try {
+                Thread.sleep(1000);
+                Platform.runLater(() -> closeDialog());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+    private void closeDialog() {
+        Stage stage = (Stage) saveBtn.getScene().getWindow();
+        stage.close();
     }
 
 }

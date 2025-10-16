@@ -15,6 +15,12 @@ public class CreateClassRequest {
         this.lessonIds = lessonIds;
     }
 
+    public CreateClassRequest(int id, String className, List<Integer> lessonIds) {
+        this.id = id;
+        this.className = className;
+        this.lessonIds = lessonIds;
+    }
+
     public int getId() { return this.id; }
     public void setId(int id) { this.id = id; }
 
