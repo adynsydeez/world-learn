@@ -68,7 +68,8 @@ public class BackendApplication {
         app.delete("/api/users/{id}", userController::deleteUser);
         app.put("/api/users/password/{id}", userController::updatePassword);
         app.get("/api/users/{id}/questions", questionController::getAllTeacherQuestions);
-        app.get("/api/users/{id}/lessons", lessonController::getAllTeacherLessons);
+        app.get("/api/users/{id}/quizzes", quizController::getAllTeacherQuizzes);
+        app.get("api/users/{id}/lessons", lessonController::getAllTeacherLessons);
 
         // LOGIN endpoint
         app.post("/api/users/login", userController::logIn);
@@ -93,6 +94,7 @@ public class BackendApplication {
         app.post("/api/quizzes", quizController::createQuiz);
         app.put("/api/quizzes/update", quizController::updateQuiz);
         app.get("/api/quizzes", quizController::getAllQuizzes);
+        app.get("/api/quizzes/public", quizController::getPublicQuizzes);
         app.get("/api/quizzes/{id}/questions", quizController::getQuizQuestions);
 
 
@@ -100,6 +102,7 @@ public class BackendApplication {
         app.post("/api/lessons", lessonController::createLesson);
         app.put("/api/lessons/update", lessonController::updateLesson);
         app.get("/api/lessons", lessonController::getAllLessons);
+        app.get("/api/lessons/public", lessonController::getPublicLessons);
         app.get("/api/lessons/{id}", lessonController::getLessonQuizzes);
 
         // Graceful shutdown

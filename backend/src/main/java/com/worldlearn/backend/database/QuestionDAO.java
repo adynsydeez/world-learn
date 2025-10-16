@@ -96,17 +96,8 @@ public class QuestionDAO {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     // Fetch options array safely
-                    String[] options = null;
-                    try {
-                        Array optionsArray = rs.getArray("options");
-                        if (optionsArray != null) {
-                            options = (String[]) optionsArray.getArray();
-                        }
-                    } catch (SQLException e) {
-                        System.err.println("Failed to fetch options array for question_id="
-                                + rs.getInt("question_id") + ": " + e.getMessage());
-                        options = null;
-                    }
+                    Array optionsArray = rs.getArray("options");
+                    String[] options = optionsArray != null ? (String[]) optionsArray.getArray() : new String[0];
 
                     // Fetch other fields safely
                     String typeStr = rs.getString("type");
@@ -114,6 +105,8 @@ public class QuestionDAO {
                     if (typeStr != null) {
                         type = QuestionType.fromDbValue(typeStr);
                     }
+
+                    String answer = rs.getString("answer") != null ? rs.getString("answer") : "null";
 
                     String visibilityStr = rs.getString("visibility");
                     Visibility visibility = null;
@@ -124,7 +117,7 @@ public class QuestionDAO {
                     Question q = new Question(
                             rs.getInt("question_id"),
                             rs.getString("question_name"),
-                            rs.getString("answer"),
+                            answer,
                             options,
                             rs.getString("prompt"),
                             type,
@@ -155,10 +148,12 @@ public class QuestionDAO {
                 Array optionsArray = rs.getArray("options");
                 String[] options = optionsArray != null ? (String[]) optionsArray.getArray() : new String[0];
 
+                String answer = rs.getString("answer") != null ? rs.getString("answer") : "null";
+
                 Question q = new Question(
                         rs.getInt("question_id"),
                         rs.getString("question_name"),
-                        rs.getString("answer"),
+                        answer,
                         options,
                         rs.getString("prompt"),
                         QuestionType.fromDbValue(rs.getString("type")),

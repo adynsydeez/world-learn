@@ -37,15 +37,16 @@
     <HBox spacing="20" alignment="TOP_LEFT">
         <VBox>
             <Label text="Your Quizzes"/>
-            <ListView fx:id="teacherQuizzesList" prefHeight="300"/>
+            <ListView fx:id="teacherQuizzesList"/>
         </VBox>
 
         <VBox>
-            <Label text="Quizzes in Lesson"/>
-            <Button fx:id="removeBtn" text="Remove"/>
-            <ListView fx:id="lessonQuizzesList" prefHeight="300"/>
+            <Label text="Search Quizzes"/>
+            <HBox>
+                <TextField fx:id="searchField" promptText="Search Quizzes..."/>
+            </HBox>
+            <ListView fx:id="searchQuizzesList"/>
         </VBox>
-    </HBox>
 
     <HBox spacing="10">
        <!-- <Button fx:id="loadBtn" text="Load Quizzes"/> -->

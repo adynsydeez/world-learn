@@ -2,6 +2,7 @@ package com.worldlearn.backend.services;
 
 import com.worldlearn.backend.database.LessonDAO;
 import com.worldlearn.backend.models.Lesson;
+import com.worldlearn.backend.models.Question;
 import com.worldlearn.backend.models.Quiz;
 
 import java.sql.SQLException;
@@ -80,5 +81,8 @@ public class LessonService {
 
     public List<Lesson> getAllTeacherLessons(int teacherId) throws SQLException {
         return lessonDAO.getAllTeacherLessons(teacherId);
+
+    public List<Lesson> getPublicLessons() throws SQLException {
+        return lessonDAO.getPublicLessons();
     }
 }

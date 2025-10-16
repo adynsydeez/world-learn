@@ -52,16 +52,44 @@ public class Question {
     public String getQuestionName() { return questionName; }
 
     // ANSWER
+    /*
     public void setAnswer(String answer) {
-        this.answer = (answer != null) ? answer.trim() : null;
+        if (answer == null || answer.trim().isEmpty()) {
+            throw new IllegalArgumentException("answer must not be null/blank");
+        }
+        this.answer = answer.trim();
     }
-
+    */
+    public void setAnswer(String answer) {
+        if (getType() == QuestionType.mcq) {
+            if (answer == null || answer.trim().isEmpty()) {
+                throw new IllegalArgumentException("answer must not be null/blank");
+            } else {
+                this.answer = answer.trim();
+            }
+        } else {
+            this.answer = "N/A";
+        }
+    }
     public String getAnswer() { return answer; }
 
+    // OPTIONS
     public void setOptions(String[] options) {
-        this.options = (options != null) ? Arrays.copyOf(options, options.length) : null;
-    }
+        if (getType() == QuestionType.mcq) {
+            if (options == null) {
+                throw new IllegalArgumentException("options must not be null");
+            }
+            for (int i = 0; i < options.length; i++) {
+                if (options[i] == null) {
+                    throw new IllegalArgumentException("options[" + i + "] must not be null");
+                }
+            }
+            this.options = Arrays.copyOf(options, options.length);
+        } else {
+            this.options = null;
+        }
 
+    }
     public String[] getOptions() { return options; }
 
     // PROMPT
@@ -74,7 +102,12 @@ public class Question {
     public String getPrompt() { return prompt; }
 
     // TYPE
-    public void setType(QuestionType type) { this.type = type; }
+    public void setType(QuestionType type) {
+        if (type == null) {
+            throw new IllegalArgumentException("type must not be null");
+        }
+        this.type = type;
+    }
     public QuestionType getType() { return type; }
 
     // POINTSWORTH
@@ -87,7 +120,12 @@ public class Question {
     public int getPointsWorth() { return pointsWorth; }
 
     // VISIBILITY
-    public void setVisibility(Visibility vis) { this.visibility = vis; }
+    public void setVisibility(Visibility vis) {
+        if (vis == null) {
+            throw new IllegalArgumentException("visibility must not be null");
+        }
+        this.visibility = vis;
+    }
     public Visibility getVisibility() { return visibility; }
 
     // ENUMS

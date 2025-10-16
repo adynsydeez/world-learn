@@ -8,6 +8,7 @@ import com.worldlearn.backend.models.WlClass;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 public class ClassService {
     private final ClassDAO classDAO;
@@ -22,7 +23,9 @@ public class ClassService {
 
     // Simple class creation - just inserts into Classes table
     public WlClass createClass(WlClass wlClass, int teacherId, List<Integer> lessons) throws SQLException {
-        WlClass saved = classDAO.createClass(wlClass);
+        int joinCode = generateCode();
+        WlClass toSave = new WlClass(wlClass.getId(), wlClass.getClassName(), joinCode);
+        WlClass saved = classDAO.createClass(toSave);
         int classId = saved.getId();
         classDAO.saveTeacherToClass(classId, teacherId);
         for(Integer l : lessons){
@@ -31,19 +34,27 @@ public class ClassService {
         return saved;
     }
 
+    public int generateCode() {
+        Random random = new Random();
+        int joinCode;
+
+        int attempts = 0;
+        do {
+            joinCode = 100000 + random.nextInt(900000);
+            attempts++;
+            if (attempts > 1000) throw new RuntimeException("Unable to generate unique join code");
+        } while (classDAO.joinCodeExists(joinCode)); // check DB
+
+        return joinCode;
+    }
+
+
     public List<WlClass> getAllClassesForUser(User user) throws SQLException {
         return classDAO.getAllClassesForUser(user);
     }
 
     public List<Lesson> getClassLessons(int classId) throws SQLException {
         return classDAO.getClassLessons(classId);
-    }
-
-    public static int generateJoinCode(WlClass wlClass) {
-        System.out.println("adding " + wlClass.getId() + "to 100000");
-        int code = 100000 + wlClass.getId();
-        System.out.println(code);
-        return code;
     }
 
      public void assignStudentToClass(int classId, int userId) throws SQLException {

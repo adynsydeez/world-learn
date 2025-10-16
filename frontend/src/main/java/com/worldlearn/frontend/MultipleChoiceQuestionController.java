@@ -34,11 +34,11 @@ public class MultipleChoiceQuestionController {
     private static final String CORRECT_HILITE  = "; -fx-border-color:#2e7d32; -fx-border-width:2; -fx-background-color:#c8f7c5;";
     private static final String WRONG_HILITE    = "; -fx-border-color:#b71c1c; -fx-border-width:2; -fx-background-color:#ffd3d3;";
 
-    public void init(User user, Stage stage, AuthClientService auth,
+    public void init(Stage stage, AuthClientService auth,
                      int questionNumber, String region, String question,
                      List<String> choices, String correct, int pointsWorth, int questionId, String mapResource) {
 
-        this.user = user;
+        this.user = Session.getCurrentUser();
         this.stage = stage;
         this.auth  = auth;
         this.correctAnswer = correct;
@@ -81,7 +81,7 @@ public class MultipleChoiceQuestionController {
         Scene scene = new Scene(fxml.load(), 1280, 720);
 
         ProfileController controller = fxml.getController();
-        controller.init(user, stage, auth);
+        controller.init(stage, auth);
 
         stage.setScene(scene);
     }
@@ -185,7 +185,7 @@ public class MultipleChoiceQuestionController {
         FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("student-question-view.fxml"));
         Scene scene = new Scene(fxml.load(), 1280, 720);
         StudentQuestionViewController c = fxml.getController();
-        c.init(user, stage, auth);
+        c.init(stage, auth);
 
         if (current != null) {
             c.setQuiz(current.getQuizID(), current.getQuizName());

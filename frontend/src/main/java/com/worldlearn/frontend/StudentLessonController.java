@@ -37,8 +37,8 @@ public class StudentLessonController {
     @FXML private Button classesView;
     @FXML private VBox quizListContainer;
     private final com.worldlearn.frontend.services.ApiService api = new com.worldlearn.frontend.services.ApiService();
-    public void init(User user, Stage stage, AuthClientService auth) {
-        this.user = user;
+    public void init(Stage stage, AuthClientService auth) {
+        this.user = Session.getCurrentUser();
         this.stage = stage;
         this.auth  = auth;
 
@@ -79,7 +79,7 @@ public class StudentLessonController {
         FXMLLoader loader = new FXMLLoader(HelloApplication.class.getResource("student-question-view.fxml"));
         Scene scene = new Scene(loader.load(), 1280, 720);
         StudentQuestionViewController c = loader.getController();
-        c.init(user, stage, auth);
+        c.init(stage, auth);
         c.setQuiz(q.getQuizID(), q.getQuizName());
         stage.setScene(scene);
     }
@@ -90,7 +90,7 @@ public class StudentLessonController {
         Scene scene = new Scene(fxml.load(), 1280, 720);
 
         ProfileController controller = fxml.getController();
-        controller.init(user, stage, auth);
+        controller.init(stage, auth);
 
         stage.setScene(scene);
     }
@@ -99,7 +99,7 @@ public class StudentLessonController {
         FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("student-dashboard-view.fxml"));
         Scene scene = new Scene(fxml.load(),1280,720);
         StudentDashboardController c = fxml.getController();
-        c.init(user,stage,auth);
+        c.init(stage,auth);
         stage.setScene(scene);
     }
 
@@ -108,7 +108,7 @@ public class StudentLessonController {
         FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("profile-view.fxml"));
         Scene scene = new Scene(fxml.load(),1280,720);
         ProfileController c = fxml.getController();
-        c.init(user,stage,auth);
+        c.init(stage,auth);
         stage.setScene(scene);
     }
 
@@ -117,7 +117,7 @@ public class StudentLessonController {
         FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("student-dashboard-view.fxml"));
         Scene scene = new Scene(fxml.load(),1280,720);
         StudentDashboardController c = fxml.getController();
-        c.init(Session.instance.getCurrentUser(), stage, auth);
+        c.init(stage, auth);
         stage.setScene(scene);
     }
     @FXML
@@ -125,7 +125,7 @@ public class StudentLessonController {
         FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("student-lesson-view.fxml"));
         Scene scene = new Scene(fxml.load(), 1280, 720);
         StudentLessonController c = fxml.getController();
-        c.init(user, stage, auth);
+        c.init(stage, auth);
         stage.setScene(scene);
     }
     public void setLesson(int lessonId, String lessonName) {

@@ -35,8 +35,8 @@ public class StudentQuestionViewController {
     @FXML private Label lessonTitleLabel;
     @FXML private VBox questionListBox;
     @FXML private Label pointsBadge;
-    public void init(User user, Stage stage, AuthClientService auth) {
-        this.user = user;
+    public void init(Stage stage, AuthClientService auth) {
+        this.user = Session.getCurrentUser();
         this.stage = stage;
         this.auth  = auth;
     }
@@ -134,7 +134,7 @@ public class StudentQuestionViewController {
 
                                 MultipleChoiceQuestionController c = loader.getController();
                                 List<String> choices = (q.getOptions() == null) ? List.of() : Arrays.asList(q.getOptions());
-                                c.init(user, stage, auth,
+                                c.init(stage, auth,
                                         questionNumber,
                                         null,
                                         q.getPrompt(),
@@ -157,7 +157,7 @@ public class StudentQuestionViewController {
         FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("student-dashboard-view.fxml"));
         Scene scene = new Scene(fxml.load(),1280,720);
         StudentDashboardController c = fxml.getController();
-        c.init(user,stage,auth);
+        c.init(stage,auth);
         stage.setScene(scene);
     }
 
@@ -166,7 +166,7 @@ public class StudentQuestionViewController {
         FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("profile-view.fxml"));
         Scene scene = new Scene(fxml.load(),1280,720);
         ProfileController c = fxml.getController();
-        c.init(user,stage,auth);
+        c.init(stage,auth);
         stage.setScene(scene);
     }
     @FXML
@@ -174,7 +174,7 @@ public class StudentQuestionViewController {
         FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("student-lesson-view.fxml"));
         Scene scene = new Scene(fxml.load(), 1280, 720);
         StudentLessonController c = fxml.getController();
-        c.init(user, stage, auth);
+        c.init(stage, auth);
         stage.setScene(scene);
     }
 

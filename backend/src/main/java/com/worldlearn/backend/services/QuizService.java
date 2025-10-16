@@ -83,4 +83,12 @@ public class QuizService {
         return quizDAO.getAllQuizzes();
     }
 
+    public List<Quiz> getAllTeacherQuizzes(int userId) throws SQLException {
+        return quizDAO.getAllTeacherQuizzes(userId);
+    }
+
+    public List<Quiz> getPublicQuizzes() throws SQLException {
+        return quizDAO.getPublicQuizzes();
+    }
+
 }

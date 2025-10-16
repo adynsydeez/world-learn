@@ -149,12 +149,30 @@ public class QuizCreatorController {
         this.quiz = quiz;
     }
 
-    private void getTeacherQuestions() {
+    private void getQuestions() {
         apiService.getAllTeacherQuestionsAsync(teacherId)
-                .thenAccept(questions -> Platform.runLater(() -> {
-                    System.out.println("Fetched " + questions.size() + " questions");
-                    teacherQuestions.setAll(questions);
-                }))
+                .thenAccept(teacherQs -> {
+                    Platform.runLater(() -> {
+                        teacherQuestions.setAll(teacherQs);
+                    });
+
+                    apiService.getPublicQuestionsAsync()
+                            .thenAccept(publicQuestions -> {
+                                List<Question> filtered = publicQuestions.stream()
+                                        .filter(q -> teacherQs.stream()
+                                                .noneMatch(tq -> tq.getQuestionId() == q.getQuestionId()))
+                                        .toList();
+
+                                Platform.runLater(() -> {
+                                    searchQuestions.setAll(filtered);
+                                    System.out.println("Fetched " + filtered.size() + " public question(s).");
+                                });
+                            })
+                            .exceptionally(e -> {
+                                e.printStackTrace();
+                                return null;
+                            });
+                })
                 .exceptionally(e -> {
                     e.printStackTrace();
                     return null;
@@ -202,6 +220,7 @@ public class QuizCreatorController {
     }
 
     private void clearQuiz() {
+        nameField.clear();
         quizQuestions.clear();
     }
 
@@ -250,9 +269,11 @@ public class QuizCreatorController {
         System.out.println("Attempting Save Quiz.");
         if (checkInvalidName()) {
             showError("Please enter a valid quiz name");
+          return;
         } else if (checkInvalidQuiz()) {
             showError("ERROR: Quiz Must Contain Questions");
-        }
+            return;
+        } 
         quizName = nameField.getText().trim();
         try {
             List<Integer> questionIds = questions.stream()
@@ -278,6 +299,7 @@ public class QuizCreatorController {
             }
             showAlert(message.toString());
 
+            clearQuiz();
         } catch (IllegalArgumentException ex){
             showError(ex.getMessage());
         }

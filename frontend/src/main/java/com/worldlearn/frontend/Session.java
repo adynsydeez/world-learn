@@ -19,6 +19,10 @@ public class Session {
     }
 
     public static User getCurrentUser(){
+        if (currentUser == null) {
+            System.out.println("No User Logged In");
+            return null;
+        }
         return currentUser;
     }
 
@@ -67,10 +71,13 @@ public class Session {
         System.out.println("No Quiz Selected");
         return null;
     }
+
     public static Question getCurrentQuestion() {
         return currentQuestion;
     }
+
     public static void setCurrentQuestion(Question question) {
         currentQuestion = question;
     }
+
 }

@@ -1,4 +1,4 @@
-package com.worldlearn.frontend.test;
+package com.worldlearn.frontend.test.model;
 
 import com.worldlearn.backend.models.*;
 
@@ -6,7 +6,6 @@ import com.worldlearn.backend.models.*;
 
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 
@@ -26,10 +25,11 @@ public class QuestionTest {
         );
     }
 
+    /// ////CONSTRUCTOR
     @Nested
     @DisplayName("Constructor")
     class Constructor {
-        /// ////CONSTRUCTOR and GETTERS
+
         @Test
         void constructorStoresAllFields () {
             assertEquals(1, question.getQuestionId());
@@ -70,6 +70,12 @@ public class QuestionTest {
         void setQuestionIDnegative() {
             assertThrows(IllegalArgumentException.class, () -> question.setQuestionId(-1));
         }
+
+        @Test
+        void setQuestionIDzeroAccepted() {
+            question.setQuestionId(0);
+            assertEquals(0, question.getQuestionId());
+        }
     }
 
     @Nested
@@ -89,6 +95,12 @@ public class QuestionTest {
         @Test
         void setAnswerBlank() {
             assertThrows(IllegalArgumentException.class, () -> question.setAnswer(""));
+        }
+
+        @Test
+        void trimsAnswerWhitespace() {
+            question.setAnswer("   Canberra  ");
+            assertEquals("Canberra", question.getAnswer());
         }
     }
 
@@ -119,16 +131,90 @@ public class QuestionTest {
         void setPromptWhiteSpace() {
             assertThrows(IllegalArgumentException.class, () -> question.setPrompt(" "));
         }
-    }
 
-    @Nested
-    @DisplayName("PointsWorthValidation")
-    class PointsWorthTest {
-        //setPointsWorth
-        @ParameterizedTest
-        @ValueSource(ints = {-1,0})
-        void disallowsNegativeZero(int bad) {
-            assertThrows(IllegalArgumentException.class, () -> question.setPointsWorth(bad));
+        @Test
+        void trimsPrompt() {
+            question.setPrompt("   Capital of AU?   ");
+            assertEquals("Capital of AU?", question.getPrompt());
         }
+
+        @Nested
+        @DisplayName("PointsWorthValidation")
+        class PointsWorthTest {
+            //setPointsWorth
+            @ParameterizedTest
+            @ValueSource(ints = {-1, 0})
+            void disallowsNegativeZero(int bad) {
+                assertThrows(IllegalArgumentException.class, () -> question.setPointsWorth(bad));
+            }
+
+            @Test
+            void positiveAccepted() {
+                question.setPointsWorth(3);
+                assertEquals(3, question.getPointsWorth());
+            }
+
+        }
+
+        @Nested
+        @DisplayName("TypeValidation")
+        class TypeTest {
+            @Test
+            void setTypeNull_throws() {
+                assertThrows(IllegalArgumentException.class, () -> question.setType(null));
+            }
+        }
+
+        @Nested
+        @DisplayName("VisibilityValidation")
+        class VisibilityTest {
+            @Test
+            void setVisibilityNull_throws() {
+                assertThrows(IllegalArgumentException.class, () -> question.setVisibility(null));
+            }
+        }
+
+        @Nested
+        @DisplayName("QuestionName")
+        class QuestionNameTest {
+            @Test
+            void setAndGetQuestionName() {
+                question.setQuestionName("Geo Q1");
+                assertEquals("Geo Q1", question.getQuestionName());
+            }
+        }
+
+        @Nested
+        @DisplayName("Enums")
+        class EnumsTest {
+
+            @Test
+            void questionTypeFromDbValueMixedCase() {
+                assertEquals(Question.QuestionType.mcq, Question.QuestionType.fromDbValue("MCQ"));
+                assertEquals(Question.QuestionType.written, Question.QuestionType.fromDbValue("Written"));
+                assertEquals(Question.QuestionType.map, Question.QuestionType.fromDbValue("map"));
+            }
+
+            @Test
+            void questionTypeToJsonAndGetDbValueLowercase() {
+                assertEquals("mcq", Question.QuestionType.mcq.toJson());
+                assertEquals("written", Question.QuestionType.written.getDbValue());
+            }
+
+            @Test
+            void visibilityFromDbValueSuccessAndFailure() {
+                assertEquals(Question.Visibility.PUBLIC, Question.Visibility.fromDbValue("PUBLIC"));
+                assertEquals(Question.Visibility.PRIVATE, Question.Visibility.fromDbValue("private"));
+                assertThrows(IllegalArgumentException.class, () -> Question.Visibility.fromDbValue("hidden"));
+            }
+
+            @Test
+            void visibilityToJSONLowercase() {
+                assertEquals("public", Question.Visibility.PUBLIC.toJSON());
+                assertEquals("private", Question.Visibility.PRIVATE.toJSON());
+            }
+        }
+
+
     }
 }

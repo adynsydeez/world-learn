@@ -102,7 +102,7 @@ public class AuthController {
 
                         Object controller = loader.getController();
                         if (controller instanceof StudentDashboardController studentController) {
-                            studentController.init(user, stage, auth);
+                            studentController.init(stage, auth);
                         } else if (controller instanceof TeacherDashboardController teacherController) {
                             teacherController.init(stage, auth);
                         }
