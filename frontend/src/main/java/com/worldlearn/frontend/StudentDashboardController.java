@@ -112,27 +112,32 @@ public class StudentDashboardController {
                     classBox.getChildren().clear();
 
                     ToggleGroup group = new ToggleGroup();
-                    int i = 0;
                     for (WlClass wlClass : classes) {
                         ToggleButton btn = new ToggleButton(wlClass.getClassName());
                         btn.setToggleGroup(group);
-
-
                         btn.getStyleClass().addAll("chip-btn", "class-tab");
 
                         btn.setOnAction(e -> loadLessonsForClass(wlClass.getId()));
                         classBox.getChildren().add(btn);
-                        i++;
                     }
 
-                    Button joinBtn = new Button("Join Class");
 
+                    Button joinBtn = new Button("Join Class");
                     joinBtn.getStyleClass().addAll("pill", "success");
                     joinBtn.setOnAction(e -> onJoinButtonClick());
                     classBox.getChildren().add(joinBtn);
+
+
+                    if (!classes.isEmpty() && !classBox.getChildren().isEmpty()) {
+                        ToggleButton firstBtn = (ToggleButton) classBox.getChildren().get(0);
+                        firstBtn.setSelected(true);
+                        // trigger its lessons to load
+                        loadLessonsForClass(classes.get(0).getId());
+                    }
                 }))
                 .exceptionally(ex -> { ex.printStackTrace(); return null; });
     }
+
 
 
 

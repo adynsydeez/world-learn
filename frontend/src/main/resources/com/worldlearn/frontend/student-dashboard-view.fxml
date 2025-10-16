@@ -70,7 +70,7 @@
             <HBox spacing="10" alignment="CENTER_LEFT">
                 <Label text="Your Classes" styleClass="section-title"/>
                 <Pane HBox.hgrow="ALWAYS"/>
-                <Button text="..." styleClass="icon-btn"/>
+
             </HBox>
 
             <!-- Class tabs + Join -->
