@@ -1,5 +1,6 @@
 package com.worldlearn.frontend;
 
+import com.worldlearn.backend.dto.CreateLessonRequest;
 import com.worldlearn.backend.models.Quiz;
 import com.worldlearn.backend.models.Teacher;
 import com.worldlearn.backend.models.User;
@@ -30,6 +31,7 @@ public class QuizCreatorController {
     @FXML private Button loadBtn;
     @FXML private TextField searchField;
     @FXML private TextField nameField;
+    @FXML private Label creatorTitle;
     private String quizName;
 
     private ObservableList<Question> teacherQuestions = FXCollections.observableArrayList();
@@ -40,6 +42,8 @@ public class QuizCreatorController {
 
     int teacherId = Session.getCurrentUser().getId();
     private final ApiService apiService = new ApiService();
+
+    Quiz quiz;
 
     @FXML
     public void initialize() {
@@ -125,13 +129,23 @@ public class QuizCreatorController {
             clearQuiz();
         });
 
+        if(this.quiz != null) {
+            getQuizQuestions();
+            nameField.setText(this.quiz.getQuizName());
+            saveBtn.setOnAction(e -> editQuiz(quizQuestions));
+            creatorTitle.setText("Edit Quiz");
+        }
+
 //        loadBtn.setOnAction(e -> {
 //            getTeacherQuestions();
 //            searchQuestions();
 //        });
 
         getTeacherQuestions();
-        getTeacherQuestions();
+    }
+
+    public void setQuiz(Quiz quiz) {
+        this.quiz = quiz;
     }
 
     private void getTeacherQuestions() {
@@ -139,6 +153,18 @@ public class QuizCreatorController {
                 .thenAccept(questions -> Platform.runLater(() -> {
                     System.out.println("Fetched " + questions.size() + " questions");
                     teacherQuestions.setAll(questions);
+                }))
+                .exceptionally(e -> {
+                    e.printStackTrace();
+                    return null;
+                });
+    }
+
+    private void getQuizQuestions() {
+        apiService.getQuizQuestionsAsync(this.quiz.getQuizID())
+                .thenAccept(questions -> Platform.runLater(() -> {
+                    System.out.println("Fetched " + questions.size() + " questions");
+                    quizQuestions.setAll(questions);
                 }))
                 .exceptionally(e -> {
                     e.printStackTrace();
@@ -255,6 +281,58 @@ public class QuizCreatorController {
             showError(ex.getMessage());
         }
     }
+
+    private void editQuiz(List<Question> questions) {
+        System.out.println("Attempting Edit Quiz.");
+
+        if (checkInvalidName()) {
+            showError("Please enter a valid Quiz name");
+            return;
+        }
+        if (checkInvalidQuiz()) {
+            showError("ERROR: Quiz Must Contain Questions");
+            return;
+        }
+
+        quizName = nameField.getText().trim();
+        try {
+            List<Integer> questionIds = questions.stream()
+                    .map(Question::getQuestionId)
+                    .toList();
+
+            CreateQuizRequest quizRequest = new CreateQuizRequest(
+                    this.quiz.getQuizID(),
+                    quizName,
+                    getVisibility(),
+                    questionIds
+            );
+
+            apiService.updateQuizAsync(quizRequest)
+                    .thenAccept(l -> {
+                        System.out.println("Quiz saved: " + quizName);
+
+                        // Only show success alert if the update actually succeeded
+                        Platform.runLater(() -> {
+                            StringBuilder message = new StringBuilder("Quiz Updated! \n \nName: " + quizRequest.getQuizName() + "\nvisibility: " + quizRequest.getVisibility().toString() + "\n" + "Questions:\n");
+                            for(Question question : questions) {
+                                message.append(question.getQuestionName()).append("\n");
+                            }
+                            showAlert(message.toString());
+                        });
+                    })
+                    .exceptionally(e -> {
+                        Platform.runLater(() -> {
+                            showError("Failed to update Quiz: " + e.getMessage());
+                        });
+                        e.printStackTrace();
+                        return null;
+                    });
+        } catch (IllegalArgumentException ex) {
+            showError(ex.getMessage());
+        }
+    }
+
+
 
     private void closeDialog() {
         Stage stage = (Stage) saveBtn.getScene().getWindow();

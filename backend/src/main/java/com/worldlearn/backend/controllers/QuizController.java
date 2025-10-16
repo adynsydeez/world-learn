@@ -1,5 +1,7 @@
 package com.worldlearn.backend.controllers;
 
+import com.worldlearn.backend.dto.CreateLessonRequest;
+import com.worldlearn.backend.models.Lesson;
 import com.worldlearn.backend.models.Question;
 import com.worldlearn.backend.models.Quiz;
 import com.worldlearn.backend.services.QuizService;
@@ -19,9 +21,9 @@ public class QuizController {
     public void getUserById(Context ctx) {
         try {
             int id = Integer.parseInt(ctx.pathParam("id"));
-            Optional<Quiz> quiz = quizService.getQuizById(id);
+            Quiz quiz = quizService.getQuizById(id);
 
-            if (quiz.isPresent()) {
+            if (quiz != null) {
                 ctx.json(quiz);
             } else {
                 ctx.status(404).result("Quiz not found");
@@ -48,6 +50,32 @@ public class QuizController {
         } catch (IllegalArgumentException e) {
             ctx.status(400).result("Validation error: " + e.getMessage());
         } catch (Exception e) {
+            ctx.status(500).result("Internal server error: " + e.getMessage());
+        }
+    }
+
+    public void updateQuiz(Context ctx) {
+        try {
+            int teacherId = Integer.parseInt(ctx.queryParam("teacherId"));
+            CreateQuizRequest req = ctx.bodyAsClass(CreateQuizRequest.class);
+
+            // Validate that lessonId is provided
+            if (req.getQuizId() <= 0) {
+                ctx.status(400).result("Quiz ID is required for update");
+                return;
+            }
+
+            Quiz quiz = new Quiz(req.getQuizId(), req.getQuizName(), req.getVisibility());
+            Quiz updatedQuiz = quizService.updateQuiz(quiz, teacherId, req.getQuestionIds());
+
+            ctx.status(200).json(updatedQuiz);
+
+        } catch (SecurityException e) {
+            ctx.status(403).result("Forbidden: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            ctx.status(400).result("Validation error: " + e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
             ctx.status(500).result("Internal server error: " + e.getMessage());
         }
     }

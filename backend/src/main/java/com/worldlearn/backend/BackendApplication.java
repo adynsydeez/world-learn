@@ -90,10 +90,9 @@ public class BackendApplication {
         // Quiz API endpoints
 
         app.post("/api/quizzes", quizController::createQuiz);
+        app.put("/api/quizzes/update", quizController::updateQuiz);
         app.get("/api/quizzes", quizController::getAllQuizzes);
         app.get("/api/quizzes/{id}/questions", quizController::getQuizQuestions);
-
-
 
 
         // Lesson API endpoints

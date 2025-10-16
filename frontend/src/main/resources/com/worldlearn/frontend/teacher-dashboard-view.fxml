@@ -90,7 +90,7 @@
                 </HBox>
                 <TextField promptText="Search Quizzes"/>
                 <ScrollPane fitToWidth="true" prefHeight="500">
-                    <VBox spacing="10">
+                    <VBox fx:id="quizList" spacing="10">
                         <Label text="Quiz 101 - Code: HJW8NH" style="-fx-background-color: white; -fx-padding: 10; -fx-border-color: #ccc;"/>
                         <Label text="Quiz 102 - Code: HJW8NH" style="-fx-background-color: white; -fx-padding: 10; -fx-border-color: #ccc;"/>
                         <Label text="Quiz 103 - Code: HJW8NH" style="-fx-background-color: white; -fx-padding: 10; -fx-border-color: #ccc;"/>
