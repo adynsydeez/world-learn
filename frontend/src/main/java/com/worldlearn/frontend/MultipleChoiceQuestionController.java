@@ -63,6 +63,8 @@ public class MultipleChoiceQuestionController {
         cBtn.setText(choices.get(2));
         dBtn.setText(choices.get(3));
 
+        nextBtn.setVisible(questionNumber != Session.getQuestionsList().size());
+
         // Save each button's BASE style so we can revert easily
         for (Toggle t : answersGroup.getToggles()) {
             ToggleButton b = (ToggleButton) t;
