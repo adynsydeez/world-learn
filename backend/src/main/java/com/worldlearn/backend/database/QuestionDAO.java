@@ -208,9 +208,14 @@ public class QuestionDAO {
     public Question updateQuestion(Question question) throws SQLException {
         String sql = """
             UPDATE questions
-            SET question_name = ?, answer = ?, options = ?, prompt = ?,
-                type = ?::question_type, points_worth = ?, visibility = ?::visibility_type
-            WHERE question_id = ?
+            SET question_name = ?, 
+                answer = ?, 
+                options = ?, 
+                prompt = ?,
+                type = ?::question_type, 
+                points_worth = ?, 
+                visibility = ?::visibility_type
+            WHERE question_id = ?;
         """;
 
         try (Connection conn = database.getConnection();
@@ -221,9 +226,9 @@ public class QuestionDAO {
             Array optionsArray = conn.createArrayOf("text", question.getOptions());
             stmt.setArray(3, optionsArray);
             stmt.setString(4, question.getPrompt());
-            stmt.setString(5, question.getType().getDbValue());
+            stmt.setString(5, question.getType().toString());
             stmt.setInt(6, question.getPointsWorth());
-            stmt.setString(7, question.getVisibility().getDbValue());
+            stmt.setString(7, question.getVisibility().toString().toLowerCase());
             stmt.setInt(8, question.getQuestionId());
 
             int rowsAffected = stmt.executeUpdate();

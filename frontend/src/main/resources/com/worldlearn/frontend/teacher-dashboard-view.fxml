@@ -107,7 +107,7 @@
                 </HBox>
                 <TextField promptText="Search Questions"/>
                 <ScrollPane fitToWidth="true" prefHeight="500">
-                    <VBox spacing="10">
+                    <VBox fx:id="questionList" spacing="10">
                         <Label text="Question 1 - Multiple Choice" style="-fx-background-color: white; -fx-padding: 10; -fx-border-color: #ccc;"/>
                         <Label text="Question 2 - Short Answer" style="-fx-background-color: white; -fx-padding: 10; -fx-border-color: #ccc;"/>
                         <Label text="Question 3 - True/False" style="-fx-background-color: white; -fx-padding: 10; -fx-border-color: #ccc;"/>

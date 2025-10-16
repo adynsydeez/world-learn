@@ -81,6 +81,7 @@ public class QuestionController {
 
     public void updateQuestion(Context ctx) {
         try {
+            int teacherId = Integer.parseInt(ctx.pathParam("id"));
             Question question = ctx.bodyAsClass(Question.class);
             Question updatedQuestion = questionService.updateQuestion(question);
 

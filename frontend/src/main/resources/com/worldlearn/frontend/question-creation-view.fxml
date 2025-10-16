@@ -9,7 +9,7 @@
       spacing="20">
 
     <HBox spacing="10" alignment="CENTER_LEFT">
-        <Label text="Create A Question" style="-fx-font-size:22; -fx-font-weight:bold;"/>
+        <Label fx:id="creatorTitle" text="Create A Question" style="-fx-font-size:22; -fx-font-weight:bold;"/>
         <Pane HBox.hgrow="ALWAYS"/>
     </HBox>
 

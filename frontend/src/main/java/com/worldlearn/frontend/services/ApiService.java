@@ -569,13 +569,13 @@ public class ApiService {
     }
 
     // Update question
-    public CompletableFuture<Question> updateQuestionAsync(int id, Question question) {
+    public CompletableFuture<Question> updateQuestionAsync(int teacherId, Question question) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 String jsonBody = objectMapper.writeValueAsString(question);
 
                 HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(baseUrl + "/questions/" + id))
+                        .uri(URI.create(baseUrl + "/questions/" + teacherId))
                         .header("Content-Type", "application/json")
                         .PUT(HttpRequest.BodyPublishers.ofString(jsonBody))
                         .timeout(Duration.ofSeconds(30))

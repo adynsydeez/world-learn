@@ -81,6 +81,7 @@ public class BackendApplication {
 
         // Question API endpoints
         app.post("/api/questions", questionController::createQuestion);
+        app.put("/api/questions/{id}", questionController::updateQuestion);
         app.get("/api/questions", questionController::getAllQuestions);
         app.get("/api/questions/public", questionController::getPublicQuestions);
         app.get("/api/questions/{id}", questionController::getQuestionById);

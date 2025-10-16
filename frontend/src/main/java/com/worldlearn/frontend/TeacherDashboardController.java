@@ -1,8 +1,5 @@
 package com.worldlearn.frontend;
-import com.worldlearn.backend.models.Lesson;
-import com.worldlearn.backend.models.Quiz;
-import com.worldlearn.backend.models.User;
-import com.worldlearn.backend.models.WlClass;
+import com.worldlearn.backend.models.*;
 import com.worldlearn.frontend.services.ApiService;
 import com.worldlearn.frontend.services.AuthClientService;
 import javafx.application.Platform;
@@ -41,6 +38,7 @@ public class TeacherDashboardController {
         loadClasses(this.user);
         loadLessons(this.user.getId());
         loadQuizzes();
+        loadQuestions(this.user.getId());
     }
 
     @FXML private Label lblClasses;
@@ -55,6 +53,7 @@ public class TeacherDashboardController {
     @FXML private VBox classList;
     @FXML private VBox lessonList;
     @FXML private VBox quizList;
+    @FXML private VBox questionList;
 
     @FXML
     private void initialize() {
@@ -109,6 +108,23 @@ public class TeacherDashboardController {
                 });
     }
 
+    private void loadQuestions(int teacherId) {
+        api.getAllTeacherQuestionsAsync(teacherId)
+                .thenAccept(questions -> Platform.runLater(() -> {
+                    questionList.getChildren().clear();
+                    for (Question question : questions) {
+                        Button btn = new Button(question.getQuestionName());
+                        btn.setStyle("-fx-background-color: white; -fx-padding: 10; -fx-border-color: #ccc;");
+                        btn.setOnAction(e -> editQuestion(question));
+                        questionList.getChildren().add(btn);
+                    }
+                }))
+                .exceptionally(e -> {
+                    e.printStackTrace();
+                    return null;
+                });
+    }
+
     private void editClass(WlClass wlClass) {
         openPopup("class-creation-view.fxml", "Edit Class", wlClass);
     }
@@ -117,6 +133,9 @@ public class TeacherDashboardController {
     }
     private void editQuiz(Quiz quiz) {
         openPopup("quiz-creation-view.fxml", "Edit Quiz", quiz);
+    }
+    private void editQuestion(Question question) {
+        openPopup("question-creation-view.fxml", "Edit Question", question);
     }
 
 
@@ -223,6 +242,34 @@ public class TeacherDashboardController {
             popupStage.initOwner(parentStage);
 
             popupStage.setOnHidden(e -> loadQuizzes());
+
+            popupStage.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void openPopup(String fxmlPath, String title, Question question) {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource(fxmlPath));
+            fxmlLoader.setControllerFactory(param -> {
+                QuestionCreatorController controller = new QuestionCreatorController();
+                controller.setQuestion(question);
+                return controller;
+            });
+
+            Scene scene = new Scene(fxmlLoader.load(), 800, 600);
+
+            Stage popupStage = new Stage();
+            popupStage.setTitle(title);
+            popupStage.setScene(scene);
+            popupStage.initModality(Modality.APPLICATION_MODAL);
+
+            Stage parentStage = (Stage) createQuestionBtn.getScene().getWindow();
+            popupStage.initOwner(parentStage);
+
+            popupStage.setOnHidden(e -> loadQuestions(this.user.getId()));
 
             popupStage.showAndWait();
         } catch (IOException e) {

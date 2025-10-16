@@ -132,6 +132,7 @@ public class QuizCreatorController {
         if(this.quiz != null) {
             getQuizQuestions();
             nameField.setText(this.quiz.getQuizName());
+            visibilityComboBox.setValue(this.quiz.getVisibility());
             saveBtn.setOnAction(e -> editQuiz(quizQuestions));
             creatorTitle.setText("Edit Quiz");
         }

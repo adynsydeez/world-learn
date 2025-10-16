@@ -32,7 +32,6 @@ public class LessonCreatorController {
     private ObservableList<Quiz> teacherQuizzes = FXCollections.observableArrayList();
     private ObservableList<Quiz> lessonQuizzes = FXCollections.observableArrayList();
 
-    int teacherId = Session.getCurrentUser().getId();
     private final ApiService apiService = new ApiService();
 
     private Lesson lesson;
@@ -87,6 +86,7 @@ public class LessonCreatorController {
         if(this.lesson != null) {
             getLessonQuizzes();
             nameField.setText(this.lesson.getLessonName());
+            visibilityComboBox.setValue(this.lesson.getVisibility());
             saveBtn.setOnAction(e -> editLesson(lessonQuizzes));
             creatorTitle.setText("Edit Lesson");
         }
