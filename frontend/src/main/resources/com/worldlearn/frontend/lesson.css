@@ -6,13 +6,13 @@
 }
 
 /* Sidebar */
+
 .sidebar {
   -fx-background-color: rgba(12, 28, 68, 0.85);
   -fx-background-radius: 16;
   -fx-padding: 14 10;
   -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 24, 0.25, 0, 8);
 }
-.logo-coin { -fx-background-color: rgba(66,90,160,0.35); -fx-background-radius: 9999; -fx-padding: 8; }
 .side-pill {
   -fx-background-color: #f0f4ff;
   -fx-text-fill: #0f1b3a;

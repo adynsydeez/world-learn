@@ -112,27 +112,28 @@ public class StudentDashboardController {
                     classBox.getChildren().clear();
 
                     ToggleGroup group = new ToggleGroup();
+                    int i = 0;
                     for (WlClass wlClass : classes) {
                         ToggleButton btn = new ToggleButton(wlClass.getClassName());
                         btn.setToggleGroup(group);
 
 
-                        btn.setOnAction(e -> {
-                            Integer classId =
+                        btn.getStyleClass().addAll("chip-btn", "class-tab");
 
-                                    wlClass.getId();
-                            loadLessonsForClass(classId);
-                        });
-
+                        btn.setOnAction(e -> loadLessonsForClass(wlClass.getId()));
                         classBox.getChildren().add(btn);
+                        i++;
                     }
 
                     Button joinBtn = new Button("Join Class");
+
+                    joinBtn.getStyleClass().addAll("pill", "success");
                     joinBtn.setOnAction(e -> onJoinButtonClick());
                     classBox.getChildren().add(joinBtn);
                 }))
                 .exceptionally(ex -> { ex.printStackTrace(); return null; });
     }
+
 
 
     @FXML
@@ -208,27 +209,28 @@ public class StudentDashboardController {
 
     private VBox buildLessonCard(Lesson l) {
         VBox card = new VBox(6);
-        card.setStyle("-fx-padding:10; -fx-background-color:#f3edf9; -fx-background-radius:12; -fx-pref-width:180;");
-        card.getChildren().addAll(
-                new Label(String.valueOf(l.getLessonId())) {{
-                    setStyle("-fx-font-size:60;");
-                }},
-                new Label(l.getLessonName()) {{
-                    setStyle("-fx-font-weight:bold;");
-                }},
-                new Label("Updated recently") {{
-                    setStyle("-fx-text-fill:#666; -fx-font-size:11;");
-                }}
-        );
+        card.getStyleClass().addAll("lesson-card", pickColor(l));
 
+        Label over = new Label("Lesson");
+        over.getStyleClass().add("lesson-overline");
+
+        Label title = new Label(l.getLessonName());
+        title.getStyleClass().add("lesson-title");
+
+        card.getChildren().addAll(over, title);
         card.setOnMouseClicked(ev -> {
-            try {
-                openLesson(l);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            try { openLesson(l); } catch (IOException e) { throw new RuntimeException(e); }
         });
         return card;
+    }
+
+    private String pickColor(Lesson l) {
+        int mod = Math.abs(l.getLessonId()) % 3;
+        return switch (mod) {
+            case 0 -> "card-purple";
+            case 1 -> "card-amber";
+            default -> "card-green";
+        };
     }
 
 
@@ -240,7 +242,7 @@ public class StudentDashboardController {
         Scene scene = new Scene(fxml.load(), 1280, 720);
         StudentLessonController c = fxml.getController();
         c.init(stage, auth);
-        c.setLesson(l.getLessonId(), l.getLessonName());  // triggers load for this lesson
+        c.setLesson(l.getLessonId(), l.getLessonName());
         stage.setScene(scene);
     }
 }

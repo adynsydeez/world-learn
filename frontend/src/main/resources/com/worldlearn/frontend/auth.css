@@ -7,13 +7,7 @@
 }
 
 
-.world-wrap {
-    -fx-background-color: transparent;
-    -fx-background-radius: 9999;
-    -fx-padding: 16;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.45), 30, 0.2, 0, 10);
-    -fx-alignment: center;
-}
+
 
 
 

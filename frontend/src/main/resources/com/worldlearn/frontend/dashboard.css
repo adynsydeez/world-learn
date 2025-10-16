@@ -1,31 +1,16 @@
-/* ===== Background ===== */
+/* ===== Background (keep yours) ===== */
 .star-bg {
   -fx-background-color: #0b163d;
   -fx-background-image: url("img/stars.png");
   -fx-background-repeat: repeat;
 }
 
-/* ===== Sidebar ===== */
+/* ===== Sidebar (keep yours) ===== */
 .sidebar {
-  -fx-background-color: rgba(12, 28, 68, 0.85);
+  -fx-background-color: rgba(12,28,68,0.85);
   -fx-background-radius: 16;
   -fx-padding: 14 10;
   -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 24, 0.25, 0, 8);
-}
-
-.logo-coin {
-  -fx-background-color: rgba(66, 90, 160, 0.35);
-  -fx-background-radius: 9999;
-  -fx-padding: 8;
-}
-
-.side-item { -fx-cursor: hand; }
-.side-icon { -fx-font-size: 28px; -fx-text-fill: #e8f0ff; }
-.side-label {
-  -fx-font-size: 10px;
-  -fx-text-fill: #c7d3ff;
-  -fx-font-weight: bold;
-  -fx-letter-spacing: 0.5px;
 }
 
 .logout-btn {
@@ -38,74 +23,84 @@
 
 /* ===== Content Card ===== */
 .content-card {
-  -fx-background-color: #ffffff;
+  -fx-background-color: white;
   -fx-background-radius: 18;
   -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.28), 24, 0.25, 0, 10);
 }
+.page-title   { -fx-font-size: 32px; -fx-font-weight: 800; -fx-text-fill: #152042; }
+.section-title{ -fx-font-size: 22px; -fx-font-weight: 800; -fx-text-fill: #3a4668; }
 
-.page-title {
-  -fx-font-size: 32px;
-  -fx-font-weight: 800;
-  -fx-text-fill: #152042;
-}
-
-.section-title {
-  -fx-font-size: 18px;
+.icon-btn {
+  -fx-background-color: #eef2ff;
+  -fx-text-fill: #1a2452;
+  -fx-background-radius: 10;
+  -fx-padding: 6 10;
   -fx-font-weight: 700;
-  -fx-text-fill: #3a4668;
 }
 
-/* ===== Activity chips ===== */
-.activity-chip {
-  -fx-background-radius: 14;
-  -fx-padding: 14;
-  -fx-min-width: 180;
-  -fx-max-width: 180;
-  -fx-min-height: 84;
-  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 8, 0.2, 0, 2);
-}
-.chip-title { -fx-text-fill: white; -fx-font-weight: 800; -fx-font-size: 16; }
-.chip-progress { -fx-padding: 6 0 0 0; }
-
-.chip-green  { -fx-background-color: #53c65c; }
-.chip-red    { -fx-background-color: #d9534f; }
-.chip-purple { -fx-background-color: #6d5db8; }
-
-/* ===== Class chip buttons ===== */
+/* ===== Class chips (ToggleButtons) ===== */
 .chip-btn {
-  -fx-background-radius: 20;
-  -fx-background-color: #ffffff;
+  -fx-background-radius: 9999;
+  -fx-background-color: white;
   -fx-border-color: #d7ddea;
-  -fx-border-radius: 20;
-  -fx-padding: 6 12;
+  -fx-border-radius: 9999;
+  -fx-padding: 6 14;
+  -fx-text-fill: #0f1b3a;
+  -fx-font-weight: 700;
 }
-.chip-btn:hover { -fx-background-color: #eff3ff; }
-.chip-selected {
+.chip-btn:hover { -fx-background-color: #f3f6ff; }
+
+/* Selected state for ToggleButton */
+.class-tab:selected {
   -fx-background-color: #0f1b3a;
   -fx-text-fill: white;
-  -fx-font-weight: bold;
+  -fx-border-color: transparent;
 }
+
+/* ===== Join Class pill ===== */
 .pill.success {
   -fx-background-color: #5fb266;
   -fx-text-fill: white;
-  -fx-font-weight: bold;
-  -fx-background-radius: 20;
-  -fx-padding: 6 12;
+  -fx-font-weight: 800;
+  -fx-background-radius: 9999;
+  -fx-padding: 8 14;
 }
 
 /* ===== Lesson cards ===== */
 .lesson-card {
   -fx-min-width: 220;
-  -fx-min-height: 130;
-  -fx-padding: 14;
-  -fx-background-radius: 14;
+  -fx-min-height: 128;
+  -fx-padding: 16;
+  -fx-background-radius: 16;
   -fx-cursor: hand;
-  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 8, 0.2, 0, 2);
+  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.10), 10, 0.25, 0, 2);
 }
+.card-purple { -fx-background-color: #7c5ed6; } /* Lesson One */
+.card-amber  { -fx-background-color: #e6a522; } /* Lesson Two */
+.card-green  { -fx-background-color: #50c35d; } /* Lesson Three */
+
 .lesson-overline { -fx-text-fill: rgba(255,255,255,0.95); -fx-font-size: 12; -fx-font-weight: 700; }
 .lesson-title    { -fx-text-fill: white; -fx-font-size: 22; -fx-font-weight: 900; }
-.lesson-progress { -fx-padding: 6 0 0 0; }
 
-.card-purple { -fx-background-color: #7c5ed6; }
-.card-amber  { -fx-background-color: #e6a522; }
-.card-green  { -fx-background-color: #50c35d; }
+/* Progress pill (rail + fill) */
+.progress-rail {
+  -fx-background-color: rgba(0,0,0,0.18);
+  -fx-background-radius: 12;
+  -fx-pref-height: 14;
+}
+.progress-fill {
+  -fx-background-radius: 12;
+  -fx-pref-height: 14;
+
+  /* subtle diagonal sheen — single pass gradient (keeps assets optional) */
+  -fx-background-color:
+      linear-gradient(from 0% 0% to 100% 0%, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.0) 100%),
+      rgba(255,255,255,0.85);
+  -fx-opacity: 0.95;
+}
+
+/* Give the fill a slight rounded cap on the right when not full */
+.progress-fill { -fx-background-insets: 0; }
+
+/* spacing helper */
+.mt-8 { -fx-padding: 8 0 0 0; }

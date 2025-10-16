@@ -24,7 +24,7 @@
         <VBox spacing="16" alignment="TOP_CENTER" styleClass="sidebar" prefWidth="96" minWidth="96" maxWidth="96">
             <!-- Logo coin -->
             <StackPane styleClass="logo-coin">
-                <ImageView fx:id="logoImage" fitWidth="64" fitHeight="64" preserveRatio="true">
+                <ImageView fx:id="logoImage" fitWidth="80" fitHeight="80" preserveRatio="true">
                     <image>
                         <Image url="@img/logosm.png"/>
                     </image>
@@ -47,19 +47,7 @@
                 </graphic>
             </Button>
 
-            <!-- SETTINGS -->
-            <Button text="SETTINGS" contentDisplay="TOP" graphicTextGap="8" prefWidth="96"
-                    style="-fx-background-color: transparent;
-                   -fx-text-fill: #e8f0ff; -fx-font-size: 12px; -fx-font-weight: 700;
-                   -fx-padding: 12 6 12 6; -fx-background-radius:16;">
-                <graphic>
-                    <Label text="&#xE713;"
-                           style="-fx-font-family:'Segoe MDL2 Assets';
-                          -fx-font-size:26;
-                          -fx-text-fill:#e8f0ff;
-                          -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.35), 8, 0.25, 0, 0);" />
-                </graphic>
-            </Button>
+
 
 
 
