@@ -115,7 +115,7 @@ public class LessonCreatorController {
 
         //loadBtn.setOnAction(e -> getTeacherQuizzes());
 
-        getTeacherQuizzes();
+        getQuizzes();
 
         if(this.lesson != null) {
             getLessonQuizzes();
@@ -131,18 +131,6 @@ public class LessonCreatorController {
 
     public void setLesson(Lesson lesson) {
         this.lesson = lesson;
-
-        saveBtn.setOnAction(e -> {
-            saveLesson(lessonQuizzes);
-        });
-
-        clearBtn.setOnAction(e -> {
-            clearLesson();
-        });
-
-        loadBtn.setOnAction(e -> {
-            getQuizzes();
-        });
     }
 
     private void getQuizzes() {
@@ -278,10 +266,7 @@ public class LessonCreatorController {
         if (checkInvalidLesson()) {
             showError("ERROR: Lesson Must Contain Quizzes");
             return;
-        } catch (IllegalArgumentException ex){
-            showAlert(ex.getMessage());
         }
-
         lessonName = nameField.getText().trim();
         try {
             List<Integer> quizIds = quizzes.stream()

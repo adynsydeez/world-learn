@@ -102,14 +102,4 @@ public class LessonController {
             ctx.status(500).result("Failed to get quizzes: " + e.getMessage());
         }
     }
-
-    public void getAllTeacherLessons(Context ctx) {
-        try {
-            int teacherId = Integer.parseInt(ctx.pathParam("id"));
-            List<Lesson> lessons = lessonService.getAllTeacherLessons(teacherId);
-            ctx.json(lessons);
-        } catch (Exception e) {
-            ctx.status(500).result("Failed to get lessons: " + e.getMessage());
-        }
-    }
 }

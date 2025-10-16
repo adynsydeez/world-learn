@@ -452,35 +452,6 @@ public class ApiService {
         });
     }
 
-    public CompletableFuture<List<Lesson>> getAllTeacherLessonsAsync(int teacherId) {
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                // Make sure the URL matches the backend route
-                HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(baseUrl + "/users/" + teacherId + "/lessons"))
-                        .header("Accept", "application/json")
-                        .GET()
-                        .timeout(Duration.ofSeconds(30))
-                        .build();
-
-                HttpResponse<String> response = httpClient.send(request,
-                        HttpResponse.BodyHandlers.ofString());
-
-
-                if (response.statusCode() == 200) {
-                    Lesson[] lessons = objectMapper.readValue(response.body(), Lesson[].class);
-                    return List.of(lessons);
-                } else {
-                    throw new RuntimeException("Failed to get lessons: " + response.statusCode() +
-                            " - " + response.body());
-                }
-            } catch (Exception e) {
-                throw new RuntimeException("Error getting lessons: " + e.getMessage(), e);
-            }
-        });
-    }
-
-
     // ===== QUESTION OPERATIONS =====
     // Create question
     public CompletableFuture<Question> createQuestionAsync(Question question) {

@@ -39,6 +39,7 @@ public class QuestionController {
             int teacherId = Integer.parseInt(ctx.queryParam("teacherId"));
             String body = ctx.body();
             Question question = ctx.bodyAsClass(Question.class);
+            question.validate();
             System.out.println("Raw JSON received: " + body);
             System.out.println("Deserialized: answer=" + question.getAnswer() + ", options=" + Arrays.toString(question.getOptions()));
             Question createdQuestion = questionService.createQuestion(question, teacherId);

@@ -128,8 +128,6 @@ public class QuizDAO {
         return quizzes;
     }
 
-*/
-
     public Quiz getQuizByID(int id) throws SQLException {
         String sql = "SELECT quiz_id, quiz_name, visibility FROM quizzes WHERE quiz_id = ?";
 

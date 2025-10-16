@@ -119,12 +119,6 @@ public class ClassCreatorController {
         });
     }
 
-    @FXML
-    protected void handleAddStudent() {
-        String email = studentEmailField.getText();
-        if (email != null && !email.isBlank()) {
-            studentList.getItems().add(email.trim());
-            studentEmailField.clear();
     private void getLessons() {
         apiService.getAllTeacherLessonsAsync(teacherId)
                 .thenAccept(teacherLs -> {

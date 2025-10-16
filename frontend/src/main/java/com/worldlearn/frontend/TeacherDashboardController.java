@@ -37,7 +37,7 @@ public class TeacherDashboardController {
 
         loadClasses(this.user);
         loadLessons(this.user.getId());
-        loadQuizzes();
+        loadQuizzes(this.user.getId());
         loadQuestions(this.user.getId());
     }
 
@@ -91,8 +91,8 @@ public class TeacherDashboardController {
                 .exceptionally(ex -> { ex.printStackTrace(); return null; });
     }
 
-    private void loadQuizzes() {
-        api.getAllQuizzesAsync()
+    private void loadQuizzes(int teacherId) {
+        api.getAllTeacherQuizzesAsync(teacherId)
                 .thenAccept(quizzes -> Platform.runLater(() -> {
                     quizList.getChildren().clear();
                     for (Quiz quiz : quizzes) {
@@ -163,6 +163,13 @@ public class TeacherDashboardController {
 
             Stage parentStage = (Stage) createQuestionBtn.getScene().getWindow();
             popupStage.initOwner(parentStage);
+
+            popupStage.setOnHidden(e -> {
+                loadClasses(this.user);
+                loadLessons(this.user.getId());
+                loadQuizzes(this.user.getId());
+                loadQuestions(this.user.getId());
+            });
 
             popupStage.showAndWait();
         } catch (IOException e) {
@@ -241,7 +248,7 @@ public class TeacherDashboardController {
             Stage parentStage = (Stage) createQuizBtn.getScene().getWindow();
             popupStage.initOwner(parentStage);
 
-            popupStage.setOnHidden(e -> loadQuizzes());
+            popupStage.setOnHidden(e -> loadQuizzes(this.user.getId()));
 
             popupStage.showAndWait();
         } catch (IOException e) {

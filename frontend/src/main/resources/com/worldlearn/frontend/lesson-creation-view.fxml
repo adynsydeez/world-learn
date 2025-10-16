@@ -48,6 +48,13 @@
             <ListView fx:id="searchQuizzesList"/>
         </VBox>
 
+        <VBox>
+            <Label text="Your Lesson"/>
+            <Button fx:id="removeBtn" text="Remove"/>
+            <ListView fx:id="lessonQuizzesList"/>
+        </VBox>
+    </HBox>
+
     <HBox spacing="10">
        <!-- <Button fx:id="loadBtn" text="Load Quizzes"/> -->
         <Button fx:id="addToLessonBtn" text="Add Selected Quizzes"/>

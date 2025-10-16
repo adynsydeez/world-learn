@@ -174,6 +174,40 @@ public class LessonDAO {
         return lessons;
     }
 
+    public List<Lesson> getPublicLessons() throws SQLException {
+        List<Lesson> lessons = new ArrayList<>();
+
+        String sql = """
+        SELECT * FROM Lessons WHERE visibility = 'public';
+    """;
+
+        try (Connection conn = database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    String visibilityStr = rs.getString("visibility");
+                    Question.Visibility visibility = null;
+                    if (visibilityStr != null) {
+                        visibility = Question.Visibility.fromDbValue(visibilityStr);
+                    }
+
+                    Lesson l = new Lesson(
+                            rs.getInt("lesson_id"),
+                            rs.getString("lesson_name"),
+                            visibility
+                    );
+
+                    // Debug print for each row
+                    System.out.println("Loaded lesson: " + l.getLessonName());
+                    lessons.add(l);
+                }
+            }
+        }
+
+        return lessons;
+    }
+
     // Update lesson basic info
     public void updateLesson(Lesson lesson) throws SQLException {
         String sql = "UPDATE lessons SET lesson_name = ?, visibility = ?::visibility_type WHERE lesson_id = ?";

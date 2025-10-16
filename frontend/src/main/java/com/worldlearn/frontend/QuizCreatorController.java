@@ -142,7 +142,7 @@ public class QuizCreatorController {
 //            searchQuestions();
 //        });
 
-        getTeacherQuestions();
+        getQuestions();
     }
 
     public void setQuiz(Quiz quiz) {

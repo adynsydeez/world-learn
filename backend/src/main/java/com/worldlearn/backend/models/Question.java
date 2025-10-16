@@ -61,34 +61,21 @@ public class Question {
     }
     */
     public void setAnswer(String answer) {
-        if (getType() == QuestionType.mcq) {
-            if (answer == null || answer.trim().isEmpty()) {
-                throw new IllegalArgumentException("answer must not be null/blank");
-            } else {
-                this.answer = answer.trim();
-            }
+        if (answer != null) {
+            this.answer = answer.trim();
         } else {
-            this.answer = "N/A";
+            this.answer = null;
         }
     }
     public String getAnswer() { return answer; }
 
     // OPTIONS
     public void setOptions(String[] options) {
-        if (getType() == QuestionType.mcq) {
-            if (options == null) {
-                throw new IllegalArgumentException("options must not be null");
-            }
-            for (int i = 0; i < options.length; i++) {
-                if (options[i] == null) {
-                    throw new IllegalArgumentException("options[" + i + "] must not be null");
-                }
-            }
+        if (options != null) {
             this.options = Arrays.copyOf(options, options.length);
         } else {
             this.options = null;
         }
-
     }
     public String[] getOptions() { return options; }
 
@@ -159,5 +146,21 @@ public class Question {
             }
             throw new IllegalArgumentException("Unknown visibility: " + value);
         }
+    }
+
+    public void validate() {
+        if (type == null) {
+            throw new IllegalArgumentException("type must not be null");
+        }
+
+        if (type == QuestionType.mcq) {
+            if (answer == null || answer.trim().isEmpty()) {
+                throw new IllegalArgumentException("MCQ answer must not be null/blank");
+            }
+            if (options == null || options.length == 0) {
+                throw new IllegalArgumentException("MCQ must have options");
+            }
+        }
+        // ... other validations
     }
 }
