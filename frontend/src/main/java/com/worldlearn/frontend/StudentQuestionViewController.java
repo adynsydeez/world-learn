@@ -2,6 +2,7 @@ package com.worldlearn.frontend;
 import com.worldlearn.backend.models.Question;
 
 import com.worldlearn.backend.models.Question;
+import com.worldlearn.backend.models.Quiz;
 import com.worldlearn.backend.models.User;
 import com.worldlearn.frontend.services.ApiService;
 import com.worldlearn.frontend.services.AuthClientService;
@@ -44,6 +45,15 @@ public class StudentQuestionViewController {
         this.auth  = auth;
     }
 
+    public void init(Stage stage, AuthClientService auth, Quiz q) {
+        this.user = Session.getCurrentUser();
+        this.stage = stage;
+        this.auth = auth;
+        this.quizId = q.getQuizID();
+        this.quizName = q.getQuizName();
+
+        setQuiz(quizId, quizName);
+    }
     /** Called by StudentLessonController after loading FXML */
     public void setQuiz(int quizId, String quizName) {
         this.quizId = quizId;
@@ -53,6 +63,10 @@ public class StudentQuestionViewController {
         // remember my own scene for "Back"
         this.myScene = lessonTitleLabel.getScene();
 
+        getQuestionsAsync(quizId);
+    }
+
+    private void getQuestionsAsync(int quizId) {
         api.getQuizQuestionsAsync(quizId)
                 .thenAccept(qs -> Platform.runLater(() -> renderQuestions(qs)))
                 .exceptionally(ex -> { ex.printStackTrace(); return null; });

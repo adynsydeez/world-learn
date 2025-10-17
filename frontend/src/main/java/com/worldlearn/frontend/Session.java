@@ -86,6 +86,8 @@ public class Session {
         currentQuestion = question;
     }
 
+    public static void clearCurrentQuestion() { currentQuestion = null; }
+
     public static void setQuestionList(ArrayList<Question> questions) {
         questionList = questions;
     }

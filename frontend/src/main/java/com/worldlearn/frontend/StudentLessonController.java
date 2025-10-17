@@ -74,7 +74,7 @@ public class StudentLessonController {
     }
 
 
-    private void openQuiz(Quiz q) throws IOException {
+    public void openQuiz(Quiz q) throws IOException {
         Session.instance.setCurrentQuiz(q);  // remember quiz
         FXMLLoader loader = new FXMLLoader(HelloApplication.class.getResource("student-question-view.fxml"));
         Scene scene = new Scene(loader.load(), 1280, 720);
