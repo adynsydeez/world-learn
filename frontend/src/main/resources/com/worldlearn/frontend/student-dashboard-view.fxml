@@ -6,6 +6,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 
+<!-- dashboard screen: shows user classes + lessons -->
 <StackPane xmlns="http://javafx.com/javafx"
            xmlns:fx="http://javafx.com/fxml"
            fx:controller="com.worldlearn.frontend.StudentDashboardController"
@@ -13,83 +14,60 @@
            stylesheets="@dashboard.css"
            styleClass="star-bg">
 
-
     <HBox spacing="16" alignment="CENTER_LEFT">
         <padding><Insets top="16" right="16" bottom="16" left="16"/></padding>
 
-        <!-- === LEFT SIDEBAR === -->
+        <!-- sidebar stuff -->
         <VBox spacing="16" alignment="TOP_CENTER" styleClass="sidebar" prefWidth="96" minWidth="96" maxWidth="96">
-            <!-- Logo -->
+
+            <!-- little logo coin -->
             <StackPane styleClass="logo-coin">
                 <ImageView fitWidth="80" fitHeight="80" preserveRatio="true">
-                    <image>
-                        <Image url="@img/logosm.png"/>
-                    </image>
+                    <image><Image url="@img/logosm.png"/></image>
                 </ImageView>
             </StackPane>
 
-            <!-- Sidebar buttons -->
-            <!-- PROFILE -->
+            <!-- profile button -->
             <Button text="PROFILE" onAction="#setProfileButtonClick" contentDisplay="TOP" graphicTextGap="8" prefWidth="96"
                     style="-fx-background-color: transparent;
-               -fx-text-fill: #e8f0ff; -fx-font-size: 12px; -fx-font-weight: 700;
-               -fx-padding: 12 6 12 6; -fx-background-radius:16;">
+                           -fx-text-fill: #e8f0ff; -fx-font-size: 12px; -fx-font-weight: 700;
+                           -fx-padding: 12 6 12 6; -fx-background-radius:16;">
                 <graphic>
-
                     <Label text="&#xE77B;"
                            style="-fx-font-family:'Segoe MDL2 Assets';
-                      -fx-font-size:26;
-                      -fx-text-fill:#e8f0ff;
-                      -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.35), 8, 0.25, 0, 0);" />
+                                  -fx-font-size:26; -fx-text-fill:#e8f0ff;
+                                  -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.35), 8, 0.25, 0, 0);" />
                 </graphic>
             </Button>
 
-
-
             <Region VBox.vgrow="ALWAYS"/>
 
-            <Button fx:id="logoutButton"
-                    text="Log Out"
-                    onAction="#onLogoutButtonClick"
-                    styleClass="logout-btn"/>
+            <!-- logout btn -->
+            <Button fx:id="logoutButton" text="Log Out" onAction="#onLogoutButtonClick" styleClass="logout-btn"/>
         </VBox>
 
-        <!-- === RIGHT CONTENT CARD === -->
+        <!-- main content area -->
         <VBox spacing="20" alignment="TOP_LEFT" VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS" styleClass="content-card">
             <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
 
+            <!-- welcome text -->
             <Label fx:id="welcomeLabel" text="Welcome StudentName!" styleClass="page-title"/>
 
-
-
-
-
-
-
-            <!-- Header row -->
+            <!-- top row heading -->
             <HBox spacing="10" alignment="CENTER_LEFT">
                 <Label text="Your Classes" styleClass="section-title"/>
                 <Pane HBox.hgrow="ALWAYS"/>
-
             </HBox>
 
-            <!-- Class tabs + Join -->
+            <!-- class tabs (filled in dynamically) -->
             <HBox fx:id="classBox" spacing="8">
-                <ToggleButton text="Class 1"  styleClass="chip-btn class-tab"/>
-                <ToggleButton text="Class 2"  styleClass="chip-btn class-tab"/>
-                <ToggleButton text="Class 3"  styleClass="chip-btn class-tab"/>
-                <ToggleButton text="Class 4"  styleClass="chip-btn class-tab"/>
-                <ToggleButton text="Class 5"  styleClass="chip-btn class-tab"/>
                 <Pane HBox.hgrow="ALWAYS"/>
-                <Button fx:id="joinButton" text="Join Class" styleClass="pill success"/>
+                <!-- join class button -->
+                <Button fx:id="joinButton" text="Join Class" styleClass="pill success" onAction="#onJoinButtonClick"/>
             </HBox>
 
-
+            <!-- lesson cards appear here -->
             <HBox fx:id="lessonsRow" spacing="16"/>
-
-
-
-
         </VBox>
     </HBox>
 </StackPane>
