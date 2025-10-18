@@ -22,12 +22,12 @@ jobs:
           java-version: '21'
           cache: maven
 
-      # 1) Build and INSTALL backend first so its jar is in ~/.m2
+      # 1) Build and INSTALL backend
       - name: Build & install backend
         working-directory: backend
-        run: mvn -B -ntp install
+        run: mvn install
 
-      # 2) Now frontend can resolve the backend dependency and run tests
+      # 2) Build Frontend and run tests
       - name: Build & test frontend
         working-directory: frontend
-        run: mvn -B -ntp -fae verify
+        run: mvn verify
