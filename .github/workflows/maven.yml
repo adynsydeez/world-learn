@@ -39,6 +39,6 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages
-          folder: docs  # <-- correct path for your repo
+          folder: backend/target/site/apidocs
           clean: true
           single-commit: true
