@@ -24,8 +24,15 @@ jobs:
 
       # 🔸 Run Maven in the backend module
       - name: Generate Javadoc (backend)
-        working-directory: backend
-        run: mvn -B -q -DskipTests javadoc:javadoc
+        run: |
+          mvn -v
+          mvn -B -DskipTests \
+            -Dmaven.javadoc.failOnError=false \
+            -DadditionalJOption=-Xdoclint:none \
+            -pl backend -am javadoc:javadoc
+
+          echo "Searching for apidocs…"
+          find . -type d -name apidocs -print
 
       # 🔸 Sanity check: fail if folder missing so you see why it didn’t deploy
       - name: Verify Javadoc exists
