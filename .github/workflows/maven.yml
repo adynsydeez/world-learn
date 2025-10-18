@@ -1,4 +1,4 @@
-name: Build & Publish Javadoc
+name: Build and Test
 
 on:
   push:
@@ -12,33 +12,20 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '21'
+          cache: maven
 
-      # 🔸 Run Maven in the backend module
-      - name: Generate Javadoc (backend)
-        run: |
-          mvn -v
-          mvn -B -DskipTests \
-            -Dmaven.javadoc.failOnError=false \
-            -DadditionalJOption=-Xdoclint:none \
-            -pl backend -am javadoc:javadoc
+      - name: Build & test backend
+        working-directory: backend
+        run: mvn -B -ntp -fae verify
 
-          echo "Searching for apidocs…"
-          find . -type d -name apidocs -print
-
-
-      - name: Publish Javadoc to gh-pages
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          branch: gh-pages
-          folder: backend/target/site/apidocs
-          clean: true
-          single-commit: true
+      - name: Build & test frontend
+        working-directory: frontend
+        run: mvn -B -ntp -fae verify
