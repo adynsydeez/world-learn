@@ -1,14 +1,38 @@
-existing workflow file at .github/workflows/maven.yml:
+name: Build & Publish Javadoc
+
+on:
+  push:
+    branches: [ main ]          # adjust if your default branch is different
+  workflow_dispatch:
+
+permissions:
+  contents: write               # allows pushing to gh-pages
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      # ... other steps
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0        # recommended for gh-pages push history
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin # or corretto to match your local
+          java-version: '21'
+
+      # Build (optional if you only need javadoc)
+      - name: Build
+        run: mvn -B -q -DskipTests package
 
       - name: Generate Javadoc
-        run: mvn javadoc:javadoc
-      - name: Publish Javadoc
+        run: mvn -B -q -DskipTests javadoc:javadoc
+
+      - name: Publish Javadoc to gh-pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: target/docs/javadoc
+          branch: gh-pages
+          folder: target/site/apidocs   # <-- correct Maven javadoc path
+          clean: true                   # wipe old files on gh-pages
+          single-commit: true
