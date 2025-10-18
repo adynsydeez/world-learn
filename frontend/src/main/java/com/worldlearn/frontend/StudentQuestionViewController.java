@@ -72,114 +72,129 @@ public class StudentQuestionViewController {
                 .exceptionally(ex -> { ex.printStackTrace(); return null; });
     }
 
-    private void renderQuestions(List<Question> questions) {
-        this.loadedQuestions = questions;
-        questionListBox.getChildren().clear();
-        this.availableQuestion = 0;
-        int i = 1;
-        for (Question q : questions) {
-            HBox row = new HBox(10);
-            // use style classes instead of big inline style strings
-            row.getStyleClass().add("q-row");
+    private VBox buildQuestionItem(Question q, int questionNumber) {
+        VBox itemBox = new VBox(6);
+        itemBox.getStyleClass().add("q-item");
 
-            Label lbl = new Label("Question " + i + ": " + q.getPrompt());
-            row.getChildren().add(lbl);
+        HBox row = new HBox(10);
+        row.getStyleClass().add("q-row");
 
-            final int questionNumber = i;
-            row.setOnMouseClicked(e -> openQuestion(q, questionNumber));
-            questionListBox.getChildren().add(row);
+        Label lbl = new Label("Question " + questionNumber + ": " + q.getPrompt());
+        lbl.getStyleClass().add("q-title");
+        row.getChildren().add(lbl);
 
-            // <-- NEW: decorate row based on student's previous answer
-            decorateRowWithStatus(row, q.getQuestionId(), questionNumber);
+        // Hidden details panel (becomes visible on hover if answered)
+        VBox details = new VBox(4);
+        details.getStyleClass().add("q-details");
+        details.setVisible(false);
+        details.setManaged(false);
 
-            i++;
-        }
-        computeAndShowQuizProgress(questions);
+        itemBox.getChildren().addAll(row, details);
 
-        Session.setQuestionList(new ArrayList<>(loadedQuestions));
-    }
+        // Default: clicking the row tries to open the question
+        row.setOnMouseClicked(e -> openQuestion(q, questionNumber));
 
-    /** Ask backend if student answered this question; color the row. */
-    private void decorateRowWithStatus(HBox row, int questionId, int questionNumber) {
-        api.getStudentAnswer(questionId, this.user.getId())
+        // Ask backend whether student answered -> decorate + fill details + hover behavior
+        api.getStudentAnswer(q.getQuestionId(), this.user.getId())
                 .thenAccept(answer -> Platform.runLater(() -> {
                     row.getStyleClass().removeAll("q-row--correct", "q-row--wrong", "q-row--disabled");
                     row.setDisable(false);
 
                     if (answer == null) {
+                        // lock-step availability logic you already had
                         this.availableQuestion = Math.min(
                                 this.availableQuestion == 0 ? questionNumber : this.availableQuestion,
                                 questionNumber
                         );
-
                         if (questionNumber != this.availableQuestion) {
+                            row.getStyleClass().add("q-row--disabled");
                             row.setDisable(true);
                         }
-
+                        // unanswered: keep click to open MC view
                     } else {
+                        // answered: color the row, fill details, disable click
                         if (answer.isCorrect()) {
                             row.getStyleClass().add("q-row--correct");
                         } else {
                             row.getStyleClass().add("q-row--wrong");
                         }
 
+                        // Fill details panel
+                        details.getChildren().setAll(
+                                new Label("Your answer: " + answer.getGivenAnswer()),
+                                new Label("Points earned: " + Math.max(0, answer.getPointsEarned())),
+                                new Label("Answered at: " + answer.getAnsweredAt()),
+                                new Label("Result: " + (answer.isCorrect() ? "Correct ✓" : "Incorrect ✗"))
+                        );
+
+                        // Disable click (so it won’t open MC page)
+                        row.setOnMouseClicked(null);
+
+                        // Hover behavior: show details on enter, hide on exit
+                        itemBox.setOnMouseEntered(ev -> showDetails(details));
+                        itemBox.setOnMouseExited(ev -> hideDetails(details));
                     }
                 }))
-                .exceptionally(ex -> {
-                    ex.printStackTrace();
-                    return null;
-                });
+                .exceptionally(ex -> { ex.printStackTrace(); return null; });
+
+        return itemBox;
     }
 
-    public void openQuestion(Question q, int questionNumber) {
-        try {
-            api.getStudentAnswer(q.getQuestionId(), this.user.getId())
-                    .thenAccept(previousAnswer -> {
-                        javafx.application.Platform.runLater(() -> {
-                            if (previousAnswer != null) {
-                                // Show their previous answer
-                                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                                alert.setTitle("Already Answered");
-                                alert.setHeaderText("You've already answered this question!");
-                                alert.setContentText(
-                                        "Your answer: " + previousAnswer.getGivenAnswer() + "\n" +
-                                                "Points earned: " + previousAnswer.getPointsEarned() + "\n" +
-                                                "Answered at: " + previousAnswer.getAnsweredAt() + "\n" +
-                                                "Result: " + (previousAnswer.isCorrect() ? "Correct ✓" : "Incorrect ✗")
-                                );
-                                alert.showAndWait();
-                            } else {
-                                // save the selected question in session
-                                Session.setCurrentQuestion(q);
-
-                                FXMLLoader loader = new FXMLLoader(
-                                        HelloApplication.class.getResource("multiple-choice-question-view.fxml")
-                                );
-                                Scene mcScene = null;
-                                try {
-                                    mcScene = new Scene(loader.load(), 1280, 720);
-                                } catch (IOException e) {
-                                    throw new RuntimeException(e);
-                                }
-
-                                MultipleChoiceQuestionController c = loader.getController();
-                                List<String> choices = (q.getOptions() == null) ? List.of() : Arrays.asList(q.getOptions());
-                                c.init(stage, auth,
-                                        questionNumber,
-                                        null,
-                                        q.getPrompt(),
-                                        choices,
-                                        q.getAnswer(),
-                                        q.getPointsWorth(),
-                                        q.getQuestionId(),
-                                        null);
-                                stage.setScene(mcScene);
-                            }
-                        });
-                    });
-        } catch (Exception ex) {
-            ex.printStackTrace();
+    // Simple fade helpers
+    private void showDetails(VBox details) {
+        if (!details.isVisible()) {
+            details.setManaged(true);
+            details.setVisible(true);
+            var fade = new javafx.animation.FadeTransition(javafx.util.Duration.millis(120), details);
+            fade.setFromValue(0.0); fade.setToValue(1.0); fade.play();
         }
+    }
+
+    private void hideDetails(VBox details) {
+        if (details.isVisible()) {
+            var fade = new javafx.animation.FadeTransition(javafx.util.Duration.millis(120), details);
+            fade.setFromValue(1.0); fade.setToValue(0.0);
+            fade.setOnFinished(e -> { details.setVisible(false); details.setManaged(false); });
+            fade.play();
+        }
+    }
+
+    private void renderQuestions(List<Question> questions) {
+        this.loadedQuestions = questions;
+        questionListBox.getChildren().clear();
+        this.availableQuestion = 0;
+
+        int i = 1;
+        for (Question q : questions) {
+            VBox item = buildQuestionItem(q, i);
+            questionListBox.getChildren().add(item);
+            i++;
+        }
+        computeAndShowQuizProgress(questions);
+        Session.setQuestionList(new ArrayList<>(loadedQuestions));
+    }
+
+    // Optional: remove the popup path in openQuestion
+    public void openQuestion(Question q, int questionNumber) {
+        api.getStudentAnswer(q.getQuestionId(), this.user.getId())
+                .thenAccept(previousAnswer -> Platform.runLater(() -> {
+                    if (previousAnswer != null) {
+                        // Already answered: do nothing (hover shows info)
+                        return;
+                    }
+                    // Unanswered -> load MC view (same as your current code)
+                    try {
+                        FXMLLoader loader = new FXMLLoader(HelloApplication.class.getResource("multiple-choice-question-view.fxml"));
+                        Scene mcScene = new Scene(loader.load(), 1280, 720);
+                        MultipleChoiceQuestionController c = loader.getController();
+                        List<String> choices = (q.getOptions() == null) ? List.of() : Arrays.asList(q.getOptions());
+                        c.init(stage, auth, questionNumber, null, q.getPrompt(), choices, q.getAnswer(), q.getPointsWorth(), q.getQuestionId(), null);
+                        stage.setScene(mcScene);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }))
+                .exceptionally(ex -> { ex.printStackTrace(); return null; });
     }
     @FXML
     protected void onHomeButtonClickLessonPage() throws Exception {
