@@ -2,21 +2,41 @@ name: Build & Publish Javadoc
 
 on:
   push:
-    branches: [ main ]     # change to master if needed
-  workflow_dispatch:       # allow manual runs
+    branches: [ javadocbackend ]   # change to master if needed
+  workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: write        # needed to push to gh-pages
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      # ... other steps
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Generate Javadoc
-        run: mvn javadoc:javadoc
-      - name: Publish Javadoc
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      # 🔸 Run Maven in the backend module
+      - name: Generate Javadoc (backend)
+        working-directory: backend
+        run: mvn -B -q -DskipTests javadoc:javadoc
+
+      # 🔸 Sanity check: fail if folder missing so you see why it didn’t deploy
+      - name: Verify Javadoc exists
+        run: |
+          test -d backend/target/site/apidocs || (echo "No javadoc produced" && exit 1)
+          ls -la backend/target/site/apidocs | head -n 50
+
+      - name: Publish Javadoc to gh-pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: target/docs
+          branch: gh-pages
+          folder: backend/target/site/apidocs   # <-- correct path for your repo
+          clean: true
+          single-commit: true
