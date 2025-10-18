@@ -29,10 +29,7 @@ jobs:
       - name: Generate Javadoc
         run: mvn -B -q -DskipTests javadoc:javadoc
 
-      - name: Publish Javadoc to gh-pages
+      - name: Publish Javadoc
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          branch: gh-pages
-          folder: target/docs/javadoc  # <-- correct Maven javadoc path
-          clean: true                   # wipe old files on gh-pages
-          single-commit: true
+          folder: target/docs/javadoc
