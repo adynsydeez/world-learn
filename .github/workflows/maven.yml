@@ -33,6 +33,6 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages
-          folder: target/site/apidocs   # <-- correct Maven javadoc path
+          folder: target/docs/javadoc  # <-- correct Maven javadoc path
           clean: true                   # wipe old files on gh-pages
           single-commit: true
