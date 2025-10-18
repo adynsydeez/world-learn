@@ -1,0 +1,10 @@
+existing workflow file at .github/workflows/maven.yml:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # ... other steps
+
+      - name: Generate Javadoc
+        run: mvn javadoc:javadoc
