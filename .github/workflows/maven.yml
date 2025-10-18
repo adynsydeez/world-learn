@@ -39,6 +39,6 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages
-          folder: target/docs   # <-- correct path for your repo
+          folder: docs  # <-- correct path for your repo
           clean: true
           single-commit: true
