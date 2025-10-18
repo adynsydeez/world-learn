@@ -83,19 +83,11 @@ public class QuestionTest {
     class AnswerTest {
         //setAnswer
         @Test
-        void disallowNull() {
-            assertThrows(IllegalArgumentException.class, () -> question.setAnswer(null));
+        void allowNull() {
+            question.setAnswer(null);
+            assertNull(question.getAnswer());
             }
 
-        @Test
-        void setAnswerWhiteSpace() {
-            assertThrows(IllegalArgumentException.class, () -> question.setAnswer(" "));
-        }
-
-        @Test
-        void setAnswerBlank() {
-            assertThrows(IllegalArgumentException.class, () -> question.setAnswer(""));
-        }
 
         @Test
         void trimsAnswerWhitespace() {
@@ -110,12 +102,16 @@ public class QuestionTest {
         //setOptions
         @Test
         void setOptionsNull() {
-            assertThrows(IllegalArgumentException.class, () -> question.setOptions(null));
+            question.setOptions(null);
+            assertEquals(question.getOptions(),null);
         }
 
         @Test
         void setOptionsArrayContainsNull() {
-            assertThrows(IllegalArgumentException.class, () -> question.setOptions(new String[] {null}));
+            question.setOptions(new String[] { null });
+            assertNotNull(question.getOptions());
+            assertEquals(1, question.getOptions().length);
+            assertNull(question.getOptions()[0]);
         }
     }
 

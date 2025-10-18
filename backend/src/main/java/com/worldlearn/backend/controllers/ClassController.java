@@ -17,13 +17,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Class controller
+ */
 public class ClassController {
     private final ClassService classService;
 
+    /**
+     * Constructs controller
+     * @param classService
+     */
     public ClassController(ClassService classService) {
         this.classService = classService;
     }
 
+    /**
+     * Creates class
+     * @param ctx
+     */
     public void createClass(Context ctx) {
         try {
             int teacherId = Integer.parseInt(ctx.queryParam("teacherId"));
@@ -43,12 +54,15 @@ public class ClassController {
         }
     }
 
+    /**
+     * Updates class
+     * @param ctx
+     */
     public void updateClass(Context ctx) {
         try {
             int teacherId = Integer.parseInt(ctx.queryParam("teacherId"));
             CreateClassRequest req = ctx.bodyAsClass(CreateClassRequest.class);
 
-            // Validate that lessonId is provided
             if (req.getId() <= 0) {
                 ctx.status(400).result("Class ID is required for update");
                 return;
@@ -69,23 +83,22 @@ public class ClassController {
         }
     }
 
+    /**
+     * Gets all classes for user
+     * @param ctx
+     */
     public void getAllClassesForUser(Context ctx) {
         try {
-            // Extract user ID from path
             int userId = Integer.parseInt(ctx.pathParam("id"));
 
-            // Fetch full user from DB so we know the role
             UserService userService = new UserService(new UserDAO(new Database()));
-            User user = userService.getUserById(String.valueOf(userId)); // make sure this returns User with role
+            User user = userService.getUserById(String.valueOf(userId));
             if (user == null) {
                 ctx.status(404).json(Map.of("error", "User not found"));
                 return;
             }
 
-            // Fetch classes
             List<WlClass> classes = classService.getAllClassesForUser(user);
-
-            // Always return JSON array (empty if no classes)
             ctx.status(200).json(classes);
 
         } catch (NumberFormatException e) {
@@ -96,22 +109,22 @@ public class ClassController {
         }
     }
 
+    /**
+     * Gets lessons for class
+     * @param ctx
+     */
     public void getClassLessons(Context ctx) {
         try {
-            // Extract class ID from path
             int classId = Integer.parseInt(ctx.pathParam("id"));
 
             ClassService classService = new ClassService(new ClassDAO(new Database()));
-            WlClass wlClass = classService.getClassById(classId); // make sure this returns User with role
+            WlClass wlClass = classService.getClassById(classId);
             if (wlClass == null) {
                 ctx.status(404).json(Map.of("error", "Class not found"));
                 return;
             }
 
-            // Fetch classes
             List<Lesson> lessons = classService.getClassLessons(classId);
-
-            // Always return JSON array (empty if no classes)
             ctx.status(200).json(lessons);
 
         } catch (NumberFormatException e) {
@@ -122,11 +135,14 @@ public class ClassController {
         }
     }
 
+    /**
+     * Assigns student to class
+     * @param ctx
+     */
     public void assignStudentToClass(Context ctx) {
         try {
             AssignStudentRequest req = ctx.bodyAsClass(AssignStudentRequest.class);
 
-            // classService should look up classId by joinCode
             int classId = classService.getClassIdByJoinCode(req.getJoinCode());
 
             classService.assignStudentToClass(classId, req.getUserId());

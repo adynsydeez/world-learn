@@ -12,13 +12,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Question data access object
+ */
 public class QuestionDAO {
     private final Database database;
 
+    /**
+     * Constructs QuestionDAO
+     * @param database
+     */
     public QuestionDAO(Database database) {
         this.database = database;
     }
 
+    /**
+     * Creates a question
+     * @param question
+     * @return created question or null
+     * @throws SQLException
+     */
     public Question createQuestion(Question question) throws SQLException {
         String sql = """
     INSERT INTO questions (question_name, answer, options, prompt, type, points_worth, visibility)
@@ -28,14 +41,14 @@ public class QuestionDAO {
         try (Connection conn = database.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            stmt.setString(1, question.getQuestionName());     // question_name
-            stmt.setString(2, question.getAnswer());            // answer
+            stmt.setString(1, question.getQuestionName());
+            stmt.setString(2, question.getAnswer());
             Array optionsArray = conn.createArrayOf("text", question.getOptions());
-            stmt.setArray(3, optionsArray);                     // options
-            stmt.setString(4, question.getPrompt());            // prompt
-            stmt.setString(5, question.getType().getDbValue()); // type
-            stmt.setInt(6, question.getPointsWorth());          // points_worth
-            stmt.setString(7, question.getVisibility().getDbValue()); // visibility
+            stmt.setArray(3, optionsArray);
+            stmt.setString(4, question.getPrompt());
+            stmt.setString(5, question.getType().getDbValue());
+            stmt.setInt(6, question.getPointsWorth());
+            stmt.setString(7, question.getVisibility().getDbValue());
 
             int rowsAffected = stmt.executeUpdate();
 
@@ -51,13 +64,18 @@ public class QuestionDAO {
         return null;
     }
 
+    /**
+     * Gets all questions
+     * @return list of questions
+     * @throws SQLException
+     */
     public List<Question> getAllQuestions() throws SQLException {
         List<Question> questions = new ArrayList<>();
         String sql = "SELECT question_id, question_name, answer, options, prompt, type, points_worth, visibility FROM questions";
 
         try (Connection conn = database.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
-            ResultSet rs = stmt.executeQuery()) {
+             ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
                 String[] options = (String[]) rs.getArray("options").getArray();
@@ -77,6 +95,12 @@ public class QuestionDAO {
         return questions;
     }
 
+    /**
+     * Gets all questions created by a teacher
+     * @param userId
+     * @return list of questions
+     * @throws SQLException
+     */
     public List<Question> getAllTeacherQuestions(int userId) throws SQLException {
         List<Question> questions = new ArrayList<>();
 
@@ -95,11 +119,9 @@ public class QuestionDAO {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    // Fetch options array safely
                     Array optionsArray = rs.getArray("options");
                     String[] options = optionsArray != null ? (String[]) optionsArray.getArray() : new String[0];
 
-                    // Fetch other fields safely
                     String typeStr = rs.getString("type");
                     QuestionType type = null;
                     if (typeStr != null) {
@@ -125,7 +147,6 @@ public class QuestionDAO {
                             visibility
                     );
 
-                    // Debug print for each row
                     System.out.println("Loaded question: " + q.getQuestionId() + ", prompt=" + q.getPrompt());
 
                     questions.add(q);
@@ -136,6 +157,11 @@ public class QuestionDAO {
         return questions;
     }
 
+    /**
+     * Gets all public questions
+     * @return list of questions
+     * @throws SQLException
+     */
     public List<Question> getPublicQuestions() throws SQLException {
         List<Question> questions = new ArrayList<>();
         String sql = "SELECT question_id, question_name, answer, options, prompt, type, points_worth, visibility FROM questions WHERE visibility = 'public'";
@@ -166,8 +192,12 @@ public class QuestionDAO {
         return questions;
     }
 
-
-
+    /**
+     * Gets a question by id
+     * @param id
+     * @return optional question
+     * @throws SQLException
+     */
     public Optional<Question> getQuestionByID(int id) throws SQLException {
         String sql = """
         SELECT question_id, question_name, answer, options, prompt, type, points_worth, visibility
@@ -199,7 +229,12 @@ public class QuestionDAO {
         return Optional.empty();
     }
 
-
+    /**
+     * Updates a question
+     * @param question
+     * @return updated question or null
+     * @throws SQLException
+     */
     public Question updateQuestion(Question question) throws SQLException {
         String sql = """
             UPDATE questions
@@ -237,6 +272,11 @@ public class QuestionDAO {
         }
     }
 
+    /**
+     * Saves teacher-to-question mapping
+     * @param questionId
+     * @param teacherId
+     */
     public void saveTeacherToQuestion(int questionId, int teacherId){
         String sql = "INSERT INTO teacher_question (teacher_role, question_id, user_id) VALUES (?::teacher_role_type, ?, ?)";
         try (Connection conn = database.getConnection();
@@ -251,6 +291,12 @@ public class QuestionDAO {
         }
     }
 
+    /**
+     * Deletes a question
+     * @param id
+     * @return true if deleted
+     * @throws SQLException
+     */
     public boolean deleteQuestion(int id) throws SQLException {
         String sql = "DELETE FROM questions WHERE question_id = ?";
 
@@ -262,8 +308,15 @@ public class QuestionDAO {
         }
     }
 
+    /**
+     * Submits a student's answer
+     * @param questionId
+     * @param userId
+     * @param givenAnswer
+     * @return answer response
+     * @throws SQLException
+     */
     public AnswerResponse submitAnswer(int questionId, int userId, String givenAnswer) throws SQLException {
-        // First, get the correct answer and points from the question
         String getQuestionSql = "SELECT answer, points_worth FROM questions WHERE question_id = ?";
 
         try (Connection conn = database.getConnection();
@@ -279,11 +332,9 @@ public class QuestionDAO {
                 String correctAnswer = rs.getString("answer");
                 int pointsWorth = rs.getInt("points_worth");
 
-                // Check if the answer is correct (case-insensitive)
                 boolean isCorrect = correctAnswer.trim().equalsIgnoreCase(givenAnswer.trim());
                 int pointsEarned = isCorrect ? pointsWorth : 0;
 
-                // Insert the answer submission into the database
                 String insertSql = """
                 INSERT INTO student_answer (question_id, user_id, given_answer, points_earned, answered_at)
                 VALUES (?, ?, ?, ?, NOW())
@@ -306,7 +357,6 @@ public class QuestionDAO {
                                     ", correct=" + isCorrect +
                                     ", points=" + pointsEarned);
 
-                            // Create and return the response DTO
                             return new AnswerResponse(
                                     questionId,
                                     userId,
@@ -324,6 +374,13 @@ public class QuestionDAO {
         throw new SQLException("Failed to submit answer");
     }
 
+    /**
+     * Gets a student's submitted answer
+     * @param questionId
+     * @param userId
+     * @return optional answer response
+     * @throws SQLException
+     */
     public Optional<AnswerResponse> getStudentAnswer(int questionId, int userId) throws SQLException {
         String sql = """
         SELECT sa.question_id, sa.user_id, sa.given_answer, sa.points_earned, sa.answered_at,

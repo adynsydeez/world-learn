@@ -7,18 +7,38 @@ import com.worldlearn.backend.models.User;
 import java.sql.SQLException;
 import java.util.List;
 
-
+/**
+ * User service
+ */
 public class UserService {
     private final UserDAO userDAO;
 
+    /**
+     * Constructs service
+     * @param userDAO
+     */
     public UserService(UserDAO userDAO) {
         this.userDAO = userDAO;
     }
 
+    /**
+     * Logs in user
+     * @param email
+     * @param password
+     * @return user
+     * @throws SQLException
+     */
     public User logIn(String email, String password) throws SQLException {
         return userDAO.getUserByEmailAndPassword(email, password);
     }
 
+    /**
+     * Gets user by id
+     * @param id
+     * @return user
+     * @throws SQLException
+     * @throws IllegalArgumentException
+     */
     public User getUserById(String id) throws SQLException {
         if (id == null || id.trim().isEmpty()) {
             throw new IllegalArgumentException("User ID is required");
@@ -33,20 +53,35 @@ public class UserService {
         return userDAO.getUserById(id);
     }
 
+    /**
+     * Creates user
+     * @param user
+     * @return created user
+     * @throws SQLException
+     * @throws IllegalArgumentException
+     */
     public User createUser(User user) throws SQLException {
-        // Validation
         validateUser(user);
-
-        // Business logic (e.g., check for duplicate emails)
-        // You could add email uniqueness check here
-
         return userDAO.createUser(user);
     }
 
+    /**
+     * Gets all users
+     * @return users
+     * @throws SQLException
+     */
     public List<User> getAllUsers() throws SQLException {
         return userDAO.getAllUsers();
     }
 
+    /**
+     * Updates user
+     * @param id
+     * @param user
+     * @return updated user
+     * @throws SQLException
+     * @throws IllegalArgumentException
+     */
     public User updateUser(int id, UpdateUserProfileRequest user) throws SQLException {
         if (id <= 0) {
             throw new IllegalArgumentException("Invalid user ID");
@@ -55,6 +90,13 @@ public class UserService {
         return userDAO.updateUser(id, user);
     }
 
+    /**
+     * Deletes user
+     * @param id
+     * @return true if deleted
+     * @throws SQLException
+     * @throws IllegalArgumentException
+     */
     public boolean deleteUser(int id) throws SQLException {
         if (id <= 0) {
             throw new IllegalArgumentException("Invalid user ID");
@@ -63,6 +105,14 @@ public class UserService {
         return userDAO.deleteUser(id);
     }
 
+    /**
+     * Updates password
+     * @param id
+     * @param user
+     * @return updated user
+     * @throws SQLException
+     * @throws IllegalArgumentException
+     */
     public User updatePassword(int id, UpdatePasswordRequest user) throws SQLException {
         if (id <= 0) {
             throw new IllegalArgumentException("Invalid user ID");
@@ -71,6 +121,11 @@ public class UserService {
         return userDAO.updatePassword(id, user);
     }
 
+    /**
+     * Validates user
+     * @param user
+     * @throws IllegalArgumentException
+     */
     private void validateUser(User user) {
         if (user.getFirstName() == null || user.getFirstName().trim().isEmpty()) {
             throw new IllegalArgumentException("First name is required");
@@ -85,12 +140,16 @@ public class UserService {
             throw new IllegalArgumentException("User role is required");
         }
 
-        // Email format validation
         if (!isValidEmail(user.getEmail())) {
             throw new IllegalArgumentException("Invalid email format");
         }
     }
 
+    /**
+     * Checks email format
+     * @param email
+     * @return true if valid
+     */
     private boolean isValidEmail(String email) {
         return email.contains("@") && email.contains(".");
     }

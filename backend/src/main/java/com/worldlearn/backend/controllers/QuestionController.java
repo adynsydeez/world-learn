@@ -10,13 +10,24 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Question controller
+ */
 public class QuestionController {
     private final QuestionService questionService;
 
+    /**
+     * Constructs controller
+     * @param questionService
+     */
     public QuestionController(QuestionService questionService) {
         this.questionService = questionService;
     }
 
+    /**
+     * Gets question by id
+     * @param ctx
+     */
     public void getQuestionById(Context ctx) {
         try {
             int id = Integer.parseInt(ctx.pathParam("id"));
@@ -34,6 +45,10 @@ public class QuestionController {
         }
     }
 
+    /**
+     * Creates question
+     * @param ctx
+     */
     public void createQuestion(Context ctx) {
         try {
             int teacherId = Integer.parseInt(ctx.queryParam("teacherId"));
@@ -52,6 +67,10 @@ public class QuestionController {
         }
     }
 
+    /**
+     * Gets all questions
+     * @param ctx
+     */
     public void getAllQuestions(Context ctx) {
         try {
             List<Question> questions = questionService.getAllQuestions();
@@ -61,6 +80,10 @@ public class QuestionController {
         }
     }
 
+    /**
+     * Gets all teacher questions
+     * @param ctx
+     */
     public void getAllTeacherQuestions(Context ctx) {
         try {
             int teacherId = Integer.parseInt(ctx.pathParam("id"));
@@ -71,6 +94,10 @@ public class QuestionController {
         }
     }
 
+    /**
+     * Gets public questions
+     * @param ctx
+     */
     public void getPublicQuestions(Context ctx) {
         try {
             List<Question> questions = questionService.getPublicQuestions();
@@ -80,6 +107,10 @@ public class QuestionController {
         }
     }
 
+    /**
+     * Updates question
+     * @param ctx
+     */
     public void updateQuestion(Context ctx) {
         try {
             int teacherId = Integer.parseInt(ctx.pathParam("id"));
@@ -98,6 +129,10 @@ public class QuestionController {
         }
     }
 
+    /**
+     * Deletes question
+     * @param ctx
+     */
     public void deleteQuestion(Context ctx) {
         try {
             int id = Integer.parseInt(ctx.pathParam("id"));
@@ -115,25 +150,26 @@ public class QuestionController {
         }
     }
 
+    /**
+     * Submits answer
+     * @param ctx
+     */
     public void submitAnswer(Context ctx) {
         try {
             int questionId = Integer.parseInt(ctx.queryParam("questionId"));
 
-            // Parse the request body to get BOTH givenAnswer and userId
             AnswerRequest body = ctx.bodyAsClass(AnswerRequest.class);
             String givenAnswer = body.getGivenAnswer();
-            int userId = body.getUserId(); // Get userId from request body, not context attribute
+            int userId = body.getUserId();
 
-            // Check if student has already answered
             Optional<AnswerResponse> existingAnswer = questionService.getStudentAnswer(questionId, userId);
             if (existingAnswer.isPresent()) {
-                ctx.status(400).json(existingAnswer.get()); // Return their previous answer
+                ctx.status(400).json(existingAnswer.get());
                 return;
             }
 
             System.out.println("Submitting answer: questionId=" + questionId + ", userId=" + userId + ", answer=" + givenAnswer);
 
-            // Call your DAO
             AnswerResponse result = questionService.submitAnswer(questionId, userId, givenAnswer);
 
             ctx.status(201).json(result);
@@ -147,6 +183,10 @@ public class QuestionController {
         }
     }
 
+    /**
+     * Gets student's answer
+     * @param ctx
+     */
     public void getStudentAnswer(Context ctx) {
         try {
             int questionId = Integer.parseInt(ctx.pathParam("id"));

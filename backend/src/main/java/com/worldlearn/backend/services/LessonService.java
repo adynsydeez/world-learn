@@ -11,24 +11,48 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Lesson service
+ */
 public class LessonService {
     private final LessonDAO lessonDAO;
 
+    /**
+     * Constructs LessonService
+     * @param lessonDAO
+     */
     public LessonService(LessonDAO lessonDAO) { this.lessonDAO = lessonDAO; }
 
+    /**
+     * Creates lesson
+     * @param lesson
+     * @param teacherId
+     * @param quizzes
+     * @return Lesson
+     * @throws SQLException
+     */
     public Lesson createLesson(Lesson lesson, int teacherId, List<Integer> quizzes) throws SQLException {
         Lesson saved = lessonDAO.createLesson(lesson);
         int lessonId = saved.getLessonId();
-        System.out.println("Created lesson:" +lesson.getLessonName());
+        System.out.println("Created lesson:" + lesson.getLessonName());
         lessonDAO.saveTeacherToLesson(lessonId, teacherId);
-        System.out.println("Saving teacher: "+teacherId+" to Lesson: "+lessonId);
+        System.out.println("Saving teacher: " + teacherId + " to Lesson: " + lessonId);
         for (Integer q : quizzes){
             lessonDAO.saveQuizToLesson(lessonId, q);
-            System.out.println("Saving Quiz: "+q+" to Lesson: " +lessonId);
+            System.out.println("Saving Quiz: " + q + " to Lesson: " + lessonId);
         }
         return saved;
     }
 
+    /**
+     * Updates lesson
+     * @param lesson
+     * @param teacherId
+     * @param quizzes
+     * @return Lesson
+     * @throws SQLException
+     * @throws SecurityException
+     */
     public Lesson updateLesson(Lesson lesson, int teacherId, List<Integer> quizzes) throws SQLException {
         int lessonId = lesson.getLessonId();
 
@@ -70,19 +94,41 @@ public class LessonService {
         return lessonDAO.getLessonById(lessonId);
     }
 
+    /**
+     * Gets all lessons
+     * @return List
+     * @throws SQLException
+     */
     public List<Lesson> getAllLessons() throws SQLException{
         return lessonDAO.getAllLessons();
     }
 
+    /**
+     * Gets lesson quizzes
+     * @param id
+     * @return List
+     * @throws SQLException
+     */
     public List<Quiz> getLessonQuizzes(int id) throws SQLException {
         System.out.println("Sending to DAO from Service.");
         return lessonDAO.getLessonQuizzes(id);
     }
 
+    /**
+     * Gets all teacher lessons
+     * @param teacherId
+     * @return List
+     * @throws SQLException
+     */
     public List<Lesson> getAllTeacherLessons(int teacherId) throws SQLException {
         return lessonDAO.getAllTeacherLessons(teacherId);
     }
 
+    /**
+     * Gets public lessons
+     * @return List
+     * @throws SQLException
+     */
     public List<Lesson> getPublicLessons() throws SQLException {
         return lessonDAO.getPublicLessons();
     }

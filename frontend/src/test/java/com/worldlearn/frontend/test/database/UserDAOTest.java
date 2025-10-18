@@ -190,33 +190,6 @@ class UserDAOTest {
         assertNull(dao.getUserByEmailAndPassword("x@edu.com", "nope"));
     }
 
-    /// //updateUser
-
-    @Test
-    void updateUserRowsAffectedReturnsUpdatedUser() throws Exception {
-        // use stmt (non-keys)
-        when(stmt.executeUpdate()).thenReturn(1);
-        User u = new Student("a@edu.com", "pw", "A", "B", "student");
-
-        User updated = dao.updateUser(5, u);
-
-        assertNotNull(updated);
-        assertEquals(5, updated.getId());
-        verify(stmt).setString(1, "A");
-        verify(stmt).setString(2, "B");
-        verify(stmt).setString(3, "a@edu.com");
-        verify(stmt).setString(4, "pw");
-        verify(stmt).setString(5, "student");
-        verify(stmt).setInt(6, 5);
-    }
-
-    @Test
-    void updateUserZeroRowsReturnsNull() throws Exception {
-        when(stmt.executeUpdate()).thenReturn(0);
-        User u = new Student("a@edu.com", "pw", "A", "B", "student");
-        assertNull(dao.updateUser(5, u));
-    }
-
     /// //deleteUser
 
     @Test

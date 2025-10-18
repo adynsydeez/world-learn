@@ -8,10 +8,24 @@ import com.worldlearn.backend.models.User;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+/**
+ * Authentication service
+ */
 public class AuthenticationService {
+    /**
+     * In-memory users list
+     */
     private final List<User> users = new CopyOnWriteArrayList<>();
+
+    /**
+     * User data access object
+     */
     private final UserDAO userDAO;
 
+    /**
+     * Constructs AuthenticationService
+     * @param userDAO
+     */
     public AuthenticationService(UserDAO userDAO) {
         this.userDAO = userDAO;
 
@@ -23,7 +37,16 @@ public class AuthenticationService {
         }
     }
 
-    // Sign up a user
+    /**
+     * Signs up a user
+     * @param email
+     * @param password
+     * @param role
+     * @param firstName
+     * @param lastName
+     * @return created user
+     * @throws IllegalArgumentException
+     */
     public User signUp(String email, String password, String role, String firstName, String lastName) {
         if (email == null || email.isBlank()) throw new IllegalArgumentException("Email required");
         if (password == null || password.isBlank()) throw new IllegalArgumentException("Password required");
@@ -57,7 +80,13 @@ public class AuthenticationService {
         }
     }
 
-    // Simple login
+    /**
+     * Logs in a user
+     * @param email
+     * @param password
+     * @return matching user
+     * @throws IllegalArgumentException
+     */
     public User logIn(String email, String password) {
         for (User user : users) {
             if (user.getEmail().equalsIgnoreCase(email) &&

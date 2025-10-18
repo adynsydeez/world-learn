@@ -12,13 +12,26 @@ import javax.xml.crypto.Data;
 import java.sql.*;
 import java.util.*;
 
+/**
+ * Quiz data access object
+ */
 public class QuizDAO {
     private final Database database;
 
+    /**
+     * Constructs QuizDAO
+     * @param database
+     */
     public QuizDAO(Database database) {
         this.database = database;
     }
 
+    /**
+     * Creates a quiz
+     * @param quiz
+     * @return Quiz
+     * @throws SQLException
+     */
     public Quiz createQuiz(Quiz quiz) throws SQLException {
         String sql = """
     INSERT INTO quizzes (quiz_name, visibility)
@@ -28,8 +41,8 @@ public class QuizDAO {
         try (Connection conn = database.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            stmt.setString(1, quiz.getQuizName());     // question_name
-            stmt.setString(2, quiz.getVisibility().getDbValue());            // answer
+            stmt.setString(1, quiz.getQuizName());
+            stmt.setString(2, quiz.getVisibility().getDbValue());
 
             int rowsAffected = stmt.executeUpdate();
 
@@ -45,6 +58,11 @@ public class QuizDAO {
         return null;
     }
 
+    /**
+     * Gets all quizzes
+     * @return List of Quiz
+     * @throws SQLException
+     */
     public List<Quiz> getAllQuizzes() throws SQLException {
         List<Quiz> quizzes = new ArrayList<>();
         String sql = "SELECT quiz_id, quiz_name, visibility FROM quizzes";
@@ -68,6 +86,13 @@ public class QuizDAO {
         }
         return quizzes;
     }
+
+    /**
+     * Gets all quizzes for a teacher
+     * @param userId
+     * @return List of Quiz
+     * @throws SQLException
+     */
     public List<Quiz> getAllTeacherQuizzes(int userId) throws SQLException {
         List<Quiz> quizzes = new ArrayList<>();
 
@@ -107,6 +132,11 @@ public class QuizDAO {
         return quizzes;
     }
 
+    /**
+     * Gets all public quizzes
+     * @return List of Quiz
+     * @throws SQLException
+     */
     public List<Quiz> getPublicQuizzes() throws SQLException {
         List<Quiz> quizzes = new ArrayList<>();
         String sql = "SELECT quiz_id, quiz_name, visibility FROM quizzes WHERE visibility = 'public'";
@@ -128,6 +158,12 @@ public class QuizDAO {
         return quizzes;
     }
 
+    /**
+     * Gets quiz by id
+     * @param id
+     * @return Quiz or null
+     * @throws SQLException
+     */
     public Quiz getQuizByID(int id) throws SQLException {
         String sql = "SELECT quiz_id, quiz_name, visibility FROM quizzes WHERE quiz_id = ?";
 
@@ -152,8 +188,12 @@ public class QuizDAO {
         return null;
     }
 
-
-
+    /**
+     * Updates a question
+     * @param question
+     * @return Question or null
+     * @throws SQLException
+     */
     public Question updateQuestion(Question question) throws SQLException {
         String sql = """
             UPDATE questions
@@ -186,6 +226,11 @@ public class QuizDAO {
         }
     }
 
+    /**
+     * Saves teacher to quiz
+     * @param quizId
+     * @param teacherId
+     */
     public void saveTeacherToQuiz(int quizId, int teacherId){
         String sql = "INSERT INTO teacher_quiz (teacher_role, quiz_id, user_id) VALUES (?::teacher_role_type, ?, ?)";
         System.out.println("saveTeachertoQuiz");
@@ -201,6 +246,12 @@ public class QuizDAO {
         }
     }
 
+    /**
+     * Deletes a question
+     * @param id
+     * @return true if deleted
+     * @throws SQLException
+     */
     public boolean deleteQuestion(int id) throws SQLException {
         String sql = "DELETE FROM questions WHERE question_id = ?";
 
@@ -212,6 +263,11 @@ public class QuizDAO {
         }
     }
 
+    /**
+     * Saves question to quiz
+     * @param quizId
+     * @param questionId
+     */
     public void saveQuestionToQuiz(int quizId, int questionId){
         String sql = "INSERT INTO quiz_question (quiz_id, question_id) VALUES (?, ?)";
         System.out.println("saving question to quiz");
@@ -225,6 +281,12 @@ public class QuizDAO {
         }
     }
 
+    /**
+     * Gets questions for a quiz
+     * @param quizId
+     * @return List of Question
+     * @throws SQLException
+     */
     public List<Question> getQuizQuestions(int quizId) throws SQLException {
         List<Question> questions = new ArrayList<>();
         String sql = """
@@ -242,7 +304,6 @@ public class QuizDAO {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    // Fetch options array safely
                     String[] options = null;
                     try {
                         Array optionsArray = rs.getArray("options");
@@ -255,7 +316,6 @@ public class QuizDAO {
                         options = null;
                     }
 
-                    // Fetch other fields safely
                     String typeStr = rs.getString("type");
                     QuestionType type = null;
                     if (typeStr != null) {
@@ -279,7 +339,6 @@ public class QuizDAO {
                             visibility
                     );
 
-                    // Debug print for each row
                     System.out.println("Loaded question: " + q.getQuestionId() + ", prompt=" + q.getPrompt());
 
                     questions.add(q);
@@ -290,7 +349,11 @@ public class QuizDAO {
         return questions;
     }
 
-    // Update quiz basic info
+    /**
+     * Updates quiz info
+     * @param quiz
+     * @throws SQLException
+     */
     public void updateQuiz(Quiz quiz) throws SQLException {
         String sql = "UPDATE quizzes SET quiz_name = ?, visibility = ?::visibility_type WHERE quiz_id = ?";
 
@@ -308,7 +371,13 @@ public class QuizDAO {
         }
     }
 
-    // Verify teacher owns the quiz
+    /**
+     * Verifies teacher owns quiz
+     * @param quizId
+     * @param teacherId
+     * @return true if owner
+     * @throws SQLException
+     */
     public boolean verifyQuizOwnership(int quizId, int teacherId) throws SQLException {
         String sql = "SELECT COUNT(*) FROM teacher_quiz WHERE quiz_id = ? AND user_id = ? AND teacher_role = 'creator'";
 
@@ -326,7 +395,12 @@ public class QuizDAO {
         }
     }
 
-    // Get current question IDs for a quiz
+    /**
+     * Gets question IDs for a quiz
+     * @param quizId
+     * @return Set of Integer
+     * @throws SQLException
+     */
     public Set<Integer> getQuestionIdsForQuiz(int quizId) throws SQLException {
         Set<Integer> questionIds = new HashSet<>();
         String sql = "SELECT question_id FROM quiz_question WHERE quiz_id = ?";
@@ -345,7 +419,12 @@ public class QuizDAO {
         return questionIds;
     }
 
-    // Remove a question from a quiz
+    /**
+     * Removes question from quiz
+     * @param quizId
+     * @param questionId
+     * @throws SQLException
+     */
     public void removeQuestionFromQuiz(int quizId, int questionId) throws SQLException {
         String sql = "DELETE FROM quiz_question WHERE quiz_id = ? AND question_id = ?";
 

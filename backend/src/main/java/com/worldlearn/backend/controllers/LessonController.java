@@ -13,11 +13,22 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Lesson controller
+ */
 public class LessonController {
     private final LessonService lessonService;
 
+    /**
+     * Constructs controller
+     * @param lessonService
+     */
     public LessonController(LessonService lessonService) { this.lessonService = lessonService; }
 
+    /**
+     * Creates lesson
+     * @param ctx
+     */
     public void createLesson(Context ctx) {
         try {
             int teacherId = Integer.parseInt(ctx.queryParam("teacherId"));
@@ -37,6 +48,10 @@ public class LessonController {
         }
     }
 
+    /**
+     * Updates lesson
+     * @param ctx
+     */
     public void updateLesson(Context ctx) {
         try {
             int teacherId = Integer.parseInt(ctx.queryParam("teacherId"));
@@ -63,6 +78,10 @@ public class LessonController {
         }
     }
 
+    /**
+     * Gets all lessons
+     * @param ctx
+     */
     public void getAllLessons(Context ctx) {
         try {
             List<Lesson> lessons = lessonService.getAllLessons();
@@ -72,6 +91,10 @@ public class LessonController {
         }
     }
 
+    /**
+     * Gets all teacher lessons
+     * @param ctx
+     */
     public void getAllTeacherLessons(Context ctx) {
         try {
             int teacherId = Integer.parseInt(ctx.pathParam("id"));
@@ -82,6 +105,10 @@ public class LessonController {
         }
     }
 
+    /**
+     * Gets public lessons
+     * @param ctx
+     */
     public void getPublicLessons(Context ctx) {
         try {
             List<Lesson> lessons = lessonService.getPublicLessons();
@@ -91,10 +118,14 @@ public class LessonController {
         }
     }
 
+    /**
+     * Gets quizzes for a lesson
+     * @param ctx
+     */
     public void getLessonQuizzes(Context ctx) {
         try {
             int lessonId = Integer.parseInt(ctx.pathParam("id"));
-            System.out.println("Getting Quizzes for Lesson: "+lessonId);
+            System.out.println("Getting Quizzes for Lesson: " + lessonId);
 
             List<Quiz> quizzes = lessonService.getLessonQuizzes(lessonId);
             ctx.json(quizzes);

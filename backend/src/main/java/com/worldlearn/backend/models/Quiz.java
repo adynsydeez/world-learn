@@ -3,23 +3,36 @@ package com.worldlearn.backend.models;
 import java.util.ArrayList;
 import com.worldlearn.backend.models.Question.Visibility;
 
+/**
+ * Quiz model
+ */
 public class Quiz {
 
     private String quizName;
     private Visibility visibility;
     private int quizID;
 
-    /// ////CONSTRUCTOR
-    public Quiz() {
+    /**
+     * No-arg constructor
+     */
+    public Quiz() { }
 
-    }
+    /**
+     * Full constructor
+     * @param quizID
+     * @param quizName
+     * @param vis
+     */
     public Quiz (int quizID, String quizName, Visibility vis) {
         setQuizID(quizID);
         setQuizName(quizName);
         setVisibility(vis);
     }
 
-    /// /////GETTERS AND SETTERS
+    /**
+     * Sets quiz ID
+     * @param id
+     */
     public void setQuizID(int id) {
         if (id < 0) {
             throw new IllegalArgumentException("quizId must be >= 0");
@@ -27,47 +40,37 @@ public class Quiz {
         this.quizID = id;
     }
 
-    /// AUTHOR
-    /*
-    public void setAuthor(Teacher author) {
-        if (author == null) {
-            throw new IllegalArgumentException("Author (Teacher) cannot be null");
-        }
-        this.author = author;
-    }
-
-    public Teacher getAuthor() {
-        return author;
-    }
-*/
-    /// QUESTIONS
-    //public void setQuestions(java.util.ArrayList<Question> questions) {
-    //    if (questions == null) {
-    //        throw new IllegalArgumentException("questions list cannot be null");
-    //    }
-    //    for (int i = 0; i < questions.size(); i++) {
-    //        if (questions.get(i) == null) {
-    //            throw new IllegalArgumentException("questions[" + i + "] cannot be null");
-    //        }
-    //    }
-    //    this.questions = questions;
-    //}
-
+    /**
+     * Sets quiz name
+     * @param quizName
+     */
     public void setQuizName(String quizName) {
         this.quizName = quizName;
     }
 
+    /**
+     * Sets visibility
+     * @param vis
+     */
     public void setVisibility(Visibility vis) {
         this.visibility = vis;
     }
 
+    /**
+     * Gets quiz ID
+     * @return quizID
+     */
     public int getQuizID() { return quizID; }
 
-    //public ArrayList<Question> getQuestions() {
-    //    return questions;
-    //}
+    /**
+     * Gets quiz name
+     * @return quizName
+     */
+    public String getQuizName() { return quizName; }
 
-    public String getQuizName() {return quizName;}
-
-    public Visibility getVisibility() {return visibility;}
+    /**
+     * Gets visibility
+     * @return visibility
+     */
+    public Visibility getVisibility() { return visibility; }
 }

@@ -10,13 +10,26 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * User data access object
+ */
 public class UserDAO {
     private final Database database;
 
+    /**
+     * Constructs UserDAO
+     * @param database
+     */
     public UserDAO(Database database) {
         this.database = database;
     }
 
+    /**
+     * Gets user by id
+     * @param id
+     * @return user or null
+     * @throws SQLException
+     */
     public User getUserById(String id) throws SQLException {
         final String sql = "SELECT user_id, email, password, first_name, last_name, user_role FROM users WHERE user_id = ?";
 
@@ -27,13 +40,13 @@ public class UserDAO {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    String user_id      = rs.getString("user_id");   // use getInt + String.valueOf if you prefer
-                    String email    = rs.getString("email");
+                    String user_id = rs.getString("user_id");
+                    String email = rs.getString("email");
                     String password = rs.getString("password");
-                    String first    = rs.getString("first_name");
-                    String last     = rs.getString("last_name");
-                    String roleRaw  = rs.getString("user_role");
-                    String role     = roleRaw == null ? "" : roleRaw.trim().toLowerCase();
+                    String first = rs.getString("first_name");
+                    String last = rs.getString("last_name");
+                    String roleRaw = rs.getString("user_role");
+                    String role = roleRaw == null ? "" : roleRaw.trim().toLowerCase();
 
                     int int_id = Integer.parseInt(user_id);
                     switch (role) {
@@ -54,6 +67,12 @@ public class UserDAO {
         return null;
     }
 
+    /**
+     * Creates user
+     * @param user
+     * @return created user with id
+     * @throws SQLException
+     */
     public User createUser(User user) throws SQLException {
         String sql = "INSERT INTO users (email, password, first_name, last_name, user_role) VALUES (?, ?, ?, ?, ?::user_role_type)";
 
@@ -81,6 +100,11 @@ public class UserDAO {
         }
     }
 
+    /**
+     * Gets all users
+     * @return list of users
+     * @throws SQLException
+     */
     public List<User> getAllUsers() throws SQLException {
         List<User> users = new ArrayList<>();
         final String sql = "SELECT * FROM users";
@@ -90,13 +114,13 @@ public class UserDAO {
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                String user_id      = rs.getString("user_id");
-                String email    = rs.getString("email");
+                String user_id = rs.getString("user_id");
+                String email = rs.getString("email");
                 String password = rs.getString("password");
-                String first    = rs.getString("first_name");
-                String last     = rs.getString("last_name");
-                String roleRaw  = rs.getString("user_role");
-                String role     = roleRaw == null ? "" : roleRaw.trim().toLowerCase();
+                String first = rs.getString("first_name");
+                String last = rs.getString("last_name");
+                String roleRaw = rs.getString("user_role");
+                String role = roleRaw == null ? "" : roleRaw.trim().toLowerCase();
 
                 int int_id = Integer.parseInt(user_id);
                 User u;
@@ -105,12 +129,12 @@ public class UserDAO {
                         u = new Student(email, password, first, last, role);
                         u.setId(int_id);
                         users.add(u);
-                        break; // Added missing break
+                        break;
                     case "teacher":
                         u = new Teacher(email, password, first, last, role);
                         u.setId(int_id);
                         users.add(u);
-                        break; // Added missing break
+                        break;
                     default:
                         throw new IllegalArgumentException("Unknown user_role: " + roleRaw);
                 }
@@ -119,6 +143,13 @@ public class UserDAO {
         return users;
     }
 
+    /**
+     * Gets user by email and password
+     * @param email
+     * @param password
+     * @return user or null
+     * @throws SQLException
+     */
     public User getUserByEmailAndPassword(String email, String password) throws SQLException {
         String sql = "SELECT user_id, first_name, last_name, email, password, user_role FROM users WHERE email = ? AND password = ?";
         try (Connection conn = database.getConnection();
@@ -128,11 +159,11 @@ public class UserDAO {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    String roleRaw  = rs.getString("user_role");
-                    String role     = roleRaw == null ? "" : roleRaw.trim().toLowerCase();
-                    int id          = rs.getInt("user_id");
-                    String first    = rs.getString("first_name");
-                    String last     = rs.getString("last_name");
+                    String roleRaw = rs.getString("user_role");
+                    String role = roleRaw == null ? "" : roleRaw.trim().toLowerCase();
+                    int id = rs.getInt("user_id");
+                    String first = rs.getString("first_name");
+                    String last = rs.getString("last_name");
                     String userEmail = rs.getString("email");
                     String userPassword = rs.getString("password");
 
@@ -147,9 +178,16 @@ public class UserDAO {
                 }
             }
         }
-        return null; // invalid credentials
+        return null;
     }
 
+    /**
+     * Updates basic user profile
+     * @param id
+     * @param user
+     * @return updated user or null
+     * @throws SQLException
+     */
     public User updateUser(int id, UpdateUserProfileRequest user) throws SQLException {
         String sql = "UPDATE users SET first_name = ?, last_name = ?, email = ? WHERE user_id = ?";
 
@@ -171,6 +209,12 @@ public class UserDAO {
         }
     }
 
+    /**
+     * Deletes user
+     * @param id
+     * @return true if deleted
+     * @throws SQLException
+     */
     public boolean deleteUser(int id) throws SQLException {
         String sql = "DELETE FROM users WHERE user_id = ?";
 
@@ -182,6 +226,13 @@ public class UserDAO {
         }
     }
 
+    /**
+     * Updates password
+     * @param id
+     * @param user
+     * @return updated user or null
+     * @throws SQLException
+     */
     public User updatePassword(int id, UpdatePasswordRequest user) throws SQLException {
         String sql = "UPDATE users SET password = ? WHERE user_id = ?";
 

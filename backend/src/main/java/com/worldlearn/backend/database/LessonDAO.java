@@ -7,11 +7,24 @@ import com.worldlearn.backend.models.Quiz;
 import java.sql.*;
 import java.util.*;
 
+/**
+ * Data access object for Lesson entities
+ */
 public class LessonDAO {
     private final Database database;
 
+    /**
+     * Constructs LessonDAO
+     * @param database
+     */
     public LessonDAO(Database database) { this.database = database; }
 
+    /**
+     * Creates a lesson
+     * @param lesson
+     * @return Lesson or null
+     * @throws SQLException
+     */
     public Lesson createLesson(Lesson lesson) throws SQLException {
         String sql = """
     INSERT INTO lessons (lesson_name, visibility)
@@ -20,10 +33,10 @@ public class LessonDAO {
         System.out.println("DAO:"+lesson.getLessonName());
         try (Connection conn = database.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-                stmt.setString(1, lesson.getLessonName());
-                stmt.setString(2, lesson.getVisibility().getDbValue());
+            stmt.setString(1, lesson.getLessonName());
+            stmt.setString(2, lesson.getVisibility().getDbValue());
 
-                int rowsAffected = stmt.executeUpdate();
+            int rowsAffected = stmt.executeUpdate();
 
             if (rowsAffected > 0) {
                 try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
@@ -37,6 +50,11 @@ public class LessonDAO {
         return null;
     }
 
+    /**
+     * Gets all lessons
+     * @return list of lessons
+     * @throws SQLException
+     */
     public List<Lesson> getAllLessons() throws SQLException {
         List<Lesson> lessons = new ArrayList<>();
         String sql = "SELECT lesson_name, visibility FROM lessons";
@@ -57,6 +75,12 @@ public class LessonDAO {
         return lessons;
     }
 
+    /**
+     * Gets lesson by id
+     * @param id
+     * @return Lesson or null
+     * @throws SQLException
+     */
     public Lesson getLessonById(int id) throws SQLException {
         String sql = "SELECT lesson_id, lesson_name, visibility FROM lessons WHERE lesson_id = ?";
 
@@ -80,6 +104,11 @@ public class LessonDAO {
         return null;
     }
 
+    /**
+     * Saves teacher ownership to lesson
+     * @param lessonId
+     * @param teacherId
+     */
     public void saveTeacherToLesson(int lessonId, int teacherId){
         String sql = "INSERT INTO teacher_lesson (teacher_role, lesson_id, user_id) VALUES (?::teacher_role_type, ?, ?)";
         try (Connection conn = database.getConnection();
@@ -94,6 +123,11 @@ public class LessonDAO {
         }
     }
 
+    /**
+     * Saves quiz to lesson
+     * @param lessonId
+     * @param quizId
+     */
     public void saveQuizToLesson(int lessonId, int quizId){
         String sql = "INSERT INTO lesson_quiz (lesson_id, quiz_id) VALUES (?, ?)";
 
@@ -108,6 +142,12 @@ public class LessonDAO {
         }
     }
 
+    /**
+     * Gets quizzes for a lesson
+     * @param id
+     * @return list of quizzes
+     * @throws SQLException
+     */
     public List<Quiz> getLessonQuizzes(int id) throws SQLException {
         List<Quiz> quizzes = new ArrayList<>();
         String sql = """
@@ -135,6 +175,12 @@ public class LessonDAO {
         return quizzes;
     }
 
+    /**
+     * Gets all lessons for a teacher
+     * @param teacherId
+     * @return list of lessons
+     * @throws SQLException
+     */
     public List<Lesson> getAllTeacherLessons(int teacherId) throws SQLException {
         List<Lesson> lessons = new ArrayList<>();
 
@@ -174,6 +220,11 @@ public class LessonDAO {
         return lessons;
     }
 
+    /**
+     * Gets public lessons
+     * @return list of lessons
+     * @throws SQLException
+     */
     public List<Lesson> getPublicLessons() throws SQLException {
         List<Lesson> lessons = new ArrayList<>();
 
@@ -208,7 +259,11 @@ public class LessonDAO {
         return lessons;
     }
 
-    // Update lesson basic info
+    /**
+     * Updates a lesson
+     * @param lesson
+     * @throws SQLException
+     */
     public void updateLesson(Lesson lesson) throws SQLException {
         String sql = "UPDATE lessons SET lesson_name = ?, visibility = ?::visibility_type WHERE lesson_id = ?";
 
@@ -226,7 +281,13 @@ public class LessonDAO {
         }
     }
 
-    // Verify teacher owns the lesson
+    /**
+     * Verifies teacher owns lesson
+     * @param lessonId
+     * @param teacherId
+     * @return true if owner
+     * @throws SQLException
+     */
     public boolean verifyLessonOwnership(int lessonId, int teacherId) throws SQLException {
         String sql = "SELECT COUNT(*) FROM teacher_lesson WHERE lesson_id = ? AND user_id = ? AND teacher_role = 'creator'";
 
@@ -244,7 +305,12 @@ public class LessonDAO {
         }
     }
 
-    // Get current quiz IDs for a lesson
+    /**
+     * Gets quiz ids for a lesson
+     * @param lessonId
+     * @return set of quiz ids
+     * @throws SQLException
+     */
     public Set<Integer> getQuizIdsForLesson(int lessonId) throws SQLException {
         Set<Integer> quizIds = new HashSet<>();
         String sql = "SELECT quiz_id FROM lesson_quiz WHERE lesson_id = ?";
@@ -263,7 +329,12 @@ public class LessonDAO {
         return quizIds;
     }
 
-    // Remove a quiz from a lesson
+    /**
+     * Removes quiz from lesson
+     * @param lessonId
+     * @param quizId
+     * @throws SQLException
+     */
     public void removeQuizFromLesson(int lessonId, int quizId) throws SQLException {
         String sql = "DELETE FROM lesson_quiz WHERE lesson_id = ? AND quiz_id = ?";
 

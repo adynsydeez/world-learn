@@ -11,13 +11,24 @@ import com.worldlearn.backend.services.UserService;
 import io.javalin.http.Context;
 import java.util.List;
 
+/**
+ * User controller
+ */
 public class UserController {
     private final UserService userService;
 
+    /**
+     * Constructs controller
+     * @param userService
+     */
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
+    /**
+     * Gets user by id
+     * @param ctx
+     */
     public void getUserById(Context ctx) {
         try {
             String id = ctx.pathParam("id");
@@ -35,6 +46,10 @@ public class UserController {
         }
     }
 
+    /**
+     * Logs in a user
+     * @param ctx
+     */
     public void logIn(Context ctx) {
         try {
             LoginRequest loginRequest = ctx.bodyAsClass(LoginRequest.class);
@@ -50,12 +65,14 @@ public class UserController {
         }
     }
 
+    /**
+     * Creates a user
+     * @param ctx
+     */
     public void createUser(Context ctx) {
         try {
-            // Parse the JSON body using UserRequest DTO
             UserRequest userRequest = ctx.bodyAsClass(UserRequest.class);
 
-            // Create the appropriate user type based on role
             User newUser;
             String role = userRequest.getRole().toLowerCase().trim();
 
@@ -83,17 +100,19 @@ public class UserController {
                     return;
             }
 
-            // Save to database using your service
             User createdUser = userService.createUser(newUser);
-
             ctx.status(201).json(createdUser);
 
         } catch (Exception e) {
             ctx.status(500).json("Error creating user: " + e.getMessage());
-            e.printStackTrace(); // For debugging
+            e.printStackTrace();
         }
     }
 
+    /**
+     * Gets all users
+     * @param ctx
+     */
     public void getAllUsers(Context ctx) {
         try {
             List<User> users = userService.getAllUsers();
@@ -103,6 +122,10 @@ public class UserController {
         }
     }
 
+    /**
+     * Updates a user
+     * @param ctx
+     */
     public void updateUser(Context ctx) {
         try {
             int id = Integer.parseInt(ctx.pathParam("id"));
@@ -123,6 +146,10 @@ public class UserController {
         }
     }
 
+    /**
+     * Deletes a user
+     * @param ctx
+     */
     public void deleteUser(Context ctx) {
         try {
             int id = Integer.parseInt(ctx.pathParam("id"));
@@ -140,6 +167,10 @@ public class UserController {
         }
     }
 
+    /**
+     * Updates a user's password
+     * @param ctx
+     */
     public void updatePassword(Context ctx) {
         try {
             int id = Integer.parseInt(ctx.pathParam("id"));

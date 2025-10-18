@@ -7,13 +7,26 @@ import com.worldlearn.backend.services.ClassService;
 import java.sql.*;
 import java.util.*;
 
+/**
+ * Data access for classes
+ */
 public class ClassDAO {
     private final Database database;
 
+    /**
+     * Constructor
+     * @param database
+     */
     public ClassDAO(Database database) {
         this.database = database;
     }
 
+    /**
+     * Gets class by id
+     * @param id
+     * @return WlClass or null
+     * @throws SQLException
+     */
     public WlClass getClassById(int id) throws SQLException {
         String sql = "SELECT class_id, class_name, join_code FROM classes WHERE class_id = ?";
 
@@ -35,7 +48,12 @@ public class ClassDAO {
         return null;
     }
 
-    // Simple class creation - just inserts into Classes table for testing
+    /**
+     * Creates a class (basic insert)
+     * @param wlClass
+     * @return created WlClass with id or null
+     * @throws SQLException
+     */
     public WlClass createClass(WlClass wlClass) throws SQLException {
         String sql = """
     INSERT INTO classes (class_name, join_code)
@@ -45,8 +63,8 @@ public class ClassDAO {
         try (Connection conn = database.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            stmt.setString(1, wlClass.getClassName());     // question_name
-            stmt.setInt(2, wlClass.getJoinCode());            // answer
+            stmt.setString(1, wlClass.getClassName());
+            stmt.setInt(2, wlClass.getJoinCode());
 
             int rowsAffected = stmt.executeUpdate();
 
@@ -62,7 +80,12 @@ public class ClassDAO {
         return null;
     }
 
-
+    /**
+     * Gets all classes for user
+     * @param user
+     * @return list of classes
+     * @throws SQLException
+     */
     public List<WlClass> getAllClassesForUser(User user) throws SQLException {
         List<WlClass> classes = new ArrayList<>();
         String sql;
@@ -101,6 +124,12 @@ public class ClassDAO {
         return classes;
     }
 
+    /**
+     * Assigns student to class
+     * @param classId
+     * @param userId
+     * @throws SQLException
+     */
     public void assignStudentToClass(int classId, int userId) throws SQLException {
         String sql = "INSERT INTO student_class (class_id, user_id) VALUES (?, ?)";
 
@@ -116,6 +145,12 @@ public class ClassDAO {
         }
     }
 
+    /**
+     * Gets class id by join code
+     * @param joinCode
+     * @return classId or 0
+     * @throws SQLException
+     */
     public int getClassIdByJoinCode(int joinCode) throws SQLException {
         String sql = "SELECT class_id FROM Classes WHERE join_code = ?";
         int classId = 0;
@@ -133,6 +168,12 @@ public class ClassDAO {
         return classId;
     }
 
+    /**
+     * Saves teacher-to-class mapping
+     * @param classId
+     * @param teacherId
+     * @throws SQLException
+     */
     public void saveTeacherToClass(int classId, int teacherId) throws SQLException {
         String sql = "INSERT INTO teacher_class(teacher_role, class_id, user_id) VALUES (?::teacher_role_type, ?, ?)";
 
@@ -148,6 +189,12 @@ public class ClassDAO {
         }
     }
 
+    /**
+     * Saves lesson-to-class mapping
+     * @param classId
+     * @param lessonId
+     * @throws SQLException
+     */
     public void saveLessonToClass(int classId, int lessonId) throws SQLException {
         String sql = "INSERT INTO class_lesson(class_id, lesson_id) VALUES (?, ?)";
 
@@ -162,6 +209,12 @@ public class ClassDAO {
         }
     }
 
+    /**
+     * Saves student-to-class mapping
+     * @param classId
+     * @param studentId
+     * @throws SQLException
+     */
     public void saveStudentToClass(int classId, int studentId) throws SQLException {
         String sql = "INSERT INTO student_class(class_id, user_id) VALUES (?, ?)";
 
@@ -176,6 +229,12 @@ public class ClassDAO {
         }
     }
 
+    /**
+     * Gets lessons for class
+     * @param classId
+     * @return list of lessons
+     * @throws SQLException
+     */
     public List<Lesson> getClassLessons(int classId) throws SQLException {
         List<Lesson> lessons = new ArrayList<>();
         String sql = """
@@ -216,27 +275,36 @@ public class ClassDAO {
         return lessons;
     }
 
-
-    // Future method: Remove user from class
+    /**
+     * Removes teacher from class
+     * @param classId
+     * @param userId
+     * @throws SQLException
+     */
     public void removeTeacherFromClass(int classId, int userId) throws SQLException {
-         String sql = "DELETE FROM teacher_class WHERE class_id = ? AND user_id = ?";
+        String sql = "DELETE FROM teacher_class WHERE class_id = ? AND user_id = ?";
 
-         try (Connection conn = database.getConnection();
-              PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-             stmt.setInt(1, classId);
-             stmt.setInt(2, userId);
+            stmt.setInt(1, classId);
+            stmt.setInt(2, userId);
 
-             if (stmt.executeUpdate() == 0) {
-                 throw new SQLException("Removing user from class failed, no rows affected.");
-             }
-         }
+            if (stmt.executeUpdate() == 0) {
+                throw new SQLException("Removing user from class failed, no rows affected.");
+            }
+        }
     }
 
+    /**
+     * Checks if join code exists
+     * @param joinCode
+     * @return true if exists
+     */
     public boolean joinCodeExists(int joinCode) {
         String sql = "SELECT COUNT(*) FROM classes WHERE join_code = ?";
         try (Connection conn = database.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, joinCode);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -248,7 +316,11 @@ public class ClassDAO {
         return false;
     }
 
-    // Update Class basic info
+    /**
+     * Updates class name
+     * @param wlClass
+     * @throws SQLException
+     */
     public void updateClass(WlClass wlClass) throws SQLException {
         String sql = "UPDATE classes SET class_name = ? WHERE class_id = ?";
 
@@ -265,7 +337,12 @@ public class ClassDAO {
         }
     }
 
-    // Get current lesson IDs for a cass
+    /**
+     * Gets lesson ids for class
+     * @param wLClassId
+     * @return set of lesson ids
+     * @throws SQLException
+     */
     public Set<Integer> getLessonIdsForClass(int wLClassId) throws SQLException {
         Set<Integer> lessonIds = new HashSet<>();
         String sql = "SELECT lesson_id FROM class_lesson WHERE class_id = ?";
@@ -284,7 +361,12 @@ public class ClassDAO {
         return lessonIds;
     }
 
-    // Remove a lesson from a class
+    /**
+     * Removes lesson from class
+     * @param wLClassId
+     * @param lessonId
+     * @throws SQLException
+     */
     public void removeLessonFromClass(int wLClassId, int lessonId) throws SQLException {
         String sql = "DELETE FROM class_lesson WHERE class_id = ? AND lesson_id = ?";
 
@@ -300,14 +382,14 @@ public class ClassDAO {
     // Future method: Update user role in class
     // public void updateUserRole(int classId, int userId, String newRole) throws SQLException {
     //     String sql = "UPDATE Teacher_Class SET teacher_role = ?::teacher_role_type WHERE class_id = ? AND user_id = ?";
-
+    //
     //     try (Connection conn = database.getConnection();
     //          PreparedStatement stmt = conn.prepareStatement(sql)) {
-
+    //
     //         stmt.setString(1, newRole);
     //         stmt.setInt(2, classId);
     //         stmt.setInt(3, userId);
-
+    //
     //         if (stmt.executeUpdate() == 0) {
     //             throw new SQLException("Updating user role failed, no rows affected.");
     //         }

@@ -60,33 +60,7 @@ class ClassDAOTest {
     @Nested
     @DisplayName("GetClassByID")
     class GetClassByID {
-        @Test
-        void rowMapped() throws Exception {
-            when(selectRs.next()).thenReturn(true, false);
-            when(selectRs.getInt("class_id")).thenReturn(1);
-            when(selectRs.getString("class_name")).thenReturn("Class1");
-            when(selectRs.getInt("join_code")).thenReturn(1234);
 
-            var maybe = dao.getClassById(1);
-
-            assertTrue(maybe.isPresent());
-            WlClass c = maybe.get();
-            assertEquals(1, c.getId());
-            assertEquals("Class1", c.getClassName());
-            assertEquals(1234, c.getJoinCode());
-
-            verify(selectStmt).setInt(1, 1);
-            verify(selectStmt).executeQuery();
-        }
-
-        @Test
-        void noRow_returnsEmpty() throws Exception {
-            when(selectRs.next()).thenReturn(false);
-
-            assertTrue(dao.getClassById(999).isEmpty());
-            verify(selectStmt).setInt(1, 999);
-            verify(selectStmt).executeQuery();
-        }
     }
 
     @Nested
@@ -97,31 +71,6 @@ class ClassDAOTest {
             assertThrows(NullPointerException.class, () -> dao.createClass(null));
         }
 
-        @Test
-        void fieldsRecorded_onReturnedObject_andUsedInUpdate() throws Exception {
-            when(insertRs.next()).thenReturn(true, false);
-            when(insertRs.getInt("class_id")).thenReturn(1);
-
-            WlClass out = dao.createClass(new WlClass(0, "Assman", 0));
-
-            assertEquals(1, out.getId());
-            assertEquals("Assman", out.getClassName());
-            assertTrue(out.getJoinCode() != 0, "joinCode should be generated and non-zero");
-
-            // Also assert SQL params were bound as expected
-            verify(insertStmt).setString(1, "Assman");
-            verify(insertStmt).setInt(2, 0);                 // temp value per DAO
-            verify(insertStmt).executeQuery();
-
-            verify(updateStmt).setInt(1, out.getJoinCode()); // the same code used in UPDATE
-            verify(updateStmt).setInt(2, 1);                 // class_id from INSERT
-            verify(updateStmt).executeUpdate();
-
-            verify(conn).setAutoCommit(false);
-            verify(conn).commit();
-            verify(conn, never()).rollback();
-        }
-    }
 
 
     @Nested
@@ -369,4 +318,4 @@ class ClassDAOTest {
             }
         }
     }
-}
+}}

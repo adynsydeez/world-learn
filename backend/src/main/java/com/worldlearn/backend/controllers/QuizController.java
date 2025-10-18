@@ -11,13 +11,24 @@ import com.worldlearn.backend.dto.CreateQuizRequest;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Quiz controller
+ */
 public class QuizController {
     private final QuizService quizService;
 
+    /**
+     * Constructs controller
+     * @param quizService
+     */
     public QuizController(QuizService quizService) {
         this.quizService = quizService;
     }
 
+    /**
+     * Gets quiz by id (path param)
+     * @param ctx
+     */
     public void getUserById(Context ctx) {
         try {
             int id = Integer.parseInt(ctx.pathParam("id"));
@@ -35,6 +46,10 @@ public class QuizController {
         }
     }
 
+    /**
+     * Creates a quiz
+     * @param ctx
+     */
     public void createQuiz(Context ctx) {
         try {
             int teacherId = Integer.parseInt(ctx.queryParam("teacherId"));
@@ -54,12 +69,15 @@ public class QuizController {
         }
     }
 
+    /**
+     * Updates a quiz
+     * @param ctx
+     */
     public void updateQuiz(Context ctx) {
         try {
             int teacherId = Integer.parseInt(ctx.queryParam("teacherId"));
             CreateQuizRequest req = ctx.bodyAsClass(CreateQuizRequest.class);
 
-            // Validate that lessonId is provided
             if (req.getQuizId() <= 0) {
                 ctx.status(400).result("Quiz ID is required for update");
                 return;
@@ -80,6 +98,10 @@ public class QuizController {
         }
     }
 
+    /**
+     * Gets all quizzes
+     * @param ctx
+     */
     public void getAllQuizzes(Context ctx) {
         try {
             List<Quiz> questions = quizService.getAllQuizzes();
@@ -89,6 +111,10 @@ public class QuizController {
         }
     }
 
+    /**
+     * Gets questions for a quiz
+     * @param ctx
+     */
     public void getQuizQuestions(Context ctx) {
         try {
             int quizId = Integer.parseInt(ctx.pathParam("id"));
@@ -99,6 +125,10 @@ public class QuizController {
         }
     }
 
+    /**
+     * Gets all quizzes authored by a teacher
+     * @param ctx
+     */
     public void getAllTeacherQuizzes(Context ctx) {
         try {
             int teacherId = Integer.parseInt(ctx.pathParam("id"));
@@ -109,6 +139,10 @@ public class QuizController {
         }
     }
 
+    /**
+     * Gets all public quizzes
+     * @param ctx
+     */
     public void getPublicQuizzes(Context ctx) {
         try {
             List<Quiz> quizzes = quizService.getPublicQuizzes();

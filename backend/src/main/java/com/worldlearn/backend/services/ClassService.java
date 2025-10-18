@@ -8,18 +8,38 @@ import com.worldlearn.backend.models.WlClass;
 import java.sql.SQLException;
 import java.util.*;
 
+/**
+ * Class service
+ */
 public class ClassService {
     private final ClassDAO classDAO;
 
+    /**
+     * Constructs ClassService
+     * @param classDAO
+     */
     public ClassService(ClassDAO classDAO) {
         this.classDAO = classDAO;
     }
 
+    /**
+     * Gets class by id
+     * @param id
+     * @return WlClass
+     * @throws SQLException
+     */
     public WlClass getClassById(int id) throws SQLException{
         return classDAO.getClassById(id);
     }
 
-    // Simple class creation - just inserts into Classes table
+    /**
+     * Creates a class with teacher and lessons
+     * @param wlClass
+     * @param teacherId
+     * @param lessons
+     * @return saved WlClass
+     * @throws SQLException
+     */
     public WlClass createClass(WlClass wlClass, int teacherId, List<Integer> lessons) throws SQLException {
         int joinCode = generateCode();
         WlClass toSave = new WlClass(wlClass.getId(), wlClass.getClassName(), joinCode);
@@ -32,6 +52,14 @@ public class ClassService {
         return saved;
     }
 
+    /**
+     * Updates class details and lesson mappings
+     * @param wlClass
+     * @param teacherId
+     * @param lessons
+     * @return updated WlClass
+     * @throws SQLException
+     */
     public WlClass updateClass(WlClass wlClass, int teacherId, List<Integer> lessons) throws SQLException {
         int wlClassId = wlClass.getId();
 
@@ -47,10 +75,10 @@ public class ClassService {
 
         // 3. Determine which lessons to add and remove
         Set<Integer> lessonsToAdd = new HashSet<>(newLessonIds);
-        lessonsToAdd.removeAll(currentLessonIds); // Only new ones
+        lessonsToAdd.removeAll(currentLessonIds);
 
         Set<Integer> lessonsToRemove = new HashSet<>(currentLessonIds);
-        lessonsToRemove.removeAll(newLessonIds); // Only removed ones
+        lessonsToRemove.removeAll(newLessonIds);
 
         // 4. Remove lessons that are no longer associated
         for (Integer lessonId : lessonsToRemove) {
@@ -68,6 +96,10 @@ public class ClassService {
         return classDAO.getClassById(wlClassId);
     }
 
+    /**
+     * Generates a unique 6-digit join code
+     * @return join code
+     */
     public int generateCode() {
         Random random = new Random();
         int joinCode;
@@ -77,31 +109,59 @@ public class ClassService {
             joinCode = 100000 + random.nextInt(900000);
             attempts++;
             if (attempts > 1000) throw new RuntimeException("Unable to generate unique join code");
-        } while (classDAO.joinCodeExists(joinCode)); // check DB
+        } while (classDAO.joinCodeExists(joinCode));
 
         return joinCode;
     }
 
-
+    /**
+     * Gets all classes for user
+     * @param user
+     * @return list of WlClass
+     * @throws SQLException
+     */
     public List<WlClass> getAllClassesForUser(User user) throws SQLException {
         return classDAO.getAllClassesForUser(user);
     }
 
+    /**
+     * Gets lessons for class
+     * @param classId
+     * @return list of Lesson
+     * @throws SQLException
+     */
     public List<Lesson> getClassLessons(int classId) throws SQLException {
         return classDAO.getClassLessons(classId);
     }
 
-     public void assignStudentToClass(int classId, int userId) throws SQLException {
-         classDAO.assignStudentToClass(classId, userId);
-     }
+    /**
+     * Assigns student to class
+     * @param classId
+     * @param userId
+     * @throws SQLException
+     */
+    public void assignStudentToClass(int classId, int userId) throws SQLException {
+        classDAO.assignStudentToClass(classId, userId);
+    }
 
-     public int getClassIdByJoinCode(int joinCode) throws SQLException {
+    /**
+     * Gets class id by join code
+     * @param joinCode
+     * @return class id
+     * @throws SQLException
+     */
+    public int getClassIdByJoinCode(int joinCode) throws SQLException {
         return classDAO.getClassIdByJoinCode(joinCode);
-     }
+    }
 
-    // Remove user from class
+    /**
+     * Removes teacher from class
+     * @param classId
+     * @param teacherId
+     * @throws SQLException
+     */
     public void removeTeacherFromClass(int classId, int teacherId) throws SQLException {
-         classDAO.removeTeacherFromClass(classId, teacherId);
+        classDAO.removeTeacherFromClass(classId, teacherId);
     }
 
     // Update user role in class

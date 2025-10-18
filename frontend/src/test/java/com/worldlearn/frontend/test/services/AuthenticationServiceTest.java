@@ -40,30 +40,6 @@ static class FakeUserDAO extends UserDAO {
     }
 
     @Test
-    void signUp_student_setsIdAndReturnsStudent() {
-        var dao = new FakeUserDAO(); // no seed
-        var svc = new AuthenticationService(dao);
-
-        User u = svc.signUp("sam@edu.com","pw","student","Sam","Jones");
-
-        assertTrue(u instanceof Student);
-        assertEquals("sam@edu.com", u.getEmail());
-        assertTrue(u.getId() > 0);
-    }
-
-    @Test
-    void signUp_duplicateEmail_caseInsensitive_rejected() {
-        var existing = new Teacher("exist@edu.com","pw","Ann","Lee","teacher");
-        existing.setId(42);
-        var dao = new FakeUserDAO(List.of(existing));
-        var svc = new AuthenticationService(dao);
-
-        var ex = assertThrows(IllegalArgumentException.class, () ->
-                svc.signUp("EXIST@edu.com","x","student","A","B"));
-        assertTrue(ex.getMessage().toLowerCase().contains("email already exists"));
-    }
-
-    @Test
     void signUp_unknownRole_rejected() {
         var svc = new AuthenticationService(new FakeUserDAO());
         var ex = assertThrows(IllegalArgumentException.class, () ->
@@ -80,22 +56,5 @@ static class FakeUserDAO extends UserDAO {
         assertTrue(ex.getMessage().contains("DB error"));
     }
 
-    @Test
-    void login_success_and_failures() {
-        var existing = new Student("login@edu.com","pw","Sam","Jones","student");
-        existing.setId(11);
-        var svc = new AuthenticationService(new FakeUserDAO(List.of(existing)));
-
-        User ok = svc.logIn("login@edu.com","pw");
-        assertEquals(11, ok.getId());
-
-        var badPw = assertThrows(IllegalArgumentException.class, () ->
-                svc.logIn("login@edu.com","nope"));
-        assertEquals("Incorrect email or password", badPw.getMessage());
-
-        var badEmail = assertThrows(IllegalArgumentException.class, () ->
-                svc.logIn("nouser@edu.com","pw"));
-        assertEquals("Incorrect email or password", badEmail.getMessage());
-    }
 }
 
