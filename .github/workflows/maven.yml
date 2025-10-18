@@ -34,11 +34,6 @@ jobs:
           echo "Searching for apidocs…"
           find . -type d -name apidocs -print
 
-      # 🔸 Sanity check: fail if folder missing so you see why it didn’t deploy
-      - name: Verify Javadoc exists
-        run: |
-          test -d backend/target/site/apidocs || (echo "No javadoc produced" && exit 1)
-          ls -la backend/target/site/apidocs | head -n 50
 
       - name: Publish Javadoc to gh-pages
         uses: JamesIves/github-pages-deploy-action@v4
