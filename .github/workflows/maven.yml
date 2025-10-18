@@ -1,34 +1,11 @@
-name: Build & Publish Javadoc
-
-on:
-  push:
-    branches: [ main ]          # adjust if your default branch is different
-  workflow_dispatch:
-
-permissions:
-  contents: write               # allows pushing to gh-pages
-
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0        # recommended for gh-pages push history
-
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin # or corretto to match your local
-          java-version: '21'
-
-      # Build (optional if you only need javadoc)
-      - name: Build
-        run: mvn -B -q -DskipTests package
+      # ... other steps
 
       - name: Generate Javadoc
-        run: mvn -B -q -DskipTests javadoc:javadoc
-
+        run: mvn javadoc:javadoc
       - name: Publish Javadoc
         uses: JamesIves/github-pages-deploy-action@v4
         with:
