@@ -2,11 +2,11 @@ name: Build and Test
 
 on:
   push:
-    branches: [ javadocbackend ]   # change to master if needed
+    branches: [ IntergratedBuild ]
   workflow_dispatch:
 
 permissions:
-  contents: write        # needed to push to gh-pages
+  contents: write
 
 jobs:
   build:
