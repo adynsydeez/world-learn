@@ -2,7 +2,7 @@ name: Build and Test
 
 on:
   push:
-    branches: [ IntergratedBuild ]
+    branches: [ IntegratedBuild ]
   workflow_dispatch:
 
 permissions:
