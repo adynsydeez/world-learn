@@ -1,82 +1,119 @@
 package com.worldlearn.frontend;
+
 import com.worldlearn.backend.models.*;
 import com.worldlearn.frontend.services.ApiService;
 import com.worldlearn.frontend.services.AuthClientService;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
+import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import javafx.scene.paint.Color;
 
 import java.io.IOException;
 import java.util.List;
 
 public class TeacherDashboardController {
+
     private static final Logger log = LoggerFactory.getLogger(TeacherDashboardController.class);
     private User user;
     private Stage stage;
     private AuthClientService auth;
-    private ApiService api = new ApiService();
+    private final ApiService api = new ApiService();
 
-    // pass user,stage to controller
-    public void init(Stage stage, AuthClientService auth) {
-        User user = Session.getCurrentUser();
-        this.user = user;
-        if(user == null){
-            System.err.println("No user logged in.");
-        }
-
-        loadClasses(this.user);
-        loadLessons(this.user.getId());
-        loadQuizzes(this.user.getId());
-        loadQuestions(this.user.getId());
-    }
-
-    @FXML private Label lblClasses;
-    @FXML private Label lblLessons;
-    @FXML private Label lblQuizzes;
-    @FXML private Label lblQuestions;
     @FXML private Button logoutBtn;
     @FXML private Button createLessonBtn;
     @FXML private Button createClassBtn;
     @FXML private Button createQuizBtn;
     @FXML private Button createQuestionBtn;
-    @FXML private VBox classList;
+    @FXML private TilePane classList;
     @FXML private VBox lessonList;
     @FXML private VBox quizList;
     @FXML private VBox questionList;
 
+    // === INITIALIZATION ===
+    public void init(Stage stage, AuthClientService auth) {
+        this.user = Session.getCurrentUser();
+        this.stage = stage;
+        this.auth = auth;
+
+        if (user == null) {
+            System.err.println("No user logged in.");
+            return;
+        }
+
+        loadClasses(user);
+        loadLessons(user.getId());
+        loadQuizzes(user.getId());
+        loadQuestions(user.getId());
+    }
+
     @FXML
     private void initialize() {
-        setupHover(lblClasses);
-        setupHover(lblLessons);
-        setupHover(lblQuizzes);
-        setupHover(lblQuestions);
+        // You no longer need the hover label setup since labels are gone from the layout
     }
 
+    // === LOAD CLASSES ===
     private void loadClasses(User user) {
-        api.getAllClassesForUser(user)
-                .thenAccept(classes -> Platform.runLater(() -> {
-                    classList.getChildren().clear();
-                    for (WlClass wlClass : classes) {
-                        Button btn = new Button(wlClass.getClassName() + " - Code: " + wlClass.getJoinCode());
-                        btn.setStyle("-fx-background-color: white; -fx-padding: 10; -fx-border-color: #ccc;");
-                        btn.setOnAction(e -> editClass(wlClass));
-                        classList.getChildren().add(btn);
+    api.getAllClassesForUser(user)
+            .thenAccept(classes -> Platform.runLater(() -> {
+                classList.getChildren().clear();
+
+                // Define a set of stable pastel colors
+                String[] pastelColors = {
+                        "#E8EAF6", "#E3F2FD", "#E8F5E9", "#FFF3E0", "#F3E5F5", "#FBE9E7"
+                };
+
+                for (WlClass wlClass : classes) {
+                    // Stable color index based on class ID or name hash
+                    int colorIndex;
+                    if (wlClass.getId() != 0) {
+                        colorIndex = wlClass.getId() % pastelColors.length;
+                    } else {
+                        colorIndex = Math.abs(wlClass.getClassName().hashCode()) % pastelColors.length;
                     }
-                }))
-                .exceptionally(ex -> { ex.printStackTrace(); return null; });
+
+                    String color = pastelColors[colorIndex];
+
+                    VBox tile = new VBox();
+                    tile.setSpacing(8);
+                    tile.setPrefSize(250, 150);
+                    tile.setPadding(new Insets(14));
+                    tile.setStyle(
+                            "-fx-background-color:" + color + ";" +
+                            "-fx-background-radius:16;" +
+                            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 6, 0.2, 0, 2);"
+                    );
+                    tile.getStyleClass().add("tile"); // enables hover animation
+
+                    Label name = new Label(wlClass.getClassName());
+                    name.setStyle("-fx-font-weight: bold; -fx-font-size: 16; -fx-text-fill: #2a2a2a;");
+
+                    Label code = new Label("Code: " + wlClass.getJoinCode());
+                    code.setStyle("-fx-font-size: 13; -fx-text-fill: #555;");
+                    VBox.setMargin(code, new Insets(20, 0, 0, 0));
+
+                    tile.getChildren().addAll(name, code);
+
+                    tile.setOnMouseClicked(e -> editClass(wlClass));
+
+                    classList.getChildren().add(tile);
+                }
+            }))
+            .exceptionally(ex -> {
+                ex.printStackTrace();
+                return null;
+            });
     }
 
+    // === LOAD LESSONS ===
     private void loadLessons(int teacherId) {
         api.getAllTeacherLessonsAsync(teacherId)
                 .thenAccept(lessons -> Platform.runLater(() -> {
@@ -91,6 +128,7 @@ public class TeacherDashboardController {
                 .exceptionally(ex -> { ex.printStackTrace(); return null; });
     }
 
+    // === LOAD QUIZZES ===
     private void loadQuizzes(int teacherId) {
         api.getAllTeacherQuizzesAsync(teacherId)
                 .thenAccept(quizzes -> Platform.runLater(() -> {
@@ -102,12 +140,10 @@ public class TeacherDashboardController {
                         quizList.getChildren().add(btn);
                     }
                 }))
-                .exceptionally(e -> {
-                    e.printStackTrace();
-                    return null;
-                });
+                .exceptionally(e -> { e.printStackTrace(); return null; });
     }
 
+    // === LOAD QUESTIONS ===
     private void loadQuestions(int teacherId) {
         api.getAllTeacherQuestionsAsync(teacherId)
                 .thenAccept(questions -> Platform.runLater(() -> {
@@ -119,37 +155,16 @@ public class TeacherDashboardController {
                         questionList.getChildren().add(btn);
                     }
                 }))
-                .exceptionally(e -> {
-                    e.printStackTrace();
-                    return null;
-                });
+                .exceptionally(e -> { e.printStackTrace(); return null; });
     }
 
-    private void editClass(WlClass wlClass) {
-        openPopup("class-creation-view.fxml", "Edit Class", wlClass);
-    }
-    private void editLesson(Lesson lesson) {
-        openPopup("lesson-creation-view.fxml", "Edit Lesson", lesson);
-    }
-    private void editQuiz(Quiz quiz) {
-        openPopup("quiz-creation-view.fxml", "Edit Quiz", quiz);
-    }
-    private void editQuestion(Question question) {
-        openPopup("question-creation-view.fxml", "Edit Question", question);
-    }
+    // === EDIT POPUPS ===
+    private void editClass(WlClass wlClass) { openPopup("class-creation-view.fxml", "Edit Class", wlClass); }
+    private void editLesson(Lesson lesson) { openPopup("lesson-creation-view.fxml", "Edit Lesson", lesson); }
+    private void editQuiz(Quiz quiz) { openPopup("quiz-creation-view.fxml", "Edit Quiz", quiz); }
+    private void editQuestion(Question question) { openPopup("question-creation-view.fxml", "Edit Question", question); }
 
-
-    private void setupHover(Label label) {
-        label.setOnMouseEntered(e -> {
-            label.setTextFill(Color.YELLOW);
-            label.setStyle("-fx-underline: true;");
-        });
-        label.setOnMouseExited(e -> {
-            label.setTextFill(Color.WHITE);
-            label.setStyle("-fx-underline: false;");
-        });
-    }
-
+    // === POPUP LOGIC ===
     @FXML
     private void openPopup(String fxmlPath, String title) {
         try {
@@ -188,7 +203,6 @@ public class TeacherDashboardController {
             });
 
             Scene scene = new Scene(fxmlLoader.load(), 800, 600);
-
             Stage popupStage = new Stage();
             popupStage.setTitle(title);
             popupStage.setScene(scene);
@@ -198,7 +212,6 @@ public class TeacherDashboardController {
             popupStage.initOwner(parentStage);
 
             popupStage.setOnHidden(e -> loadClasses(this.user));
-
             popupStage.showAndWait();
         } catch (IOException e) {
             e.printStackTrace();
@@ -216,7 +229,6 @@ public class TeacherDashboardController {
             });
 
             Scene scene = new Scene(fxmlLoader.load(), 800, 600);
-
             Stage popupStage = new Stage();
             popupStage.setTitle(title);
             popupStage.setScene(scene);
@@ -226,7 +238,6 @@ public class TeacherDashboardController {
             popupStage.initOwner(parentStage);
 
             popupStage.setOnHidden(e -> loadLessons(this.user.getId()));
-
             popupStage.showAndWait();
         } catch (IOException e) {
             e.printStackTrace();
@@ -244,7 +255,6 @@ public class TeacherDashboardController {
             });
 
             Scene scene = new Scene(fxmlLoader.load(), 800, 600);
-
             Stage popupStage = new Stage();
             popupStage.setTitle(title);
             popupStage.setScene(scene);
@@ -254,7 +264,6 @@ public class TeacherDashboardController {
             popupStage.initOwner(parentStage);
 
             popupStage.setOnHidden(e -> loadQuizzes(this.user.getId()));
-
             popupStage.showAndWait();
         } catch (IOException e) {
             e.printStackTrace();
@@ -272,7 +281,6 @@ public class TeacherDashboardController {
             });
 
             Scene scene = new Scene(fxmlLoader.load(), 800, 600);
-
             Stage popupStage = new Stage();
             popupStage.setTitle(title);
             popupStage.setScene(scene);
@@ -282,63 +290,39 @@ public class TeacherDashboardController {
             popupStage.initOwner(parentStage);
 
             popupStage.setOnHidden(e -> loadQuestions(this.user.getId()));
-
             popupStage.showAndWait();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    // === LOGOUT HANDLER ===
     @FXML
     private void onLogoutButtonClick() {
         try {
-            // 1) Clear session (adjust for your Session API)
             Session.clearSession();
-
-            // 2) Get the current window from the button (NOT the null 'stage' field)
             Stage currentStage = (Stage) logoutBtn.getScene().getWindow();
 
-            // 3) Load auth/login view (check the file name/casing!)
             FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("auth-view.fxml"));
             Scene scene = new Scene(fxml.load(), 1280, 720);
 
-            // 4) Init the auth controller with a real service + the same Stage
             AuthController authController = fxml.getController();
             authController.init((auth != null ? auth : new AuthClientService()), currentStage);
 
-            // 5) Swap scenes
             currentStage.setScene(scene);
             currentStage.show();
 
         } catch (Exception e) {
             e.printStackTrace();
-            new javafx.scene.control.Alert(
-                    javafx.scene.control.Alert.AlertType.ERROR,
-                    "Failed to log out: " + e.getMessage()
-            ).showAndWait();
+            new Alert(Alert.AlertType.ERROR, "Failed to log out: " + e.getMessage()).showAndWait();
         }
     }
 
-    @FXML
-    protected void onCreateQuestionClick() {
-        openPopup("question-creation-view.fxml", "Create Question");
-    }
-
-    @FXML
-    protected void onCreateClassClick() {
-        openPopup("class-creation-view.fxml", "Create Class");
-    }
-
-    @FXML
-    protected void onCreateLessonClick() {
-        openPopup("lesson-creation-view.fxml", "Create Lesson");
-    }
-
-    @FXML
-    protected void onCreateQuizClick() {
-        openPopup("quiz-creation-view.fxml", "Create Quiz");
-    }
-
-
+    // === CREATE BUTTON HANDLERS ===
+    @FXML protected void onCreateQuestionClick() { openPopup("question-creation-view.fxml", "Create Question"); }
+    @FXML protected void onCreateClassClick() { openPopup("class-creation-view.fxml", "Create Class"); }
+    @FXML protected void onCreateLessonClick() { openPopup("lesson-creation-view.fxml", "Create Lesson"); }
+    @FXML protected void onCreateQuizClick() { openPopup("quiz-creation-view.fxml", "Create Quiz"); }
 }
+
 

@@ -1,0 +1,129 @@
+/* ===== Reuse base dashboard design ===== */
+@import "dashboard.css";
+
+/* ===== Teacher Dashboard Accent Colors ===== */
+
+/* Title + headings slightly deeper purple */
+.page-title {
+  -fx-text-fill: #2d1b69;
+}
+
+.section-title {
+  -fx-text-fill: #4b3c98;
+}
+
+/* Background tint to distinguish teacher layout */
+.content-card {
+  -fx-background-color: #f8f7ff;
+  -fx-background-radius: 20;
+  -fx-effect: dropshadow(gaussian, rgba(90, 75, 160, 0.25), 24, 0.25, 0, 10);
+}
+
+/* ===== "Create" buttons color-coded ===== */
+#createClassBtn {
+  -fx-background-color: #6d5db8; /* purple */
+  -fx-text-fill: white;
+  -fx-font-weight: bold;
+  -fx-background-radius: 10;
+}
+
+#createLessonBtn {
+  -fx-background-color: #a87be0; /* light violet */
+  -fx-text-fill: white;
+  -fx-font-weight: bold;
+  -fx-background-radius: 10;
+}
+
+#createQuizBtn {
+  -fx-background-color: #4aaf62; /* green accent */
+  -fx-text-fill: white;
+  -fx-font-weight: bold;
+  -fx-background-radius: 10;
+}
+
+#createQuestionBtn {
+  -fx-background-color: #d9534f; /* red accent */
+  -fx-text-fill: white;
+  -fx-font-weight: bold;
+  -fx-background-radius: 10;
+}
+
+/* Hover effect for all "create" buttons */
+#createClassBtn:hover,
+#createLessonBtn:hover,
+#createQuizBtn:hover,
+#createQuestionBtn:hover {
+  -fx-opacity: 0.85;
+  -fx-cursor: hand;
+}
+
+/* ===== Sidebar tweaks ===== */
+.sidebar {
+  -fx-background-color: rgba(20, 18, 60, 0.9);
+}
+
+.logout-btn {
+  -fx-background-color: #b23c3c;
+  -fx-font-weight: bold;
+}
+
+/* ===== Scroll containers ===== */
+.scroll-pane {
+  -fx-background-color: transparent;
+  -fx-padding: 6;
+}
+
+.scroll-pane > .viewport {
+  -fx-background-color: transparent;
+}
+
+/* ===== Class tile layout ===== */
+.tile {
+  -fx-background-radius: 16;
+  -fx-padding: 14;
+  -fx-alignment: top-left;
+  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 6, 0.2, 0, 2);
+  -fx-min-width: 250;
+  -fx-min-height: 150;
+  -fx-max-width: 250;
+  -fx-max-height: 150;
+  -fx-background-color: #E8EAF6; /* fallback pastel */
+  -fx-border-radius: 16;
+  -fx-border-color: rgba(0,0,0,0.05);
+  -fx-border-width: 1;
+  -fx-transition: all 0.2s ease-in-out;
+}
+
+/* Hover animation for each tile */
+.tile:hover {
+  -fx-scale-x: 1.03;
+  -fx-scale-y: 1.03;
+  -fx-cursor: hand;
+  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 10, 0.2, 0, 4);
+  -fx-background-color: derive(#E8EAF6, 10%);
+}
+
+/* Inside labels of tiles */
+.tile .label {
+  -fx-text-fill: #2a2a2a;
+}
+
+/* Class name (top) */
+.tile .label:first-child {
+  -fx-font-size: 16;
+  -fx-font-weight: bold;
+}
+
+/* Class code (bottom-right) */
+.tile .label:last-child {
+  -fx-font-size: 13;
+  -fx-text-fill: #555;
+  -fx-alignment: bottom-right;
+}
+
+/* ===== Optional: smooth transitions for hover ===== */
+.tile {
+  -fx-scale-x: 1.0;
+  -fx-scale-y: 1.0;
+  -fx-transition: all 0.15s ease-in-out;
+}
