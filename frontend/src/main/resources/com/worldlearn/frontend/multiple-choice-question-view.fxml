@@ -115,6 +115,10 @@
                 <Button fx:id="nextBtn" text="Next Question" onMouseClicked="#onNextBtnClick"
                         style="-fx-background-color:#11d618; -fx-text-fill:white; -fx-font-weight:500;
                    -fx-background-radius:10; -fx-padding:10 18;"/>
+
+                <Button fx:id="finishBtn" text="Finish Quiz" onMouseClicked="#onFinishBtnClick"
+                        style="-fx-background-color:#11d618; -fx-text-fill:white; -fx-font-weight:500;
+                   -fx-background-radius:10; -fx-padding:10 18;"/>
             </VBox>
 
         </VBox>

@@ -5,6 +5,7 @@ import com.worldlearn.backend.models.User;
 import com.worldlearn.frontend.services.AuthClientService;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -34,6 +35,7 @@ public class MultipleChoiceQuestionController {
     @FXML private ToggleButton aBtn, bBtn, cBtn, dBtn;
     @FXML private Button submitBtn;
     @FXML private Button nextBtn;
+    @FXML private Button finishBtn;
 
     // Inline style snippets (no external CSS)
     private static final String SELECTED_HILITE = "; -fx-border-color:#64b5f6; -fx-border-width:2; -fx-background-insets:0;"
@@ -56,6 +58,7 @@ public class MultipleChoiceQuestionController {
         headerLabel.setText("Question " + questionNumber + (region != null ? " - " + region : ""));
 
         nextBtn.setDisable(true);
+        finishBtn.setDisable(true);
 
         questionLabel.setText(question);
         aBtn.setText(choices.get(0));
@@ -64,6 +67,7 @@ public class MultipleChoiceQuestionController {
         dBtn.setText(choices.get(3));
 
         nextBtn.setVisible(questionNumber != Session.getQuestionsList().size());
+        finishBtn.setVisible(questionNumber == Session.getQuestionsList().size());
 
         // Save each button's BASE style so we can revert easily
         for (Toggle t : answersGroup.getToggles()) {
@@ -125,6 +129,7 @@ public class MultipleChoiceQuestionController {
                     return null;
                 });
         nextBtn.setDisable(false);
+        finishBtn.setDisable(false);
     }
 
     private void disableAllButtons() {
@@ -221,6 +226,29 @@ public class MultipleChoiceQuestionController {
                     null);
             stage.setScene(mcScene);
         }
+    }
+
+    @FXML
+    private void onFinishBtnClick() throws IOException {
+        Session.clearCurrentQuestion();
+
+        FXMLLoader loader = new FXMLLoader(
+                HelloApplication.class.getResource("student-question-view.fxml")
+        );
+
+        Scene mcScene = null;
+        try {
+            mcScene = new Scene(loader.load(), 1280, 720);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        Quiz currentQuiz = Session.instance.getCurrentQuiz();
+
+        // Initialize controller with quiz and services
+        StudentQuestionViewController controller = loader.getController();
+        controller.init(stage, auth, currentQuiz);
+
+        stage.setScene(mcScene);
     }
 
     @FXML

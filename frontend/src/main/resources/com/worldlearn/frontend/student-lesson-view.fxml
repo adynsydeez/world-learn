@@ -5,6 +5,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 
+<!-- lesson page – shows quizzes for the selected lesson -->
 <StackPane xmlns="http://javafx.com/javafx"
            xmlns:fx="http://javafx.com/fxml"
            fx:controller="com.worldlearn.frontend.StudentLessonController"
@@ -14,8 +15,8 @@
     <HBox spacing="16" alignment="CENTER_LEFT">
         <padding><Insets top="16" right="16" bottom="16" left="16"/></padding>
 
-
-        <VBox  spacing="16" minWidth="96" prefWidth="96" maxWidth="96" alignment="TOP_CENTER"
+        <!-- sidebar -->
+        <VBox spacing="16" minWidth="96" prefWidth="96" maxWidth="96" alignment="TOP_CENTER"
               style="
                 -fx-background-color: rgba(12,28,68,0.95);
                 -fx-background-radius:16;
@@ -25,50 +26,42 @@
                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 24, 0.25, 0, 8);
               ">
 
-            <!-- Logo -->
-            <StackPane >
-                <ImageView  fitWidth="80" fitHeight="80" preserveRatio="true">
+            <!-- logo -->
+            <StackPane>
+                <ImageView fitWidth="80" fitHeight="80" preserveRatio="true">
                     <image><Image url="@img/logosm.png"/></image>
                 </ImageView>
             </StackPane>
 
-
             <VBox spacing="16" alignment="TOP_CENTER">
-
-
-                <!-- PROFILE -->
+                <!-- profile btn -->
                 <Button text="PROFILE" contentDisplay="TOP" graphicTextGap="8" prefWidth="96"
                         style="-fx-background-color: transparent;
-               -fx-text-fill: #e8f0ff; -fx-font-size: 12px; -fx-font-weight: 700;
-               -fx-padding: 12 6 12 6; -fx-background-radius:16;">
+                               -fx-text-fill: #e8f0ff; -fx-font-size: 12px; -fx-font-weight: 700;
+                               -fx-padding: 12 6 12 6; -fx-background-radius:16;">
                     <graphic>
-
                         <Label text="&#xE77B;"
                                style="-fx-font-family:'Segoe MDL2 Assets';
-                      -fx-font-size:26;
-                      -fx-text-fill:#e8f0ff;
-                      -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.35), 8, 0.25, 0, 0);" />
+                                      -fx-font-size:26;
+                                      -fx-text-fill:#e8f0ff;
+                                      -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.35), 8, 0.25, 0, 0);" />
                     </graphic>
                 </Button>
 
-
-
-
+                <!-- back btn -->
                 <Button onAction="#classesView"
                         prefWidth="84" prefHeight="36"
                         style="-fx-background-color:#f0f4ff; -fx-text-fill:#0f1b3a;
                                -fx-background-radius:20; -fx-padding:10 16;
                                -fx-font-size:13; -fx-font-weight:bold;">
-
                     <text>Back</text>
                 </Button>
-
             </VBox>
 
             <Region VBox.vgrow="ALWAYS"/>
         </VBox>
 
-
+        <!-- main white content card -->
         <VBox spacing="12" HBox.hgrow="ALWAYS"
               style="
                 -fx-background-color:white;
@@ -77,17 +70,17 @@
                 -fx-effect:dropshadow(gaussian, rgba(0,0,0,0.28), 24, 0.25, 0, 10);
               ">
 
-            <!-- Header row -->
+            <!-- title + header -->
             <HBox spacing="12" alignment="CENTER_LEFT">
                 <Label text="Lesson Title"
                        style="-fx-font-size:28; -fx-font-weight:900; -fx-text-fill:#162144;"/>
             </HBox>
 
+            <!-- subheading -->
             <Label text="Overview" style="-fx-font-size:18; -fx-font-weight:700; -fx-text-fill:#3a4668;"/>
 
-            <!-- Quiz list -->
+            <!-- quiz buttons load here -->
             <VBox fx:id="quizListContainer" spacing="10" HBox.hgrow="ALWAYS" prefWidth="2000"/>
         </VBox>
-
     </HBox>
 </StackPane>

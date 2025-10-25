@@ -1,9 +1,10 @@
 package com.worldlearn.frontend;
 
 import com.worldlearn.backend.models.Lesson;
-import com.worldlearn.backend.models.WlClass;
-import com.worldlearn.backend.services.AuthenticationService;
 import com.worldlearn.backend.models.User;
+import com.worldlearn.backend.models.WlClass;
+import com.worldlearn.frontend.Session;
+import com.worldlearn.frontend.services.ApiService;
 import com.worldlearn.frontend.services.AuthClientService;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -15,76 +16,63 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.worldlearn.frontend.Session;
-import com.worldlearn.backend.models.WlClass;
-import com.worldlearn.backend.services.AuthenticationService;
-import com.worldlearn.backend.models.User;
-import com.worldlearn.frontend.services.ApiService;
-import com.worldlearn.frontend.services.AuthClientService;
-import javafx.application.Platform;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
-import javafx.stage.Stage;
-import com.worldlearn.frontend.services.ApiService;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import com.worldlearn.backend.models.Lesson;
-import javafx.scene.layout.VBox;
-import javafx.scene.control.Label;
-import javafx.scene.layout.HBox;
-import javafx.scene.control.Button;
 
 import java.io.IOException;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToggleGroup;
 
 public class StudentDashboardController {
+
     private static final Logger log = LoggerFactory.getLogger(StudentDashboardController.class);
+
+    // state we carry around
     private User user;
     private Stage stage;
     private AuthClientService auth;
     private final ApiService apiService = new ApiService();
-    @FXML private HBox classBox;
-    @FXML private HBox lessonsRow;
+
+    // ui refs
+    @FXML private HBox classBox;     // chips/tabs for classes
+    @FXML private HBox lessonsRow;   // lesson cards container
     @FXML private Button homeButton;
     @FXML private Button lessonButton;
-
-    public void init(Stage stage) { init(stage, null); }
-
-    public void init(Stage stage, AuthClientService auth) {
-        this.user = Session.getCurrentUser();
-        this.stage = stage;
-        this.auth  = auth;
-        loadClasses();
-        if (welcomeLabel != null) {
-            welcomeLabel.setText("Welcome, " + user.getEmail() + "!");
-        }
-    }
-
     @FXML private Label welcomeLabel;
     @FXML private Button classesButton;
     @FXML private Button profileButton;
     @FXML private Button teacherButton;
     @FXML private Button logoutButton;
 
+    // entry when we only know the stage
+    public void init(Stage stage) { init(stage, null); }
+
+    // entry when we have auth too
+    public void init(Stage stage, AuthClientService auth) {
+        this.user = Session.getCurrentUser();
+        this.stage = stage;
+        this.auth  = auth;
+
+        // greet + pull classes
+        if (welcomeLabel != null) {
+            welcomeLabel.setText("Welcome, " + user.getEmail() + "!");
+        }
+        loadClasses();
+    }
+
+    // go to classes page (full list view)
     @FXML
     protected void onClassesButtonClick() throws Exception {
         FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("student-classes-view.fxml"));
         Scene scene = new Scene(fxml.load(), 1280, 720);
 
-        // pass context into the next controller
         StudentClassesController c = fxml.getController();
-        c.init(stage, auth);
+        c.init(stage, auth); // pass context
 
         stage.setScene(scene);
     }
 
+    // go to profile
     @FXML
     protected void setProfileButtonClick() throws Exception {
         FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("profile-view.fxml"));
@@ -96,51 +84,54 @@ public class StudentDashboardController {
         stage.setScene(scene);
     }
 
+    // logout back to auth screen
     @FXML
     protected void onLogoutButtonClick() throws Exception {
         user = null;
         FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("Auth-view.fxml"));
         Scene scene = new Scene(fxml.load(),1280,720);
+
         AuthController authController = fxml.getController();
         authController.init((auth != null ? auth : new AuthClientService()), stage);
+
         stage.setScene(scene);
         stage.show();
     }
+
+    // pull classes for this user and render the chips
     private void loadClasses() {
         apiService.getAllClassesForUser(this.user)
                 .thenAccept(classes -> Platform.runLater(() -> {
                     classBox.getChildren().clear();
 
                     ToggleGroup group = new ToggleGroup();
+
+                    // build a toggle for each class
                     for (WlClass wlClass : classes) {
                         ToggleButton btn = new ToggleButton(wlClass.getClassName());
                         btn.setToggleGroup(group);
                         btn.getStyleClass().addAll("chip-btn", "class-tab");
-
                         btn.setOnAction(e -> loadLessonsForClass(wlClass.getId()));
                         classBox.getChildren().add(btn);
                     }
 
-
+                    // add "join class" action on the end
                     Button joinBtn = new Button("Join Class");
                     joinBtn.getStyleClass().addAll("pill", "success");
                     joinBtn.setOnAction(e -> onJoinButtonClick());
                     classBox.getChildren().add(joinBtn);
 
-
+                    // auto-select first class so page isn’t empty
                     if (!classes.isEmpty() && !classBox.getChildren().isEmpty()) {
                         ToggleButton firstBtn = (ToggleButton) classBox.getChildren().get(0);
                         firstBtn.setSelected(true);
-                        // trigger its lessons to load
                         loadLessonsForClass(classes.get(0).getId());
                     }
                 }))
                 .exceptionally(ex -> { ex.printStackTrace(); return null; });
     }
 
-
-
-
+    // prompt for a join code and try to join
     @FXML
     private void onJoinButtonClick() {
         TextInputDialog dialog = new TextInputDialog();
@@ -160,15 +151,14 @@ public class StudentDashboardController {
         });
     }
 
+    // actually calls backend to join the class, then refreshes ui
     private void joinClass(int joinCode) {
-        System.out.println("Joining with userId=" + user.getId() + " joinCode=" + joinCode);
+        log.info("joining class: userId={} joinCode={}", user.getId(), joinCode);
+
         CompletableFuture.runAsync(() -> {
             try {
                 apiService.assignStudentToClass(this.user.getId(), joinCode);
-
-                // Refresh the classes UI on JavaFX thread
-                Platform.runLater(this::loadClasses);
-
+                Platform.runLater(this::loadClasses); // refresh chips
             } catch (Exception e) {
                 Platform.runLater(() -> {
                     Alert alert = new Alert(Alert.AlertType.ERROR, "Failed to join class: " + e.getMessage());
@@ -178,6 +168,7 @@ public class StudentDashboardController {
         });
     }
 
+    // reload this dashboard (main/home)
     @FXML
     protected void onHomeButtonClick() throws Exception {
         FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("student-dashboard-view.fxml"));
@@ -189,6 +180,7 @@ public class StudentDashboardController {
         stage.setScene(scene);
     }
 
+    // open the generic lessons page (without picking a specific lesson)
     @FXML
     protected void onLessonButtonClick() throws Exception {
         FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("student-lesson-view.fxml"));
@@ -199,11 +191,12 @@ public class StudentDashboardController {
 
         stage.setScene(scene);
     }
+
+    // get lessons for the selected class and render cards
     private void loadLessonsForClass(int classId) {
         apiService.getClassLessons(classId)
                 .thenAccept(lessons -> Platform.runLater(() -> {
                     lessonsRow.getChildren().clear();
-
                     for (Lesson l : lessons) {
                         VBox card = buildLessonCard(l);
                         lessonsRow.getChildren().add(card);
@@ -212,6 +205,7 @@ public class StudentDashboardController {
                 .exceptionally(ex -> { ex.printStackTrace(); return null; });
     }
 
+    // compact little lesson card with color + title
     private VBox buildLessonCard(Lesson l) {
         VBox card = new VBox(6);
         card.getStyleClass().addAll("lesson-card", pickColor(l));
@@ -224,11 +218,16 @@ public class StudentDashboardController {
 
         card.getChildren().addAll(over, title);
         card.setOnMouseClicked(ev -> {
-            try { openLesson(l); } catch (IOException e) { throw new RuntimeException(e); }
+            try {
+                openLesson(l);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         });
         return card;
     }
 
+    // pick a color class based on id (simple, but looks varied)
     private String pickColor(Lesson l) {
         int mod = Math.abs(l.getLessonId()) % 3;
         return switch (mod) {
@@ -238,17 +237,17 @@ public class StudentDashboardController {
         };
     }
 
-
+    // push into lesson page with the chosen lesson pre-selected
     private void openLesson(Lesson l) throws IOException {
-
-        Session.instance.setCurrentLesson(l);  // remember lesson
+        Session.instance.setCurrentLesson(l); // remember which one
 
         FXMLLoader fxml = new FXMLLoader(HelloApplication.class.getResource("student-lesson-view.fxml"));
         Scene scene = new Scene(fxml.load(), 1280, 720);
+
         StudentLessonController c = fxml.getController();
         c.init(stage, auth);
         c.setLesson(l.getLessonId(), l.getLessonName());
+
         stage.setScene(scene);
     }
 }
-

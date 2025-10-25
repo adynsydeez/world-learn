@@ -6,6 +6,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 
+<!-- question page – shows quiz questions + hover details -->
 <StackPane xmlns="http://javafx.com/javafx"
            xmlns:fx="http://javafx.com/fxml"
            fx:controller="com.worldlearn.frontend.StudentQuestionViewController"
@@ -15,7 +16,7 @@
     <HBox spacing="16" alignment="CENTER_LEFT">
         <padding><Insets top="16" right="16" bottom="16" left="16"/></padding>
 
-        <!-- ===== Sidebar (same as lesson page) ===== -->
+        <!-- left side bar -->
         <VBox spacing="16" minWidth="96" prefWidth="96" maxWidth="96" alignment="TOP_CENTER"
               style="
                 -fx-background-color: rgba(12,28,68,0.95);
@@ -26,15 +27,15 @@
                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 24, 0.25, 0, 8);
               ">
 
-            <!-- Logo coin -->
-            <StackPane >
+            <!-- logo coin thing -->
+            <StackPane>
                 <ImageView fitWidth="80" fitHeight="80" preserveRatio="true">
                     <image><Image url="@img/logosm.png"/></image>
                 </ImageView>
             </StackPane>
 
             <VBox spacing="16" alignment="TOP_CENTER">
-                <!-- PROFILE -->
+                <!-- profile btn -->
                 <Button fx:id="homeButtonLessonPage"
                         onAction="#onProfileButtonClickLessonPage"
                         text="PROFILE" contentDisplay="TOP" graphicTextGap="8" prefWidth="96"
@@ -49,9 +50,7 @@
                     </graphic>
                 </Button>
 
-
-
-                <!-- BACK to quiz list -->
+                <!-- back to quiz list -->
                 <Button onAction="#quizView"
                         style="-fx-background-color:#f0f4ff; -fx-text-fill:#0f1b3a;
                                -fx-background-radius:20; -fx-padding:10 16;
@@ -64,14 +63,14 @@
             <Region VBox.vgrow="ALWAYS"/>
         </VBox>
 
-        <!-- ===== White content card ===== -->
+        <!-- main white section -->
         <VBox spacing="20" HBox.hgrow="ALWAYS"
               style="-fx-background-color:white;
                      -fx-background-radius:18;
                      -fx-padding:24;
                      -fx-effect:dropshadow(gaussian, rgba(0,0,0,0.28), 24, 0.25, 0, 10);">
 
-            <!-- Header with right-aligned points badge -->
+            <!-- quiz name + points up top -->
             <HBox spacing="12" alignment="CENTER_LEFT">
                 <Label fx:id="lessonTitleLabel"
                        text="Quiz"
@@ -79,13 +78,14 @@
                 <Pane HBox.hgrow="ALWAYS"/>
                 <Label fx:id="pointsBadge" text="0 / 0 (0%)"
                        style="-fx-background-color:#e5e7eb; -fx-text-fill:#111827;
-                  -fx-font-weight:700; -fx-padding:6 10; -fx-background-radius:12;"/>
+                              -fx-font-weight:700; -fx-padding:6 10; -fx-background-radius:12;"/>
             </HBox>
 
+            <!-- section heading -->
             <Label text="Questions"
                    style="-fx-font-size:18; -fx-font-weight:700; -fx-text-fill:#3a4668;"/>
-                   
-            <!-- Your controller will populate this with question rows -->
+
+            <!-- where question rows get added -->
             <VBox fx:id="questionListBox" spacing="10" HBox.hgrow="ALWAYS" prefWidth="2000"/>
         </VBox>
     </HBox>
